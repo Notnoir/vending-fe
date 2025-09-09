@@ -1,36 +1,54 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Vending Machine Frontend
 
-## Getting Started
+Frontend UI untuk sistem vending machine IoT menggunakan Next.js dan React. Dirancang khusus untuk touchscreen interface.
 
-First, run the development server:
+## 🚀 Fitur
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- **Touchscreen Optimized UI** untuk pengalaman pengguna yang optimal
+- **Real-time Product Display** dengan informasi stok
+- **QRIS Payment Integration** dengan QR code scanner
+- **Multi-step Transaction Flow** yang user-friendly
+- **Responsive Design** untuk berbagai ukuran layar
+- **Error Handling** yang komprehensif
+- **State Management** dengan Zustand
+- **Type Safety** dengan TypeScript
+
+## 📱 User Flow
+
+1. **Home** - Pilih produk dari grid
+2. **Product Detail** - Lihat detail dan atur jumlah
+3. **Order Summary** - Konfirmasi pesanan
+4. **Payment** - Scan QR code untuk pembayaran
+5. **Dispensing** - Proses pengeluaran produk
+6. **Success/Error** - Hasil transaksi
+
+## 🛠️ Installation
+
+1. **Install dependencies**
+
+   ```bash
+   npm install --legacy-peer-deps
+   ```
+
+2. **Setup environment**
+
+   ```bash
+   cp .env.example .env.local
+   # Edit .env.local dengan konfigurasi API Anda
+   ```
+
+3. **Start development server**
+   ```bash
+   npm run dev
+   ```
+
+## ⚙️ Configuration
+
+Edit file `.env.local`:
+
+```env
+NEXT_PUBLIC_API_URL=http://localhost:3001/api
+NEXT_PUBLIC_MACHINE_ID=VM01
+NEXT_PUBLIC_KIOSK_MODE=true
+NEXT_PUBLIC_DEBUG=false
 ```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
