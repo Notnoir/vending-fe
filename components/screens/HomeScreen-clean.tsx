@@ -6,8 +6,7 @@ import { vendingAPI, Product } from "@/lib/api";
 import ProductCard from "@/components/ProductCard";
 import { Loading } from "@/components/ui/Loading";
 import { Button } from "@/components/ui/Button";
-import { RefreshCw, Wifi, WifiOff, Clock, Settings } from "lucide-react";
-import Link from "next/link";
+import { RefreshCw, Wifi, WifiOff, Clock } from "lucide-react";
 import toast from "react-hot-toast";
 
 const HomeScreen: React.FC = () => {
@@ -106,14 +105,6 @@ const HomeScreen: React.FC = () => {
                 />
                 Refresh
               </Button>
-
-              {/* Admin Button */}
-              <Link href="/admin">
-                <Button variant="secondary" size="sm">
-                  <Settings className="h-4 w-4 mr-2" />
-                  Admin
-                </Button>
-              </Link>
             </div>
           </div>
         </div>
