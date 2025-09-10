@@ -66,12 +66,25 @@ const OrderSummaryScreen: React.FC = () => {
         ...(customerPhone && { customer_phone: customerPhone }),
       };
 
+      console.log("Creating order with data:", orderData);
+      console.log("Backend URL: http://localhost:3001");
+
       const order = await vendingAPI.createOrder(orderData);
+      console.log("Order created successfully:", order);
+
       setCurrentOrder(order);
       setCurrentScreen("payment");
       toast.success("Pesanan berhasil dibuat");
     } catch (error: unknown) {
       console.error("Failed to create order:", error);
+      console.error("Error details:", {
+        name: (error as Error)?.name,
+        message: (error as Error)?.message,
+        response: (error as any)?.response,
+        status: (error as any)?.response?.status,
+        data: (error as any)?.response?.data,
+      });
+
       const errorMessage =
         (error as { response?: { data?: { error?: string } } })?.response?.data
           ?.error || "Gagal membuat pesanan";
