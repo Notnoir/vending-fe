@@ -36,7 +36,7 @@ interface VendingStore {
   resetTransaction: () => void;
 }
 
-export const useVendingStore = create<VendingStore>((set, _get) => ({
+export const useVendingStore = create<VendingStore>((set) => ({
   // Initial state
   machineId: "VM01",
   isOnline: true,

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Image from "next/image";
 import { Product } from "@/lib/api";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent } from "@/components/ui/Card";
@@ -83,12 +84,13 @@ const ProductModal: React.FC<ProductModalProps> = ({
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Product Image Preview */}
             <div className="flex justify-center">
-              <div className="w-32 h-32 bg-gray-200 rounded-lg flex items-center justify-center">
+              <div className="w-32 h-32 bg-gray-200 rounded-lg flex items-center justify-center relative overflow-hidden">
                 {formData.image_url ? (
-                  <img
+                  <Image
                     src={formData.image_url}
                     alt="Preview"
-                    className="w-full h-full object-cover rounded-lg"
+                    fill
+                    className="object-cover rounded-lg"
                   />
                 ) : (
                   <Package className="h-16 w-16 text-gray-400" />

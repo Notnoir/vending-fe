@@ -8,14 +8,7 @@ export async function POST(request: NextRequest) {
     console.log("Midtrans notification received:", body);
 
     // Verify the notification
-    const {
-      order_id,
-      status_code,
-      transaction_status,
-      fraud_status,
-      payment_type,
-      gross_amount,
-    } = body;
+    const { order_id, transaction_status, fraud_status } = body;
 
     // Handle different transaction statuses
     switch (transaction_status) {

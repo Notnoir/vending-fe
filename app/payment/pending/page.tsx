@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
@@ -16,7 +16,7 @@ export default function PaymentPendingPage() {
     "Memverifikasi status pembayaran..."
   );
 
-  const checkPaymentStatus = async () => {
+  const checkPaymentStatus = useCallback(async () => {
     if (!orderId) return;
 
     setIsChecking(true);
@@ -49,7 +49,7 @@ export default function PaymentPendingPage() {
     } finally {
       setIsChecking(false);
     }
-  };
+  }, [orderId, router]);
 
   useEffect(() => {
     if (orderId) {
@@ -69,7 +69,7 @@ export default function PaymentPendingPage() {
         clearTimeout(timeout);
       };
     }
-  }, [orderId]);
+  }, [orderId, checkPaymentStatus, router]);
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">

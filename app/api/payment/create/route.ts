@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-
-const midtransClient = require("midtrans-client");
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const midtransClient =
+  require("midtrans-client") as typeof import("midtrans-client");
 
 // Initialize Snap API client
 const snap = new midtransClient.Snap({
@@ -39,12 +40,19 @@ export async function POST(request: NextRequest) {
         email: customerEmail || "customer@vendingmachine.com",
         phone: customerPhone || "08123456789",
       },
-      item_details: items.map((item: any) => ({
-        id: item.id,
-        price: item.price,
-        quantity: item.quantity,
-        name: item.name,
-      })),
+      item_details: items.map(
+        (item: {
+          id: string;
+          price: number;
+          quantity: number;
+          name: string;
+        }) => ({
+          id: item.id,
+          price: item.price,
+          quantity: item.quantity,
+          name: item.name,
+        })
+      ),
       credit_card: {
         secure: true,
       },

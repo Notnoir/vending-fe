@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-
-const midtransClient = require("midtrans-client");
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const midtransClient =
+  require("midtrans-client") as typeof import("midtrans-client");
 
 // Initialize Core API client
 const core = new midtransClient.CoreApi({
@@ -10,10 +11,10 @@ const core = new midtransClient.CoreApi({
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { orderId: string } }
+  { params }: { params: Promise<{ orderId: string }> }
 ) {
   try {
-    const { orderId } = params;
+    const { orderId } = await params;
 
     if (!orderId) {
       return NextResponse.json(

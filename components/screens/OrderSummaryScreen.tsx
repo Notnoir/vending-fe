@@ -80,9 +80,9 @@ const OrderSummaryScreen: React.FC = () => {
       console.error("Error details:", {
         name: (error as Error)?.name,
         message: (error as Error)?.message,
-        response: (error as any)?.response,
-        status: (error as any)?.response?.status,
-        data: (error as any)?.response?.data,
+        response: (error as { response?: unknown })?.response,
+        status: (error as { response?: { status?: number } })?.response?.status,
+        data: (error as { response?: { data?: unknown } })?.response?.data,
       });
 
       const errorMessage =

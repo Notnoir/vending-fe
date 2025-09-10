@@ -8,13 +8,7 @@ import PaymentQR from "@/components/PaymentQR";
 import { Loading } from "@/components/ui/Loading";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent } from "@/components/ui/Card";
-import {
-  ArrowLeft,
-  CreditCard,
-  Smartphone,
-  Wallet,
-  QrCode,
-} from "lucide-react";
+import { ArrowLeft, CreditCard, QrCode } from "lucide-react";
 import toast from "react-hot-toast";
 
 const PaymentScreen: React.FC = () => {
@@ -22,7 +16,6 @@ const PaymentScreen: React.FC = () => {
   const [paymentMethod, setPaymentMethod] = useState<
     "qris" | "midtrans" | null
   >(null);
-  const [snapToken, setSnapToken] = useState<string | null>(null);
 
   const {
     currentOrder,
@@ -75,7 +68,6 @@ const PaymentScreen: React.FC = () => {
 
       // Create transaction
       const response = await paymentService.createTransaction(paymentRequest);
-      setSnapToken(response.token);
 
       // Open Snap payment popup
       const result = await paymentService.openSnapPayment(response.token);
@@ -306,10 +298,11 @@ const PaymentScreen: React.FC = () => {
         </div>
 
         <PaymentQR
-          order={currentOrder}
-          onPaymentSuccess={handlePaymentSuccess}
-          onPaymentTimeout={handleTimeout}
-          onCancel={handleBackToSummary}
+          orderId={currentOrder.order_id}
+          amount={currentOrder.total_amount}
+          onSuccess={handlePaymentSuccess}
+          onError={handleTimeout}
+          onClose={handleBackToSummary}
         />
       </div>
     </div>

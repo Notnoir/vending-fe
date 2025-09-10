@@ -10,16 +10,13 @@ import {
   Settings,
   Package,
   BarChart3,
-  Users,
   DollarSign,
   TrendingUp,
   AlertTriangle,
   CheckCircle,
   Plus,
   Edit,
-  Trash2,
   RefreshCw,
-  Eye,
   Download,
   LogOut,
 } from "lucide-react";
@@ -33,16 +30,6 @@ interface DashboardStats {
   machineStatus: "online" | "offline" | "maintenance";
 }
 
-interface Sale {
-  id: number;
-  product_name: string;
-  quantity: number;
-  amount: number;
-  payment_method: string;
-  transaction_date: string;
-  slot_number: string;
-}
-
 interface AdminDashboardProps {
   onLogout?: () => void;
 }
@@ -52,7 +39,6 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
     "dashboard" | "products" | "sales" | "settings"
   >("dashboard");
   const [products, setProducts] = useState<Product[]>([]);
-  const [sales, setSales] = useState<Sale[]>([]);
   const [stats, setStats] = useState<DashboardStats>({
     totalProducts: 0,
     totalSales: 0,
@@ -65,7 +51,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
   const [showProductModal, setShowProductModal] = useState(false);
 
   // Handle product save
-  const handleProductSave = async (productData: Partial<Product>) => {
+  const handleProductSave = async () => {
     try {
       if (selectedProduct) {
         // Update existing product
@@ -389,7 +375,11 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
             ].map((tab) => (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id as any)}
+                onClick={() =>
+                  setActiveTab(
+                    tab.id as "dashboard" | "products" | "sales" | "settings"
+                  )
+                }
                 className={`${
                   activeTab === tab.id
                     ? "border-blue-500 text-blue-600"

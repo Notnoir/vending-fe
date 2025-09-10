@@ -97,19 +97,24 @@ class PaymentService {
   }
 
   // Open Snap payment popup
-  async openSnapPayment(token: string): Promise<any> {
+  async openSnapPayment(
+    token: string
+  ): Promise<import("midtrans-client").SnapResult> {
     return new Promise((resolve, reject) => {
-      if (typeof window !== "undefined" && (window as any).snap) {
-        (window as any).snap.pay(token, {
-          onSuccess: function (result: any) {
+      if (
+        typeof window !== "undefined" &&
+        (window as import("midtrans-client").WindowWithSnap).snap
+      ) {
+        (window as import("midtrans-client").WindowWithSnap).snap!.pay(token, {
+          onSuccess: function (result: import("midtrans-client").SnapResult) {
             console.log("Payment success:", result);
             resolve(result);
           },
-          onPending: function (result: any) {
+          onPending: function (result: import("midtrans-client").SnapResult) {
             console.log("Payment pending:", result);
             resolve(result);
           },
-          onError: function (result: any) {
+          onError: function (result: import("midtrans-client").SnapResult) {
             console.log("Payment error:", result);
             reject(result);
           },
@@ -129,7 +134,7 @@ class PaymentService {
     return new Promise((resolve, reject) => {
       if (typeof window !== "undefined") {
         // Check if script is already loaded
-        if ((window as any).snap) {
+        if ((window as import("midtrans-client").WindowWithSnap).snap) {
           resolve();
           return;
         }
