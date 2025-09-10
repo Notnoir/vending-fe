@@ -1,271 +1,351 @@
 "use client";
 
-import React, { useState, useCallback, useEffect } from "react";
-import { Card, CardContent } from "@/components/ui/Card";
+import React, { useState, useEffect } from "react";
+import QRCode from "react-qr-code";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
-import { QrCode, Check, X, Clock, RefreshCw } from "lucide-react";
-import { paymentService } from "@/lib/payment";
+import { LoadingSpinner } from "@/components/ui/Loading";
+import { Order } from "@/lib/api";
+import { paymentService, PaymentRequest } from "@/lib/payment";
 import toast from "react-hot-toast";
 
 interface PaymentQRProps {
-  orderId: string;
-  amount: number;
-  onSuccess?: (result: unknown) => void;
-  onError?: (error: unknown) => void;
-  onClose?: () => void;
+  order: Order;
+  onPaymentSuccess: () => void;
+  onPaymentTimeout: () => void;
+  onClose: () => void;
 }
 
-const PaymentQR: React.FC<PaymentQRProps> = ({
-  orderId,
-  amount,
-  onSuccess,
-  onError,
+export const PaymentQR: React.FC<PaymentQRProps> = ({
+  order,
+  onPaymentSuccess,
+  onPaymentTimeout,
   onClose,
 }) => {
-  const [qrCodeUrl, setQrCodeUrl] = useState<string>("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [paymentStatus, setPaymentStatus] = useState<string>("pending");
-  const [isCheckingStatus, setIsCheckingStatus] = useState(false);
+  const [timeLeft, setTimeLeft] = useState<number>(0);
+  const [isCheckingPayment, setIsCheckingPayment] = useState(false);
+  const [isGeneratingQR, setIsGeneratingQR] = useState(true);
+  const [qrisUrl, setQrisUrl] = useState<string>("");
+  const [midtransOrderId, setMidtransOrderId] = useState<string>("");
 
-  // Generate QRIS payment
-  const generateMidtransQRIS = useCallback(async () => {
-    if (isLoading) return;
+  // Generate Midtrans QRIS on component mount
+  useEffect(() => {
+    generateMidtransQRIS();
+  }, []);
 
-    setIsLoading(true);
+  const generateMidtransQRIS = async () => {
     try {
-      // Create payment request
-      const paymentRequest = {
-        orderId,
-        amount: paymentService.formatAmount(amount),
-        customerName: "Vending Machine Customer",
-        customerEmail: "customer@vendingmachine.com",
+      setIsGeneratingQR(true);
+      console.log("🔄 Generating Midtrans QRIS for order:", order.order_id);
+
+      // Create Midtrans payment request
+      const orderId = paymentService.generateOrderId();
+      setMidtransOrderId(orderId);
+
+      const paymentRequest: PaymentRequest = {
+        orderId: orderId,
+        amount: order.total_amount,
+        customerName: "Customer",
+        customerEmail: "customer@example.com",
         items: [
           {
-            id: "vending_item",
-            price: amount,
-            quantity: 1,
-            name: "Vending Machine Item",
+            id: order.order_id,
+            price: order.unit_price,
+            quantity: order.quantity,
+            name: order.product_name,
           },
         ],
       };
 
-      // Create transaction
+      // Create Midtrans transaction for QRIS
       const response = await paymentService.createTransaction(paymentRequest);
 
-      // For QRIS, we need to use the redirect_url as QR code
-      setQrCodeUrl(response.redirect_url);
+      // For QRIS, we use the redirect_url as QR content
+      setQrisUrl(response.redirect_url);
 
-      toast.success("QR Code berhasil dibuat!");
-
-      // Status polling will be handled by useEffect
+      console.log("✅ Midtrans QRIS generated:", response);
+      toast.success("QR Code Midtrans berhasil dibuat");
     } catch (error) {
-      console.error("Failed to generate QRIS:", error);
-      toast.error("Gagal membuat QR Code");
-      onError?.(error);
+      console.error("❌ Failed to generate Midtrans QRIS:", error);
+      toast.error("Gagal membuat QR Code Midtrans");
+      // Fallback to order QR string
+      setQrisUrl(order.qr_string || order.payment_url);
+      setMidtransOrderId(order.order_id);
     } finally {
-      setIsLoading(false);
+      setIsGeneratingQR(false);
     }
-  }, [orderId, amount, isLoading, onError]);
+  };
 
-  // Check payment status
-  const checkPaymentStatus = useCallback(async () => {
-    if (isCheckingStatus || !orderId) return;
+  useEffect(() => {
+    // Calculate time left
+    if (!order.expires_at) return;
 
-    setIsCheckingStatus(true);
+    const calculateTimeLeft = () => {
+      const now = new Date().getTime();
+      const expiry = new Date(order.expires_at).getTime();
+      const difference = expiry - now;
+
+      if (difference > 0) {
+        const seconds = Math.floor(difference / 1000);
+        setTimeLeft(seconds);
+      } else {
+        setTimeLeft(0);
+        onPaymentTimeout();
+      }
+    };
+
+    // Initial calculation
+    calculateTimeLeft();
+
+    // Update every second
+    const timer = setInterval(calculateTimeLeft, 1000);
+
+    return () => clearInterval(timer);
+  }, [order.expires_at, onPaymentTimeout]);
+
+  // Auto check payment status every 3 seconds
+  useEffect(() => {
+    if (!midtransOrderId || isGeneratingQR) return;
+
+    const interval = setInterval(() => {
+      checkPaymentStatus();
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [midtransOrderId, isGeneratingQR]);
+
+  const formatTime = (seconds: number): string => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes.toString().padStart(2, "0")}:${remainingSeconds
+      .toString()
+      .padStart(2, "0")}`;
+  };
+
+  const formatPrice = (price: number): string => {
+    return new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
+    }).format(price);
+  };
+
+  // Check payment status via Midtrans API
+  const checkPaymentStatus = async () => {
+    if (!midtransOrderId || isCheckingPayment) return;
+
+    setIsCheckingPayment(true);
     try {
-      const status = await paymentService.checkPaymentStatus(orderId);
+      console.log("🔍 Checking Midtrans payment status for:", midtransOrderId);
+
+      // Try API route first
+      const response = await fetch(`/api/payment/status/${midtransOrderId}`);
+      if (response.ok) {
+        const status = await response.json();
+        console.log("📊 Payment status via API:", status);
+
+        // Handle mock responses for testing
+        if (status._mock) {
+          console.log("🎭 Received mock payment response");
+          // For testing purposes, simulate payment success after 15 seconds
+          const now = new Date().getTime();
+          const orderTime = new Date(status.transaction_time).getTime();
+          const elapsed = (now - orderTime) / 1000;
+
+          if (elapsed > 15) {
+            // Simulate success after 15 seconds
+            console.log("✅ Mock payment successful!");
+            toast.success("Pembayaran Midtrans berhasil! (Simulasi)");
+            onPaymentSuccess();
+            return;
+          }
+          return;
+        }
+
+        // Handle real Midtrans responses
+        if (
+          status.transaction_status === "settlement" ||
+          status.transaction_status === "capture"
+        ) {
+          console.log("✅ Midtrans payment successful!");
+          toast.success("Pembayaran Midtrans berhasil!");
+          onPaymentSuccess();
+        } else if (
+          status.transaction_status === "deny" ||
+          status.transaction_status === "cancel" ||
+          status.transaction_status === "expire"
+        ) {
+          console.log("❌ Midtrans payment failed:", status.transaction_status);
+          toast.error("Pembayaran Midtrans gagal atau dibatalkan");
+          onPaymentTimeout();
+        }
+        return;
+      }
+
+      // Fallback to payment service if API route fails
+      const status = await paymentService.checkPaymentStatus(midtransOrderId);
+      console.log("📊 Payment status via service:", status);
 
       if (
         status.transaction_status === "settlement" ||
         status.transaction_status === "capture"
       ) {
-        setPaymentStatus("success");
-        toast.success("Pembayaran berhasil!");
-        onSuccess?.(status);
+        console.log("✅ Midtrans payment successful!");
+        toast.success("Pembayaran Midtrans berhasil!");
+        onPaymentSuccess();
       } else if (
-        ["cancel", "deny", "expire", "failure"].includes(
-          status.transaction_status
-        )
+        status.transaction_status === "deny" ||
+        status.transaction_status === "cancel" ||
+        status.transaction_status === "expire"
       ) {
-        setPaymentStatus("failed");
-        toast.error("Pembayaran gagal");
-        onError?.(status);
-      } else if (status.transaction_status === "pending") {
-        setPaymentStatus("pending");
+        console.log("❌ Midtrans payment failed:", status.transaction_status);
+        toast.error("Pembayaran Midtrans gagal atau dibatalkan");
+        onPaymentTimeout();
       }
     } catch (error) {
-      console.error("Error checking payment status:", error);
+      console.error("❌ Error checking Midtrans payment status:", error);
     } finally {
-      setIsCheckingStatus(false);
-    }
-  }, [orderId, isCheckingStatus, onSuccess, onError]);
-
-  // Start polling payment status
-  const startStatusPolling = useCallback(() => {
-    const interval = setInterval(() => {
-      checkPaymentStatus();
-    }, 5000); // Check every 5 seconds
-
-    // Auto stop after 5 minutes
-    setTimeout(() => {
-      clearInterval(interval);
-    }, 300000);
-
-    return () => clearInterval(interval);
-  }, [checkPaymentStatus]);
-
-  // Mock payment for testing
-  const simulatePayment = useCallback(async () => {
-    setPaymentStatus("processing");
-    toast("Simulasi pembayaran...");
-
-    setTimeout(() => {
-      setPaymentStatus("success");
-      toast.success("Pembayaran berhasil! (Simulasi)");
-      onSuccess?.({
-        transaction_status: "settlement",
-        order_id: orderId,
-        payment_type: "qris",
-      });
-    }, 2000);
-  }, [orderId, onSuccess]);
-
-  // Auto-generate QR on mount
-  useEffect(() => {
-    generateMidtransQRIS();
-  }, [generateMidtransQRIS]);
-
-  // Start status polling when QR code is generated
-  useEffect(() => {
-    if (qrCodeUrl && paymentStatus === "pending") {
-      const cleanup = startStatusPolling();
-      return cleanup;
-    }
-  }, [qrCodeUrl, paymentStatus, startStatusPolling]);
-
-  const getStatusIcon = () => {
-    switch (paymentStatus) {
-      case "success":
-        return <Check className="h-8 w-8 text-green-600" />;
-      case "failed":
-        return <X className="h-8 w-8 text-red-600" />;
-      case "processing":
-        return <Clock className="h-8 w-8 text-yellow-600" />;
-      default:
-        return <QrCode className="h-8 w-8 text-blue-600" />;
+      setIsCheckingPayment(false);
     }
   };
 
-  const getStatusMessage = () => {
-    switch (paymentStatus) {
-      case "success":
-        return "Pembayaran Berhasil!";
-      case "failed":
-        return "Pembayaran Gagal";
-      case "processing":
-        return "Memproses Pembayaran...";
-      default:
-        return "Scan QR Code untuk Pembayar";
+  const handleManualCheck = async () => {
+    await checkPaymentStatus();
+  };
+
+  const handleTestPayment = async () => {
+    setIsCheckingPayment(true);
+    try {
+      // Simulate payment processing
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      console.log("🎭 Simulating successful Midtrans payment");
+      toast.success("Pembayaran Midtrans simulasi berhasil!");
+      onPaymentSuccess();
+    } catch (error) {
+      console.error("❌ Test payment error:", error);
+      toast.error("Simulasi pembayaran gagal");
+    } finally {
+      setIsCheckingPayment(false);
     }
   };
 
   return (
-    <Card className="w-full max-w-md mx-auto">
-      <CardContent className="p-6">
-        <div className="text-center space-y-4">
-          {/* Status Icon */}
-          <div className="flex justify-center">{getStatusIcon()}</div>
-
-          {/* Status Message */}
-          <h3 className="text-lg font-semibold">{getStatusMessage()}</h3>
-
-          {/* Amount */}
-          <p className="text-2xl font-bold text-blue-600">
-            Rp {amount.toLocaleString("id-ID")}
+    <div className="max-w-md mx-auto">
+      <Card>
+        <CardHeader className="text-center">
+          <CardTitle>Pembayaran QRIS Midtrans</CardTitle>
+          <p className="text-gray-600">
+            Scan QR Code dengan aplikasi mobile banking atau e-wallet
           </p>
+        </CardHeader>
 
-          {/* QR Code Display */}
-          {qrCodeUrl && paymentStatus === "pending" && (
-            <div className="bg-white p-4 rounded-lg border">
-              <div className="w-48 h-48 mx-auto bg-gray-100 flex items-center justify-center rounded-lg">
-                {isLoading ? (
-                  <div className="flex flex-col items-center space-y-2">
-                    <RefreshCw className="h-8 w-8 text-gray-400 animate-spin" />
-                    <span className="text-sm text-gray-500">Membuat QR...</span>
-                  </div>
-                ) : (
-                  <div className="text-center">
-                    <QrCode className="h-16 w-16 text-gray-400 mx-auto mb-2" />
-                    <p className="text-xs text-gray-500">
-                      QR Code akan muncul di sini
-                    </p>
-                    <p className="text-xs text-blue-500 mt-1">
-                      <a
-                        href={qrCodeUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        Buka Link Pembayaran
-                      </a>
-                    </p>
-                  </div>
-                )}
+        <CardContent className="space-y-6">
+          {/* QR Code */}
+          <div className="flex justify-center p-4 bg-white rounded-lg border">
+            {isGeneratingQR ? (
+              <div className="flex flex-col items-center space-y-4">
+                <LoadingSpinner size="lg" />
+                <p className="text-gray-600">Membuat QR Code Midtrans...</p>
               </div>
-            </div>
-          )}
-
-          {/* Action Buttons */}
-          <div className="space-y-2">
-            {paymentStatus === "pending" && !isLoading && (
-              <>
-                <Button
-                  onClick={checkPaymentStatus}
-                  disabled={isCheckingStatus}
-                  className="w-full"
-                  variant="secondary"
-                >
-                  {isCheckingStatus ? (
-                    <>
-                      <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-                      Mengecek Status...
-                    </>
-                  ) : (
-                    <>
-                      <RefreshCw className="h-4 w-4 mr-2" />
-                      Cek Status Pembayaran
-                    </>
-                  )}
-                </Button>
-
-                <Button
-                  onClick={simulatePayment}
-                  className="w-full"
-                  variant="secondary"
-                >
-                  Simulasi Pembayaran (Testing)
-                </Button>
-              </>
-            )}
-
-            {paymentStatus === "failed" && (
-              <Button onClick={generateMidtransQRIS} className="w-full">
-                Coba Lagi
-              </Button>
-            )}
-
-            {(paymentStatus === "success" || paymentStatus === "failed") && (
-              <Button onClick={onClose} className="w-full" variant="secondary">
-                Tutup
-              </Button>
+            ) : (
+              <QRCode
+                value={qrisUrl || order.qr_string || order.payment_url}
+                size={200}
+                style={{ height: "auto", maxWidth: "100%", width: "100%" }}
+                viewBox="0 0 256 256"
+              />
             )}
           </div>
 
-          {/* Order ID */}
-          <p className="text-xs text-gray-500">Order ID: {orderId}</p>
-        </div>
-      </CardContent>
-    </Card>
+          {/* Midtrans Badge */}
+          {qrisUrl && !qrisUrl.includes(order.order_id) && (
+            <div className="text-center">
+              <span className="inline-flex items-center px-3 py-1 rounded-full text-xs bg-blue-100 text-blue-800">
+                🔒 Powered by Midtrans
+              </span>
+            </div>
+          )}
+
+          {/* Order Details */}
+          <div className="space-y-2 text-center">
+            <h3 className="font-semibold text-lg">{order.product_name}</h3>
+            <p className="text-gray-600">Jumlah: {order.quantity} pcs</p>
+            <div className="text-2xl font-bold text-blue-600">
+              {formatPrice(order.total_amount)}
+            </div>
+            {midtransOrderId && (
+              <p className="text-xs text-gray-500">
+                Order ID: {midtransOrderId}
+              </p>
+            )}
+          </div>
+
+          {/* Countdown */}
+          <div className="text-center">
+            <div className="text-lg font-mono font-bold text-red-600">
+              {formatTime(timeLeft)}
+            </div>
+            <p className="text-sm text-gray-600">Waktu tersisa</p>
+          </div>
+
+          {/* Status */}
+          <div className="text-center">
+            {isCheckingPayment ? (
+              <div className="flex items-center justify-center space-x-2">
+                <LoadingSpinner size="sm" />
+                <span>Mengecek pembayaran Midtrans...</span>
+              </div>
+            ) : (
+              <p className="text-gray-600">Menunggu pembayaran...</p>
+            )}
+          </div>
+
+          {/* Action Buttons */}
+          <div className="space-y-3">
+            {/* Check Payment Status Button */}
+            <Button
+              variant="primary"
+              fullWidth
+              onClick={handleManualCheck}
+              disabled={isCheckingPayment || isGeneratingQR}
+              className="bg-blue-600 hover:bg-blue-700"
+            >
+              {isCheckingPayment ? "Memeriksa..." : "Periksa Status Pembayaran"}
+            </Button>
+
+            {/* Test Payment Button (for demo) */}
+            <Button
+              variant="secondary"
+              fullWidth
+              onClick={handleTestPayment}
+              disabled={isCheckingPayment || isGeneratingQR}
+              className="bg-green-600 hover:bg-green-700 text-white"
+            >
+              {isCheckingPayment
+                ? "Memproses..."
+                : "🧪 Test Pembayaran (Demo)"}
+            </Button>
+
+            {/* Close Button */}
+            <Button
+              variant="secondary"
+              fullWidth
+              onClick={onClose}
+              disabled={isCheckingPayment}
+            >
+              Tutup
+            </Button>
+          </div>
+
+          {/* Instructions */}
+          <div className="text-xs text-gray-600 space-y-1">
+            <p className="font-semibold">Cara pembayaran:</p>
+            <p>1. Buka aplikasi mobile banking atau e-wallet</p>
+            <p>2. Pilih menu scan QR Code</p>
+            <p>3. Arahkan kamera ke QR Code di atas</p>
+            <p>4. Konfirmasi pembayaran Midtrans</p>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
   );
 };
-
-export default PaymentQR;

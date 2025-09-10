@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useVendingStore } from "@/lib/store";
 import { vendingAPI } from "@/lib/api";
 import { paymentService, PaymentRequest } from "@/lib/payment";
-import PaymentQR from "@/components/PaymentQR";
+import { PaymentQR } from "@/components/PaymentQR";
 import { Loading } from "@/components/ui/Loading";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent } from "@/components/ui/Card";
@@ -298,10 +298,9 @@ const PaymentScreen: React.FC = () => {
         </div>
 
         <PaymentQR
-          orderId={currentOrder.order_id}
-          amount={currentOrder.total_amount}
-          onSuccess={handlePaymentSuccess}
-          onError={handleTimeout}
+          order={currentOrder}
+          onPaymentSuccess={handlePaymentSuccess}
+          onPaymentTimeout={handleTimeout}
           onClose={handleBackToSummary}
         />
       </div>
