@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const midtransClient =
-  require("midtrans-client") as typeof import("midtrans-client");
+import midtransClient from "midtrans-client";
 
 // Initialize Core API client
 const core = new midtransClient.CoreApi({
@@ -59,7 +57,7 @@ export async function GET(
       // Check transaction status with real Midtrans
       const statusResponse = await core.transaction.status(orderId);
       return NextResponse.json(statusResponse);
-    } catch (midtransError: any) {
+    } catch (midtransError: unknown) {
       console.error("Midtrans API error:", midtransError);
 
       // Always fallback to demo mode if Midtrans fails (for development)

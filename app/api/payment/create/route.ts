@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const midtransClient =
-  require("midtrans-client") as typeof import("midtrans-client");
+import midtransClient from "midtrans-client";
 
 // Initialize Snap API client
 const snap = new midtransClient.Snap({

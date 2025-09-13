@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import QRCode from "react-qr-code";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
@@ -28,12 +28,7 @@ export const PaymentQR: React.FC<PaymentQRProps> = ({
   const [qrisUrl, setQrisUrl] = useState<string>("");
   const [midtransOrderId, setMidtransOrderId] = useState<string>("");
 
-  // Generate Midtrans QRIS on component mount
-  useEffect(() => {
-    generateMidtransQRIS();
-  }, []);
-
-  const generateMidtransQRIS = async () => {
+  const generateMidtransQRIS = useCallback(async () => {
     try {
       setIsGeneratingQR(true);
       console.log("🔄 Generating Midtrans QRIS for order:", order.order_id);
@@ -74,7 +69,20 @@ export const PaymentQR: React.FC<PaymentQRProps> = ({
     } finally {
       setIsGeneratingQR(false);
     }
-  };
+  }, [
+    order.order_id,
+    order.total_amount,
+    order.unit_price,
+    order.quantity,
+    order.product_name,
+    order.qr_string,
+    order.payment_url,
+  ]);
+
+  // Generate Midtrans QRIS on component mount
+  useEffect(() => {
+    generateMidtransQRIS();
+  }, [generateMidtransQRIS]);
 
   useEffect(() => {
     // Calculate time left
@@ -103,17 +111,6 @@ export const PaymentQR: React.FC<PaymentQRProps> = ({
     return () => clearInterval(timer);
   }, [order.expires_at, onPaymentTimeout]);
 
-  // Auto check payment status every 3 seconds
-  useEffect(() => {
-    if (!midtransOrderId || isGeneratingQR) return;
-
-    const interval = setInterval(() => {
-      checkPaymentStatus();
-    }, 3000);
-
-    return () => clearInterval(interval);
-  }, [midtransOrderId, isGeneratingQR]);
-
   const formatTime = (seconds: number): string => {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
@@ -130,7 +127,7 @@ export const PaymentQR: React.FC<PaymentQRProps> = ({
   };
 
   // Check payment status via Midtrans API
-  const checkPaymentStatus = async () => {
+  const checkPaymentStatus = useCallback(async () => {
     if (!midtransOrderId || isCheckingPayment) return;
 
     setIsCheckingPayment(true);
@@ -206,13 +203,24 @@ export const PaymentQR: React.FC<PaymentQRProps> = ({
     } finally {
       setIsCheckingPayment(false);
     }
-  };
+  }, [midtransOrderId, isCheckingPayment, onPaymentSuccess, onPaymentTimeout]);
 
-  const handleManualCheck = async () => {
+  // Auto check payment status every 3 seconds
+  useEffect(() => {
+    if (!midtransOrderId || isGeneratingQR) return;
+
+    const interval = setInterval(() => {
+      checkPaymentStatus();
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [midtransOrderId, isGeneratingQR, checkPaymentStatus]);
+
+  const handleManualCheck = useCallback(async () => {
     await checkPaymentStatus();
-  };
+  }, [checkPaymentStatus]);
 
-  const handleTestPayment = async () => {
+  const handleTestPayment = useCallback(async () => {
     setIsCheckingPayment(true);
     try {
       // Simulate payment processing
@@ -226,7 +234,7 @@ export const PaymentQR: React.FC<PaymentQRProps> = ({
     } finally {
       setIsCheckingPayment(false);
     }
-  };
+  }, [onPaymentSuccess]);
 
   return (
     <div className="max-w-md mx-auto">
@@ -320,9 +328,7 @@ export const PaymentQR: React.FC<PaymentQRProps> = ({
               disabled={isCheckingPayment || isGeneratingQR}
               className="bg-green-600 hover:bg-green-700 text-white"
             >
-              {isCheckingPayment
-                ? "Memproses..."
-                : "🧪 Test Pembayaran (Demo)"}
+              {isCheckingPayment ? "Memproses..." : "🧪 Test Pembayaran (Demo)"}
             </Button>
 
             {/* Close Button */}
