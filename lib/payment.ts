@@ -72,8 +72,9 @@ class PaymentService {
         hasRedirectUrl: !!data.redirect_url,
       });
       return data;
-    } catch (error: any) {
-      console.error("❌ Error creating payment transaction:", error.message);
+    } catch (error: unknown) {
+      const err = error as { message?: string };
+      console.error("❌ Error creating payment transaction:", err.message);
       throw error;
     }
   }
@@ -145,22 +146,45 @@ class PaymentService {
         typeof window !== "undefined" &&
         (window as import("midtrans-client").WindowWithSnap).snap
       ) {
+        let isFinished = false; // Track if payment is already finished
+
         (window as import("midtrans-client").WindowWithSnap).snap!.pay(token, {
           onSuccess: function (result: import("midtrans-client").SnapResult) {
-            console.log("Payment success:", result);
+            console.log("✅ Payment success:", result);
+            isFinished = true; // Mark as finished
             resolve(result);
           },
           onPending: function (result: import("midtrans-client").SnapResult) {
-            console.log("Payment pending:", result);
+            console.log("⏳ Payment pending:", result);
+            isFinished = true; // Mark as finished
             resolve(result);
           },
           onError: function (result: import("midtrans-client").SnapResult) {
-            console.log("Payment error:", result);
+            console.log("❌ Payment error:", result);
+            isFinished = true; // Mark as finished
             reject(result);
           },
           onClose: function () {
-            console.log("Payment popup closed");
-            reject(new Error("Payment popup closed"));
+            console.log("🚪 Payment popup closed by user");
+
+            // Only handle close if payment hasn't finished yet
+            if (!isFinished) {
+              console.log("⚠️ Popup closed without completing payment");
+              // For VA/Bank Transfer, popup is closed after instructions shown
+              // Return pending status instead of rejecting
+              resolve({
+                transaction_status: "pending",
+                status_code: "201",
+                status_message:
+                  "Payment popup closed - please complete payment",
+              } as import("midtrans-client").SnapResult);
+            } else {
+              console.log(
+                "✅ Popup closed after payment completion - ignoring"
+              );
+              // Payment already handled by onSuccess/onPending/onError
+              // Don't resolve again
+            }
           },
         });
       } else {

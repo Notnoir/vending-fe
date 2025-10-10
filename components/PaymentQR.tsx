@@ -35,14 +35,19 @@ export const PaymentQR: React.FC<PaymentQRProps> = ({
     try {
       setIsGeneratingQR(true);
       setQrGenerationError("");
-      console.log("🔄 Generating Midtrans QRIS for order:", order.order_id);
+      console.log(
+        "🔄 Generating Midtrans Snap QRIS for order:",
+        order.order_id
+      );
 
-      // Use the existing order ID from backend instead of generating new one
       const orderId = order.order_id;
       setMidtransOrderId(orderId);
 
+      // Always create Midtrans Snap transaction to get proper QR URL
+      console.log("� Creating Midtrans Snap transaction...");
+
       const paymentRequest: PaymentRequest = {
-        orderId: orderId, // Use backend order ID to maintain consistency
+        orderId: orderId,
         amount: order.total_amount,
         customerName: "Customer",
         customerEmail: "customer@example.com",
@@ -56,37 +61,40 @@ export const PaymentQR: React.FC<PaymentQRProps> = ({
         ],
       };
 
-      console.log("📋 Payment request prepared:", paymentRequest);
+      console.log("📋 Payment request:", paymentRequest);
 
-      // Create Midtrans transaction for QRIS
+      // Create Midtrans Snap transaction
       const response = await paymentService.createTransaction(paymentRequest);
 
-      // For QRIS, we use the redirect_url as QR content
-      setQrisUrl(response.redirect_url);
+      // Use redirect_url as QR content (Snap v4 URL)
+      console.log("✅ Midtrans Snap transaction created");
+      console.log("🔗 Redirect URL:", response.redirect_url);
 
-      console.log("✅ Midtrans QRIS generated successfully");
-      toast.success("QR Code Midtrans berhasil dibuat");
-    } catch (error: any) {
+      setQrisUrl(response.redirect_url);
+      toast.success("QR Code Midtrans Snap berhasil dibuat");
+    } catch (error: unknown) {
+      const err = error as { message?: string };
       console.error("❌ Failed to generate Midtrans QRIS:", error);
 
-      // Show more specific error message
-      const errorMessage = error.message || "Gagal membuat QR Code Midtrans";
+      const errorMessage = err.message || "Gagal membuat QR Code";
       setQrGenerationError(errorMessage);
 
-      if (errorMessage.includes("server key not configured")) {
+      if (errorMessage.includes("order_id not unique")) {
+        console.log("⚠️ Order ID already exists in Midtrans");
+        toast.error("Order ID sudah digunakan. Silakan buat pesanan baru.");
+      } else if (errorMessage.includes("server key not configured")) {
         toast.error(
           "⚙️ Konfigurasi Midtrans belum lengkap. Hubungi administrator."
         );
-      } else if (errorMessage.includes("duplicate")) {
-        toast.error("Order ID duplikat. Silakan coba lagi.");
       } else {
         toast.error(`Error: ${errorMessage}`);
       }
 
-      // Fallback to order QR string
-      console.log("🔄 Using fallback QR string from order");
-      setQrisUrl(order.qr_string || order.payment_url);
-      setMidtransOrderId(order.order_id);
+      // Fallback: use backend payment URL if exists
+      if (order.payment_url && !order.payment_url.includes("midtrans://")) {
+        console.log("🔄 Using fallback payment URL from backend");
+        setQrisUrl(order.payment_url);
+      }
     } finally {
       setIsGeneratingQR(false);
     }
@@ -96,7 +104,6 @@ export const PaymentQR: React.FC<PaymentQRProps> = ({
     order.unit_price,
     order.quantity,
     order.product_name,
-    order.qr_string,
     order.payment_url,
   ]);
 

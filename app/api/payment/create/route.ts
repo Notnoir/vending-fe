@@ -101,23 +101,29 @@ export async function POST(request: NextRequest) {
       token: transaction.token,
       redirect_url: transaction.redirect_url,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const err = error as {
+      message?: string;
+      httpStatusCode?: number;
+      ApiResponse?: unknown;
+    };
     console.error("❌ Payment creation error:", {
-      message: error.message,
-      statusCode: error.httpStatusCode,
-      apiResponse: error.ApiResponse,
+      message: err.message,
+      statusCode: err.httpStatusCode,
+      apiResponse: err.ApiResponse,
       rawError: error,
     });
 
     // Return more detailed error message
-    const errorMessage =
-      error.message || "Failed to create payment transaction";
-    const statusCode = error.httpStatusCode || 500;
+    const errorMessage = err.message || "Failed to create payment transaction";
+    const statusCode = err.httpStatusCode || 500;
 
     return NextResponse.json(
       {
         error: errorMessage,
-        details: error.ApiResponse?.error_messages || [],
+        details:
+          (err.ApiResponse as { error_messages?: string[] })?.error_messages ||
+          [],
         statusCode: statusCode,
       },
       { status: statusCode }

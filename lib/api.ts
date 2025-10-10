@@ -90,7 +90,11 @@ export const vendingAPI = {
   // Products
   getAvailableProducts: async (): Promise<{ products: Product[] }> => {
     const response = await api.get("/products/available");
-    return response.data;
+    // Backend returns { success: true, data: [...], count: ... }
+    // Transform to match expected format
+    return {
+      products: response.data.data || [],
+    };
   },
 
   getProduct: async (id: number): Promise<Product> => {

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { vendingAPI, Product } from "@/lib/api";
+import { vendingAPI } from "@/lib/api";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent } from "@/components/ui/Card";
 import { Loading } from "@/components/ui/Loading";
@@ -36,7 +36,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
   const [activeTab, setActiveTab] = useState<
     "dashboard" | "sales" | "settings"
   >("dashboard");
-  const [products, setProducts] = useState<Product[]>([]);
+  // const [products, setProducts] = useState<Product[]>([]); // Unused for now
   const [stats, setStats] = useState<DashboardStats>({
     totalProducts: 0,
     totalSales: 0,
@@ -53,7 +53,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
 
       // Load products
       const productsResponse = await vendingAPI.getAvailableProducts();
-      setProducts(productsResponse.products);
+      // setProducts(productsResponse.products); // Unused for now
 
       // Calculate stats
       const totalProducts = productsResponse.products.length;
