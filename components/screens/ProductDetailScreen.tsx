@@ -37,6 +37,19 @@ const ProductDetailScreen: React.FC = () => {
     }).format(price);
   };
 
+  // Get full image URL
+  const getImageUrl = (imageUrl: string | null) => {
+    if (!imageUrl) return "/images/placeholder-product.jpg";
+
+    // If already full URL, return as is
+    if (imageUrl.startsWith("http")) return imageUrl;
+
+    // If relative path, add backend URL
+    const backendUrl =
+      process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3001";
+    return `${backendUrl}${imageUrl}`;
+  };
+
   const unitPrice = selectedProduct.final_price ?? selectedProduct.price;
   const totalPrice = unitPrice * quantity;
   const maxQuantity = Math.min(10, selectedProduct.current_stock ?? 0);
@@ -81,10 +94,7 @@ const ProductDetailScreen: React.FC = () => {
               <div className="space-y-4">
                 <div className="relative h-64 w-full">
                   <Image
-                    src={
-                      selectedProduct.image_url ||
-                      "/images/placeholder-product.jpg"
-                    }
+                    src={getImageUrl(selectedProduct.image_url)}
                     alt={selectedProduct.name}
                     fill
                     className="object-cover rounded-lg"

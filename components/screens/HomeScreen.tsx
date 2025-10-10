@@ -64,15 +64,9 @@ const HomeScreen: React.FC = () => {
         <div className="bg-gradient-to-r from-[#DA291C] to-[#B71C1C] rounded-2xl shadow-lg p-6 text-white">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold flex items-center">
-                <span className="bg-[#FFC72C] text-[#DA291C] px-3 py-1 rounded-lg mr-3 font-black">
-                  M
-                </span>
+              <h1 className="text-3xl font-bold">
                 Vending Machine {machineId}
               </h1>
-              <p className="text-yellow-100 mt-1 ml-14">
-                Pilih produk yang Anda inginkan
-              </p>
             </div>
 
             <div className="flex items-center space-x-4">

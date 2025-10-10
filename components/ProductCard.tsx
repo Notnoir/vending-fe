@@ -29,6 +29,19 @@ const ProductCard: React.FC<ProductCardProps> = ({
     }).format(price);
   };
 
+  // Get full image URL
+  const getImageUrl = (imageUrl: string | null) => {
+    if (!imageUrl) return "/images/placeholder-product.jpg";
+
+    // If already full URL, return as is
+    if (imageUrl.startsWith("http")) return imageUrl;
+
+    // If relative path, add backend URL
+    const backendUrl =
+      process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3001";
+    return `${backendUrl}${imageUrl}`;
+  };
+
   return (
     <Card
       className={cn(
@@ -57,7 +70,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         {/* Product Image */}
         <div className="relative h-40 w-full mb-3 rounded-xl overflow-hidden bg-gradient-to-br from-[#FFF5F5] to-white">
           <Image
-            src={product.image_url || "/images/placeholder-product.jpg"}
+            src={getImageUrl(product.image_url)}
             alt={product.name}
             fill
             className="object-cover"
