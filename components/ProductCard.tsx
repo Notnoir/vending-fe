@@ -32,9 +32,10 @@ const ProductCard: React.FC<ProductCardProps> = ({
   return (
     <Card
       className={cn(
-        "relative cursor-pointer transition-all duration-200 hover:shadow-lg",
-        isDisabled && "opacity-50 cursor-not-allowed",
-        !isDisabled && "hover:scale-105"
+        "relative cursor-pointer transition-all duration-300 hover:shadow-xl border-2",
+        isDisabled && "opacity-50 cursor-not-allowed border-gray-200",
+        !isDisabled &&
+          "hover:scale-105 hover:border-[#FFC72C] border-transparent"
       )}
       onClick={() => !isDisabled && onSelect(product)}
     >
@@ -43,10 +44,10 @@ const ProductCard: React.FC<ProductCardProps> = ({
         <div className="absolute top-2 right-2 z-10">
           <div
             className={cn(
-              "px-2 py-1 rounded-full text-xs font-semibold",
+              "px-3 py-1 rounded-full text-xs font-bold shadow-md",
               isAvailable
-                ? "bg-green-100 text-green-800"
-                : "bg-red-100 text-red-800"
+                ? "bg-[#FFC72C] text-[#B71C1C]"
+                : "bg-[#DA291C] text-white"
             )}
           >
             {isAvailable ? `${product.current_stock} pcs` : "Habis"}
@@ -54,42 +55,49 @@ const ProductCard: React.FC<ProductCardProps> = ({
         </div>
 
         {/* Product Image */}
-        <div className="relative h-32 w-full mb-3">
+        <div className="relative h-40 w-full mb-3 rounded-xl overflow-hidden bg-gradient-to-br from-[#FFF5F5] to-white">
           <Image
             src={product.image_url || "/images/placeholder-product.jpg"}
             alt={product.name}
             fill
-            className="object-cover rounded-lg"
+            className="object-cover"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
+          {!isAvailable && (
+            <div className="absolute inset-0 bg-gray-900/50 flex items-center justify-center">
+              <span className="text-white font-bold text-lg">SOLD OUT</span>
+            </div>
+          )}
         </div>
 
         {/* Product Info */}
         <div className="space-y-2">
-          <h3 className="font-semibold text-lg line-clamp-1">{product.name}</h3>
+          <h3 className="font-bold text-lg line-clamp-1 text-[#B71C1C]">
+            {product.name}
+          </h3>
 
           <p className="text-gray-600 text-sm line-clamp-2">
             {product.description}
           </p>
 
-          <div className="flex items-center justify-between">
-            <div className="text-xl font-bold text-blue-600">
+          <div className="flex items-center justify-between pt-2">
+            <div className="text-2xl font-black text-[#DA291C]">
               {formatPrice(product.final_price ?? product.price)}
             </div>
 
             {product.slot_number && (
-              <div className="text-sm text-gray-500">
+              <div className="text-xs font-semibold text-gray-500 bg-gray-100 px-2 py-1 rounded">
                 Slot {product.slot_number}
               </div>
             )}
           </div>
 
           <Button
-            variant="primary"
-            size="sm"
+            variant={isAvailable ? "mcd" : "secondary"}
+            size="md"
             fullWidth
             disabled={isDisabled}
-            className="mt-3"
+            className="mt-3 font-bold"
           >
             {isAvailable ? "Pilih Produk" : "Stok Habis"}
           </Button>

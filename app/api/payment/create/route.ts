@@ -19,11 +19,34 @@ export async function POST(request: NextRequest) {
       items,
     } = body;
 
+    console.log("📥 Payment creation request:", {
+      orderId,
+      amount,
+      customerName,
+      itemsCount: items?.length,
+    });
+
     // Validate required fields
     if (!orderId || !amount || !customerName || !items || items.length === 0) {
+      console.error("❌ Validation failed: Missing required fields");
       return NextResponse.json(
         { error: "Missing required fields" },
         { status: 400 }
+      );
+    }
+
+    // Check Midtrans credentials
+    if (
+      !process.env.MIDTRANS_SERVER_KEY ||
+      process.env.MIDTRANS_SERVER_KEY.includes("YOUR_SERVER_KEY")
+    ) {
+      console.error("❌ Midtrans server key not configured");
+      return NextResponse.json(
+        {
+          error:
+            "Midtrans server key not configured. Please set MIDTRANS_SERVER_KEY in .env.local",
+        },
+        { status: 500 }
       );
     }
 
@@ -61,18 +84,43 @@ export async function POST(request: NextRequest) {
       },
     };
 
+    console.log("🔄 Creating Midtrans transaction...", {
+      order_id: parameter.transaction_details.order_id,
+      gross_amount: parameter.transaction_details.gross_amount,
+    });
+
     // Create transaction
     const transaction = await snap.createTransaction(parameter);
+
+    console.log("✅ Midtrans transaction created successfully:", {
+      token: transaction.token ? "✓" : "✗",
+      redirect_url: transaction.redirect_url ? "✓" : "✗",
+    });
 
     return NextResponse.json({
       token: transaction.token,
       redirect_url: transaction.redirect_url,
     });
-  } catch (error) {
-    console.error("Payment creation error:", error);
+  } catch (error: any) {
+    console.error("❌ Payment creation error:", {
+      message: error.message,
+      statusCode: error.httpStatusCode,
+      apiResponse: error.ApiResponse,
+      rawError: error,
+    });
+
+    // Return more detailed error message
+    const errorMessage =
+      error.message || "Failed to create payment transaction";
+    const statusCode = error.httpStatusCode || 500;
+
     return NextResponse.json(
-      { error: "Failed to create payment transaction" },
-      { status: 500 }
+      {
+        error: errorMessage,
+        details: error.ApiResponse?.error_messages || [],
+        statusCode: statusCode,
+      },
+      { status: statusCode }
     );
   }
 }

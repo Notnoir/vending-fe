@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
 import { Product, Order } from "./api";
 
 interface VendingStore {
@@ -36,41 +37,56 @@ interface VendingStore {
   resetTransaction: () => void;
 }
 
-export const useVendingStore = create<VendingStore>((set) => ({
-  // Initial state
-  machineId: "VM01",
-  isOnline: true,
-  selectedProduct: null,
-  quantity: 1,
-  currentOrder: null,
-  currentScreen: "home",
-  isLoading: false,
-  error: null,
-
-  // Actions
-  setSelectedProduct: (product) =>
-    set({ selectedProduct: product, quantity: 1 }),
-
-  setQuantity: (quantity) =>
-    set({ quantity: Math.max(1, Math.min(10, quantity)) }),
-
-  setCurrentOrder: (order) => set({ currentOrder: order }),
-
-  setCurrentScreen: (screen) => set({ currentScreen: screen, error: null }),
-
-  setLoading: (loading) => set({ isLoading: loading }),
-
-  setError: (error) => set({ error, isLoading: false }),
-
-  setMachineStatus: (online) => set({ isOnline: online }),
-
-  resetTransaction: () =>
-    set({
+export const useVendingStore = create<VendingStore>()(
+  persist(
+    (set) => ({
+      // Initial state
+      machineId: "VM01",
+      isOnline: true,
       selectedProduct: null,
       quantity: 1,
       currentOrder: null,
       currentScreen: "home",
-      error: null,
       isLoading: false,
+      error: null,
+
+      // Actions
+      setSelectedProduct: (product) =>
+        set({ selectedProduct: product, quantity: 1 }),
+
+      setQuantity: (quantity) =>
+        set({ quantity: Math.max(1, Math.min(10, quantity)) }),
+
+      setCurrentOrder: (order) => set({ currentOrder: order }),
+
+      setCurrentScreen: (screen) => set({ currentScreen: screen, error: null }),
+
+      setLoading: (loading) => set({ isLoading: loading }),
+
+      setError: (error) => set({ error, isLoading: false }),
+
+      setMachineStatus: (online) => set({ isOnline: online }),
+
+      resetTransaction: () =>
+        set({
+          selectedProduct: null,
+          quantity: 1,
+          currentOrder: null,
+          currentScreen: "home",
+          error: null,
+          isLoading: false,
+        }),
     }),
-}));
+    {
+      name: "vending-store", // localStorage key
+      storage: createJSONStorage(() => localStorage),
+      // Only persist important transaction data
+      partialize: (state) => ({
+        selectedProduct: state.selectedProduct,
+        quantity: state.quantity,
+        currentOrder: state.currentOrder,
+        currentScreen: state.currentScreen,
+      }),
+    }
+  )
+);

@@ -58,16 +58,19 @@ const HomeScreen: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
+    <div className="min-h-screen bg-gradient-to-b from-[#FFF5F5] to-white p-4">
       {/* Header */}
       <div className="max-w-6xl mx-auto mb-6">
-        <div className="bg-white rounded-xl shadow-sm p-6">
+        <div className="bg-gradient-to-r from-[#DA291C] to-[#B71C1C] rounded-2xl shadow-lg p-6 text-white">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-800">
+              <h1 className="text-3xl font-bold flex items-center">
+                <span className="bg-[#FFC72C] text-[#DA291C] px-3 py-1 rounded-lg mr-3 font-black">
+                  M
+                </span>
                 Vending Machine {machineId}
               </h1>
-              <p className="text-gray-600 mt-1">
+              <p className="text-yellow-100 mt-1 ml-14">
                 Pilih produk yang Anda inginkan
               </p>
             </div>
@@ -76,27 +79,27 @@ const HomeScreen: React.FC = () => {
               {/* Connection Status */}
               <div className="flex items-center space-x-2">
                 {isOnline ? (
-                  <div className="flex items-center text-green-600">
-                    <Wifi className="h-5 w-5 mr-1" />
+                  <div className="flex items-center bg-green-500 px-3 py-1 rounded-full">
+                    <Wifi className="h-4 w-4 mr-1" />
                     <span className="text-sm font-medium">Online</span>
                   </div>
                 ) : (
-                  <div className="flex items-center text-red-600">
-                    <WifiOff className="h-5 w-5 mr-1" />
+                  <div className="flex items-center bg-red-500 px-3 py-1 rounded-full">
+                    <WifiOff className="h-4 w-4 mr-1" />
                     <span className="text-sm font-medium">Offline</span>
                   </div>
                 )}
               </div>
 
               {/* Last Update */}
-              <div className="flex items-center text-gray-500">
+              <div className="flex items-center bg-white/20 px-3 py-1 rounded-full backdrop-blur-sm">
                 <Clock className="h-4 w-4 mr-1" />
                 <span className="text-sm">{formatTime(lastUpdate)}</span>
               </div>
 
               {/* Refresh Button */}
               <Button
-                variant="secondary"
+                variant="mcd-yellow"
                 size="sm"
                 onClick={loadProducts}
                 disabled={isLoading}
@@ -171,31 +174,31 @@ const HomeScreen: React.FC = () => {
 
       {/* Footer Info */}
       <div className="max-w-6xl mx-auto mt-8 pb-8">
-        <div className="bg-white rounded-xl shadow-sm p-6">
+        <div className="bg-gradient-to-r from-white to-[#FFF5F5] rounded-2xl shadow-md p-6 border border-[#FFC72C]/20">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-6 text-gray-600">
+            <div className="flex items-center space-x-6 text-gray-700">
               <div className="flex items-center space-x-2">
-                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                <span className="font-medium">
+                <div className="w-3 h-3 bg-[#FFC72C] rounded-full shadow-sm"></div>
+                <span className="font-semibold text-[#DA291C]">
                   Tersedia {products.length} produk
                 </span>
               </div>
-              <span className="text-gray-400">•</span>
+              <span className="text-[#FFC72C]">•</span>
               <div className="flex items-center space-x-2">
                 <svg
-                  className="w-4 h-4"
+                  className="w-5 h-5 text-[#DA291C]"
                   fill="currentColor"
                   viewBox="0 0 20 20"
                 >
                   <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4zM18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" />
                 </svg>
-                <span>Pembayaran QRIS & Virtual Account</span>
+                <span className="font-medium">Pembayaran QRIS & Midtrans</span>
               </div>
             </div>
 
             <div className="flex items-center space-x-4">
-              <span className="text-gray-500">Butuh bantuan?</span>
-              <Button variant="secondary" size="sm">
+              <span className="text-gray-600 font-medium">Butuh bantuan?</span>
+              <Button variant="mcd" size="sm">
                 <svg
                   className="w-4 h-4 mr-2"
                   fill="none"

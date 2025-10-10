@@ -1,23 +1,33 @@
 @import "tailwindcss";
 
 :root {
+  /* McDonald's Theme Colors */
+  --mcd-primary-red: #da291c;
+  --mcd-primary-yellow: #ffc72c;
+  --mcd-dark-red: #b71c1c;
+  --mcd-light-yellow: #ffdd57;
+  --mcd-cream: #fff5e1;
+
   --background: #ffffff;
   --foreground: #171717;
+
+  /* Theme variables */
+  --primary: var(--mcd-primary-red);
+  --primary-dark: var(--mcd-dark-red);
+  --accent: var(--mcd-primary-yellow);
+  --accent-light: var(--mcd-light-yellow);
+  --background-light: var(--mcd-cream);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-primary: var(--mcd-primary-red);
+  --color-secondary: var(--mcd-primary-yellow);
+  --color-accent: var(--mcd-primary-yellow);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
-
-/* @media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-} */
 
 * {
   box-sizing: border-box;
@@ -28,9 +38,47 @@ html {
 }
 
 body {
-  background: var(--background);
+  background: linear-gradient(to bottom, #fff5f5, #ffffff);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
   margin: 0;
   padding: 0;
+  min-height: 100vh;
+}
+
+/* McDonald's inspired gradients */
+.gradient-red {
+  background: linear-gradient(
+    135deg,
+    var(--mcd-primary-red),
+    var(--mcd-dark-red)
+  );
+}
+
+.gradient-yellow {
+  background: linear-gradient(
+    135deg,
+    var(--mcd-primary-yellow),
+    var(--mcd-light-yellow)
+  );
+}
+
+.gradient-mcd {
+  background: linear-gradient(
+    135deg,
+    var(--mcd-primary-red),
+    var(--mcd-primary-yellow)
+  );
+}
+
+/* Shadows */
+.shadow-mcd {
+  box-shadow: 0 4px 6px rgba(218, 41, 28, 0.1),
+    0 1px 3px rgba(218, 41, 28, 0.08);
+}
+
+.shadow-mcd-lg {
+  box-shadow: 0 10px 15px rgba(218, 41, 28, 0.15),
+    0 4px 6px rgba(218, 41, 28, 0.1);
 }

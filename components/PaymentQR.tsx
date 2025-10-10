@@ -8,6 +8,7 @@ import { LoadingSpinner } from "@/components/ui/Loading";
 import { Order } from "@/lib/api";
 import { paymentService, PaymentRequest } from "@/lib/payment";
 import toast from "react-hot-toast";
+import { RefreshCw } from "lucide-react";
 
 interface PaymentQRProps {
   order: Order;
@@ -27,18 +28,21 @@ export const PaymentQR: React.FC<PaymentQRProps> = ({
   const [isGeneratingQR, setIsGeneratingQR] = useState(true);
   const [qrisUrl, setQrisUrl] = useState<string>("");
   const [midtransOrderId, setMidtransOrderId] = useState<string>("");
+  const [hasCheckedInitialStatus, setHasCheckedInitialStatus] = useState(false);
+  const [qrGenerationError, setQrGenerationError] = useState<string>("");
 
   const generateMidtransQRIS = useCallback(async () => {
     try {
       setIsGeneratingQR(true);
+      setQrGenerationError("");
       console.log("🔄 Generating Midtrans QRIS for order:", order.order_id);
 
-      // Create Midtrans payment request
-      const orderId = paymentService.generateOrderId();
+      // Use the existing order ID from backend instead of generating new one
+      const orderId = order.order_id;
       setMidtransOrderId(orderId);
 
       const paymentRequest: PaymentRequest = {
-        orderId: orderId,
+        orderId: orderId, // Use backend order ID to maintain consistency
         amount: order.total_amount,
         customerName: "Customer",
         customerEmail: "customer@example.com",
@@ -52,18 +56,35 @@ export const PaymentQR: React.FC<PaymentQRProps> = ({
         ],
       };
 
+      console.log("📋 Payment request prepared:", paymentRequest);
+
       // Create Midtrans transaction for QRIS
       const response = await paymentService.createTransaction(paymentRequest);
 
       // For QRIS, we use the redirect_url as QR content
       setQrisUrl(response.redirect_url);
 
-      console.log("✅ Midtrans QRIS generated:", response);
+      console.log("✅ Midtrans QRIS generated successfully");
       toast.success("QR Code Midtrans berhasil dibuat");
-    } catch (error) {
+    } catch (error: any) {
       console.error("❌ Failed to generate Midtrans QRIS:", error);
-      toast.error("Gagal membuat QR Code Midtrans");
+
+      // Show more specific error message
+      const errorMessage = error.message || "Gagal membuat QR Code Midtrans";
+      setQrGenerationError(errorMessage);
+
+      if (errorMessage.includes("server key not configured")) {
+        toast.error(
+          "⚙️ Konfigurasi Midtrans belum lengkap. Hubungi administrator."
+        );
+      } else if (errorMessage.includes("duplicate")) {
+        toast.error("Order ID duplikat. Silakan coba lagi.");
+      } else {
+        toast.error(`Error: ${errorMessage}`);
+      }
+
       // Fallback to order QR string
+      console.log("🔄 Using fallback QR string from order");
       setQrisUrl(order.qr_string || order.payment_url);
       setMidtransOrderId(order.order_id);
     } finally {
@@ -205,6 +226,29 @@ export const PaymentQR: React.FC<PaymentQRProps> = ({
     }
   }, [midtransOrderId, isCheckingPayment, onPaymentSuccess, onPaymentTimeout]);
 
+  // Check initial payment status on mount (for page refresh scenarios)
+  useEffect(() => {
+    const checkInitialStatus = async () => {
+      if (hasCheckedInitialStatus) return;
+
+      // Wait for midtransOrderId to be set
+      if (!midtransOrderId || isGeneratingQR) return;
+
+      console.log("🔍 Checking initial payment status after mount/refresh...");
+      setHasCheckedInitialStatus(true);
+      await checkPaymentStatus();
+    };
+
+    // Delay initial check to ensure order ID is set
+    const timer = setTimeout(checkInitialStatus, 1000);
+    return () => clearTimeout(timer);
+  }, [
+    midtransOrderId,
+    isGeneratingQR,
+    hasCheckedInitialStatus,
+    checkPaymentStatus,
+  ]);
+
   // Auto check payment status every 3 seconds
   useEffect(() => {
     if (!midtransOrderId || isGeneratingQR) return;
@@ -238,61 +282,109 @@ export const PaymentQR: React.FC<PaymentQRProps> = ({
 
   return (
     <div className="max-w-md mx-auto">
-      <Card>
-        <CardHeader className="text-center">
-          <CardTitle>Pembayaran QRIS Midtrans</CardTitle>
-          <p className="text-gray-600">
+      <Card className="border-2 border-[#00AA13]/30 shadow-lg">
+        <CardHeader className="text-center bg-gradient-to-b from-white to-[#F0FFF4]">
+          <CardTitle className="text-[#00AA13] text-2xl">
+            Pembayaran QRIS Midtrans
+          </CardTitle>
+          <p className="text-gray-600 mt-2">
             Scan QR Code dengan aplikasi mobile banking atau e-wallet
           </p>
         </CardHeader>
 
-        <CardContent className="space-y-6">
+        <CardContent className="space-y-6 p-6">
+          {/* Error Message */}
+          {qrGenerationError && (
+            <div className="bg-red-50 border-2 border-red-200 rounded-lg p-4">
+              <div className="flex items-start space-x-3">
+                <span className="text-red-600 text-xl">⚠️</span>
+                <div className="flex-1">
+                  <p className="font-bold text-red-700 mb-1">
+                    Error saat membuat QR Code
+                  </p>
+                  <p className="text-sm text-red-600">{qrGenerationError}</p>
+                  <Button
+                    variant="danger"
+                    size="sm"
+                    onClick={generateMidtransQRIS}
+                    disabled={isGeneratingQR}
+                    className="mt-3"
+                  >
+                    <RefreshCw
+                      className={`h-4 w-4 mr-2 ${
+                        isGeneratingQR ? "animate-spin" : ""
+                      }`}
+                    />
+                    Coba Lagi
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* QR Code */}
-          <div className="flex justify-center p-4 bg-white rounded-lg border">
+          <div className="flex justify-center p-6 bg-white rounded-lg border-2 border-[#00AA13]/20 shadow-sm">
             {isGeneratingQR ? (
               <div className="flex flex-col items-center space-y-4">
                 <LoadingSpinner size="lg" />
                 <p className="text-gray-600">Membuat QR Code Midtrans...</p>
               </div>
-            ) : (
+            ) : qrisUrl ? (
               <QRCode
-                value={qrisUrl || order.qr_string || order.payment_url}
+                value={qrisUrl}
                 size={200}
                 style={{ height: "auto", maxWidth: "100%", width: "100%" }}
                 viewBox="0 0 256 256"
               />
+            ) : (
+              <div className="text-center py-8">
+                <p className="text-gray-500 mb-4">QR Code tidak tersedia</p>
+                <Button
+                  variant="primary"
+                  size="sm"
+                  onClick={generateMidtransQRIS}
+                  disabled={isGeneratingQR}
+                >
+                  <RefreshCw className="h-4 w-4 mr-2" />
+                  Generate QR Code
+                </Button>
+              </div>
             )}
           </div>
 
           {/* Midtrans Badge */}
           {qrisUrl && !qrisUrl.includes(order.order_id) && (
             <div className="text-center">
-              <span className="inline-flex items-center px-3 py-1 rounded-full text-xs bg-blue-100 text-blue-800">
+              <span className="inline-flex items-center px-3 py-1 rounded-full text-xs bg-gradient-to-r from-[#00AA13] to-[#008A10] text-white font-medium shadow-sm">
                 🔒 Powered by Midtrans
               </span>
             </div>
           )}
 
           {/* Order Details */}
-          <div className="space-y-2 text-center">
-            <h3 className="font-semibold text-lg">{order.product_name}</h3>
+          <div className="space-y-2 text-center bg-gradient-to-r from-[#FFF5F5] to-white rounded-lg p-4 border-2 border-[#FFC72C]/20">
+            <h3 className="font-bold text-lg text-[#B71C1C]">
+              {order.product_name}
+            </h3>
             <p className="text-gray-600">Jumlah: {order.quantity} pcs</p>
-            <div className="text-2xl font-bold text-blue-600">
+            <div className="text-3xl font-black text-[#00AA13]">
               {formatPrice(order.total_amount)}
             </div>
             {midtransOrderId && (
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-gray-500 font-mono">
                 Order ID: {midtransOrderId}
               </p>
             )}
           </div>
 
           {/* Countdown */}
-          <div className="text-center">
-            <div className="text-lg font-mono font-bold text-red-600">
+          <div className="text-center bg-gradient-to-r from-[#FFF5F5] to-white rounded-lg p-4 border-2 border-[#DA291C]/20">
+            <div className="text-2xl font-mono font-black text-[#DA291C]">
               {formatTime(timeLeft)}
             </div>
-            <p className="text-sm text-gray-600">Waktu tersisa</p>
+            <p className="text-sm text-gray-600 font-semibold mt-1">
+              Waktu tersisa
+            </p>
           </div>
 
           {/* Status */}
@@ -300,10 +392,14 @@ export const PaymentQR: React.FC<PaymentQRProps> = ({
             {isCheckingPayment ? (
               <div className="flex items-center justify-center space-x-2">
                 <LoadingSpinner size="sm" />
-                <span>Mengecek pembayaran Midtrans...</span>
+                <span className="text-[#00AA13] font-medium">
+                  Mengecek pembayaran Midtrans...
+                </span>
               </div>
             ) : (
-              <p className="text-gray-600">Menunggu pembayaran...</p>
+              <p className="text-gray-600 font-medium">
+                Menunggu pembayaran...
+              </p>
             )}
           </div>
 
@@ -315,18 +411,18 @@ export const PaymentQR: React.FC<PaymentQRProps> = ({
               fullWidth
               onClick={handleManualCheck}
               disabled={isCheckingPayment || isGeneratingQR}
-              className="bg-blue-600 hover:bg-blue-700"
             >
-              {isCheckingPayment ? "Memeriksa..." : "Periksa Status Pembayaran"}
+              {isCheckingPayment
+                ? "Memeriksa..."
+                : "🔍 Periksa Status Pembayaran"}
             </Button>
 
             {/* Test Payment Button (for demo) */}
             <Button
-              variant="secondary"
+              variant="mcd-yellow"
               fullWidth
               onClick={handleTestPayment}
               disabled={isCheckingPayment || isGeneratingQR}
-              className="bg-green-600 hover:bg-green-700 text-white"
             >
               {isCheckingPayment ? "Memproses..." : "🧪 Test Pembayaran (Demo)"}
             </Button>
@@ -343,8 +439,10 @@ export const PaymentQR: React.FC<PaymentQRProps> = ({
           </div>
 
           {/* Instructions */}
-          <div className="text-xs text-gray-600 space-y-1">
-            <p className="font-semibold">Cara pembayaran:</p>
+          <div className="text-xs text-gray-600 space-y-1 bg-gradient-to-r from-white to-[#F0FFF4] rounded-lg p-4 border border-[#00AA13]/20">
+            <p className="font-bold text-[#00AA13] text-sm mb-2">
+              📱 Cara pembayaran:
+            </p>
             <p>1. Buka aplikasi mobile banking atau e-wallet</p>
             <p>2. Pilih menu scan QR Code</p>
             <p>3. Arahkan kamera ke QR Code di atas</p>

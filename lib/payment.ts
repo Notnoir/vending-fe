@@ -42,6 +42,8 @@ class PaymentService {
     paymentRequest: PaymentRequest
   ): Promise<PaymentResponse> {
     try {
+      console.log("🔄 Creating payment transaction:", paymentRequest);
+
       const response = await fetch("/api/payment/create", {
         method: "POST",
         headers: {
@@ -51,13 +53,27 @@ class PaymentService {
       });
 
       if (!response.ok) {
-        throw new Error("Failed to create payment transaction");
+        const errorData = await response.json().catch(() => ({}));
+        console.error("❌ Payment API error:", {
+          status: response.status,
+          statusText: response.statusText,
+          error: errorData.error,
+          details: errorData.details,
+        });
+
+        const errorMessage =
+          errorData.error || "Failed to create payment transaction";
+        throw new Error(errorMessage);
       }
 
       const data = await response.json();
+      console.log("✅ Payment transaction created:", {
+        hasToken: !!data.token,
+        hasRedirectUrl: !!data.redirect_url,
+      });
       return data;
-    } catch (error) {
-      console.error("Error creating payment transaction:", error);
+    } catch (error: any) {
+      console.error("❌ Error creating payment transaction:", error.message);
       throw error;
     }
   }
