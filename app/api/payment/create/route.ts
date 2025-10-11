@@ -82,6 +82,9 @@ export async function POST(request: NextRequest) {
         error: `${process.env.NEXT_PUBLIC_BASE_URL}/payment/error`,
         pending: `${process.env.NEXT_PUBLIC_BASE_URL}/payment/pending`,
       },
+      // IMPORTANT: Notification URL for Midtrans to send payment status updates
+      // This is required for automatic payment status updates
+      notification_url: `${process.env.NEXT_PUBLIC_BASE_URL}/api/payment/webhook`,
     };
 
     console.log("🔄 Creating Midtrans transaction...", {
