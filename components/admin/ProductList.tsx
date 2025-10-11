@@ -117,7 +117,11 @@ export default function ProductList({
                   <div className="relative w-16 h-16 rounded-lg overflow-hidden bg-gray-100">
                     {product.image_url ? (
                       <Image
-                        src={`http://localhost:3001${product.image_url}`}
+                        src={
+                          product.image_url.startsWith("http")
+                            ? product.image_url // Supabase Storage URL (absolute)
+                            : `http://localhost:3001${product.image_url}` // Local upload (relative)
+                        }
                         alt={product.name}
                         fill
                         className="object-cover"
@@ -190,7 +194,11 @@ export default function ProductList({
                 <div className="relative w-20 h-20 rounded-lg overflow-hidden bg-gray-100">
                   {product.image_url ? (
                     <Image
-                      src={`http://localhost:3001${product.image_url}`}
+                      src={
+                        product.image_url.startsWith("http")
+                          ? product.image_url // Supabase Storage URL (absolute)
+                          : `http://localhost:3001${product.image_url}` // Local upload (relative)
+                      }
                       alt={product.name}
                       fill
                       className="object-cover"

@@ -34,7 +34,11 @@ export default function ProductForm({
 
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>(
-    product?.image_url ? `http://localhost:3001${product.image_url}` : ""
+    product?.image_url
+      ? product.image_url.startsWith("http")
+        ? product.image_url // Supabase Storage URL (absolute)
+        : `http://localhost:3001${product.image_url}` // Local upload (relative)
+      : ""
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
