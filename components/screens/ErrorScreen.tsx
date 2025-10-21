@@ -84,11 +84,11 @@ const ErrorScreen: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-red-50 to-orange-50 p-4 flex items-center justify-center">
       <div className="max-w-md mx-auto text-center">
-        <Card className="border-red-200 shadow-lg">
+        <Card className="border-red-200 shadow-health-lg">
           <CardContent className="p-8 space-y-6">
             {/* Error Icon */}
             <div className="relative">
-              <div className="w-24 h-24 bg-red-100 rounded-full flex items-center justify-center mx-auto">
+              <div className="w-24 h-24 bg-red-100 rounded-full flex items-center justify-center mx-auto shadow-md">
                 <XCircle className="h-16 w-16 text-red-600" />
               </div>
 
@@ -151,35 +151,36 @@ const ErrorScreen: React.FC = () => {
                 size="lg"
                 fullWidth
                 onClick={handleTryAgain}
-                className="bg-orange-600 hover:bg-orange-700"
+                className="bg-orange-500 hover:bg-orange-600"
               >
                 <RefreshCw className="h-4 w-4 mr-2" />
                 Coba Lagi
               </Button>
 
               <Button
-                variant="secondary"
+                variant="ghost"
                 size="lg"
                 fullWidth
                 onClick={handleBackToHome}
+                className="border border-blue-200 hover:bg-blue-50"
               >
                 Kembali ke Beranda
               </Button>
             </div>
 
             {/* Contact Info */}
-            <div className="border-t pt-4 space-y-3">
+            <div className="border-t border-blue-100 pt-4 space-y-3">
               <Button
                 variant="ghost"
                 size="sm"
                 fullWidth
-                className="text-blue-600 hover:text-blue-800"
+                className="text-blue-600 hover:text-blue-800 hover:bg-blue-50"
               >
                 <Phone className="h-4 w-4 mr-2" />
                 Hubungi Petugas: 0800-1234-5678
               </Button>
 
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-blue-600">
                 Otomatis kembali ke beranda dalam 15 detik
               </p>
             </div>
@@ -188,7 +189,7 @@ const ErrorScreen: React.FC = () => {
 
         {/* Additional Help */}
         <div className="mt-6 text-center">
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-blue-700">
             Untuk bantuan lebih lanjut, scan QR code bantuan atau tekan tombol
             Help
           </p>

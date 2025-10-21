@@ -118,7 +118,7 @@ const OrderSummaryScreen: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
+    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white p-4">
       <div className="max-w-2xl mx-auto">
         {/* Header */}
         <div className="flex items-center mb-6">
@@ -132,7 +132,7 @@ const OrderSummaryScreen: React.FC = () => {
             <ArrowLeft className="h-5 w-5 mr-2" />
             Kembali
           </Button>
-          <h1 className="text-2xl font-bold text-gray-800">
+          <h1 className="text-2xl font-bold text-blue-900">
             Ringkasan Pesanan
           </h1>
         </div>
@@ -149,46 +149,50 @@ const OrderSummaryScreen: React.FC = () => {
 
             <CardContent className="space-y-4">
               {/* Product Info */}
-              <div className="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg">
-                <div className="w-16 h-16 bg-white rounded-lg flex items-center justify-center">
+              <div className="flex items-center space-x-4 p-4 bg-blue-50 rounded-lg border border-blue-100">
+                <div className="w-16 h-16 bg-white rounded-lg flex items-center justify-center shadow-sm">
                   <span className="text-2xl">📦</span>
                 </div>
 
                 <div className="flex-1">
-                  <h3 className="font-semibold text-lg">
+                  <h3 className="font-semibold text-lg text-blue-900">
                     {selectedProduct.name}
                   </h3>
                   <p className="text-gray-600 text-sm">
                     {selectedProduct.description}
                   </p>
                   {selectedProduct.slot_number && (
-                    <p className="text-gray-500 text-xs mt-1">
+                    <p className="text-blue-600 text-xs mt-1 font-medium">
                       Slot {selectedProduct.slot_number}
                     </p>
                   )}
                 </div>
 
                 <div className="text-right">
-                  <p className="text-sm text-gray-600">Qty: {quantity}</p>
-                  <p className="font-semibold">{formatPrice(unitPrice)}</p>
+                  <p className="text-sm text-blue-600 font-medium">
+                    Qty: {quantity}
+                  </p>
+                  <p className="font-semibold text-blue-900">
+                    {formatPrice(unitPrice)}
+                  </p>
                 </div>
               </div>
 
               {/* Price Breakdown */}
-              <div className="space-y-2 border-t pt-4">
-                <div className="flex justify-between text-sm">
+              <div className="space-y-2 border-t border-blue-100 pt-4">
+                <div className="flex justify-between text-sm text-gray-700">
                   <span>Harga per unit:</span>
-                  <span>{formatPrice(unitPrice)}</span>
+                  <span className="font-medium">{formatPrice(unitPrice)}</span>
                 </div>
 
-                <div className="flex justify-between text-sm">
+                <div className="flex justify-between text-sm text-gray-700">
                   <span>Jumlah:</span>
-                  <span>{quantity} pcs</span>
+                  <span className="font-medium">{quantity} pcs</span>
                 </div>
 
-                <div className="flex justify-between font-semibold text-lg border-t pt-2">
-                  <span>Total:</span>
-                  <span className="text-blue-600">
+                <div className="flex justify-between font-semibold text-lg border-t border-blue-100 pt-2">
+                  <span className="text-blue-900">Total:</span>
+                  <span className="bg-gradient-to-r from-[#0066cc] to-[#004a99] bg-clip-text text-transparent">
                     {formatPrice(totalPrice)}
                   </span>
                 </div>
@@ -229,19 +233,21 @@ const OrderSummaryScreen: React.FC = () => {
 
           {/* Payment Method Info */}
           <Card>
-            <CardContent className="p-4">
+            <CardContent className="p-4 bg-gradient-to-r from-blue-50 to-white">
               <div className="flex items-center justify-between">
                 <div>
-                  <h4 className="font-medium">Metode Pembayaran</h4>
-                  <p className="text-sm text-gray-600">QRIS - Scan & Pay</p>
+                  <h4 className="font-medium text-blue-900">
+                    Metode Pembayaran
+                  </h4>
+                  <p className="text-sm text-blue-600">QRIS - Scan & Pay</p>
                 </div>
 
                 <div className="flex space-x-2">
-                  <div className="w-8 h-8 bg-blue-100 rounded flex items-center justify-center">
-                    <span className="text-xs font-bold text-blue-600">Q</span>
+                  <div className="w-8 h-8 bg-blue-500 rounded flex items-center justify-center shadow-sm">
+                    <span className="text-xs font-bold text-white">Q</span>
                   </div>
-                  <div className="w-8 h-8 bg-green-100 rounded flex items-center justify-center">
-                    <span className="text-xs font-bold text-green-600">💳</span>
+                  <div className="w-8 h-8 bg-blue-600 rounded flex items-center justify-center shadow-sm">
+                    <span className="text-xs font-bold text-white">💳</span>
                   </div>
                 </div>
               </div>
@@ -280,9 +286,11 @@ const OrderSummaryScreen: React.FC = () => {
           </div>
 
           {/* Terms */}
-          <div className="text-xs text-gray-500 text-center space-y-1">
+          <div className="text-xs text-blue-600 text-center space-y-1">
             <p>Dengan melanjutkan, Anda menyetujui syarat dan ketentuan</p>
-            <p>Pembayaran akan expired dalam 15 menit</p>
+            <p className="font-medium">
+              ⏱️ Pembayaran akan expired dalam 15 menit
+            </p>
           </div>
         </div>
       </div>

@@ -33,24 +33,24 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           // Base styles
           "inline-flex items-center justify-center rounded-lg font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 shadow-sm hover:shadow-md",
 
-          // Variants
+          // Variants - Healthcare Professional Theme
           {
             "bg-gray-200 text-gray-800 hover:bg-gray-300":
               variant === "default",
-            // McDonald's Primary Red
-            "bg-[#DA291C] text-white hover:bg-[#B71C1C] focus-visible:ring-[#DA291C] shadow-[0_4px_6px_rgba(218,41,28,0.15)]":
+            // Healthcare Primary Blue
+            "bg-[#0066cc] text-white hover:bg-[#004a99] focus-visible:ring-[#0066cc] shadow-[0_4px_6px_rgba(0,102,204,0.15)]":
               variant === "primary",
-            // McDonald's Yellow
-            "bg-[#FFC72C] text-[#B71C1C] hover:bg-[#FFDD57] focus-visible:ring-[#FFC72C] font-bold shadow-[0_4px_6px_rgba(255,199,44,0.25)]":
+            // Healthcare Light Blue (untuk secondary actions)
+            "bg-[#00b4d8] text-white hover:bg-[#0096c7] focus-visible:ring-[#00b4d8] font-bold shadow-[0_4px_6px_rgba(0,180,216,0.25)]":
               variant === "mcd-yellow",
-            // McDonald's Gradient
-            "bg-gradient-to-r from-[#DA291C] to-[#B71C1C] text-white hover:from-[#B71C1C] hover:to-[#8B1515] focus-visible:ring-[#DA291C] shadow-[0_4px_6px_rgba(218,41,28,0.2)]":
+            // Healthcare Gradient Blue
+            "bg-gradient-to-r from-[#0066cc] to-[#004a99] text-white hover:from-[#004a99] hover:to-[#003366] focus-visible:ring-[#0066cc] shadow-[0_4px_6px_rgba(0,102,204,0.2)]":
               variant === "mcd",
-            "bg-gray-600 text-white hover:bg-gray-700 focus-visible:ring-gray-500":
+            "bg-blue-100 text-blue-700 hover:bg-blue-200 focus-visible:ring-blue-500 border border-blue-200":
               variant === "secondary",
             "bg-red-600 text-white hover:bg-red-700 focus-visible:ring-red-500":
               variant === "danger",
-            "hover:bg-gray-100 focus-visible:ring-gray-500":
+            "hover:bg-blue-50 text-blue-600 focus-visible:ring-blue-500":
               variant === "ghost",
           },
 

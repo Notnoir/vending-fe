@@ -71,7 +71,7 @@ const ProductDetailScreen: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
+    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white p-4">
       <div className="max-w-2xl mx-auto">
         {/* Header */}
         <div className="flex items-center mb-6">
@@ -84,7 +84,7 @@ const ProductDetailScreen: React.FC = () => {
             <ArrowLeft className="h-5 w-5 mr-2" />
             Kembali
           </Button>
-          <h1 className="text-2xl font-bold text-gray-800">Detail Produk</h1>
+          <h1 className="text-2xl font-bold text-blue-900">Detail Produk</h1>
         </div>
 
         <Card>
@@ -131,29 +131,26 @@ const ProductDetailScreen: React.FC = () => {
               {/* Product Info */}
               <div className="space-y-4">
                 <div>
-                  <h2 className="text-2xl font-bold text-gray-800 mb-2">
+                  <h2 className="text-2xl font-bold text-blue-900 mb-2">
                     {selectedProduct.name}
                   </h2>
                   <p className="text-gray-600">{selectedProduct.description}</p>
                 </div>
-
                 {/* Category */}
                 {selectedProduct.category && (
                   <div className="inline-block">
-                    <span className="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full">
+                    <span className="px-3 py-1 bg-blue-100 text-blue-700 text-sm rounded-full font-medium">
                       {selectedProduct.category}
                     </span>
                   </div>
                 )}
-
                 {/* Price */}
                 <div className="space-y-1">
                   <p className="text-sm text-gray-600">Harga per unit:</p>
-                  <p className="text-3xl font-bold text-blue-600">
+                  <p className="text-3xl font-bold bg-gradient-to-r from-[#0066cc] to-[#004a99] bg-clip-text text-transparent">
                     {formatPrice(unitPrice)}
                   </p>
-                </div>
-
+                </div>{" "}
                 {/* Quantity Selector */}
                 <div className="space-y-3">
                   <label className="text-sm font-medium text-gray-700">
@@ -202,19 +199,17 @@ const ProductDetailScreen: React.FC = () => {
                     Maksimal {maxQuantity} pcs
                   </p>
                 </div>
-
                 {/* Total Price */}
-                <div className="border-t pt-4">
+                <div className="border-t border-blue-100 pt-4">
                   <div className="flex justify-between items-center">
-                    <span className="text-lg font-medium text-gray-700">
+                    <span className="text-lg font-medium text-blue-900">
                       Total:
                     </span>
-                    <span className="text-2xl font-bold text-blue-600">
+                    <span className="text-2xl font-bold bg-gradient-to-r from-[#0066cc] to-[#004a99] bg-clip-text text-transparent">
                       {formatPrice(totalPrice)}
                     </span>
                   </div>
                 </div>
-
                 {/* Action Buttons */}
                 <div className="space-y-3 pt-4">
                   <Button

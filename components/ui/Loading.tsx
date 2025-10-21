@@ -41,10 +41,22 @@ const Loading: React.FC<LoadingProps> = ({
 }) => {
   if (fullScreen) {
     return (
-      <div className="fixed inset-0 bg-white bg-opacity-90 flex items-center justify-center z-50">
-        <div className="text-center">
-          <LoadingSpinner size={size} className="mx-auto mb-4" />
-          <p className="text-gray-600 text-lg">{message}</p>
+      <div className="fixed inset-0 bg-gradient-to-br from-blue-50 to-white bg-opacity-95 flex items-center justify-center z-50 backdrop-blur-sm">
+        <div className="text-center bg-white p-8 rounded-2xl shadow-health-lg border border-blue-100">
+          <div className="relative">
+            <LoadingSpinner
+              size={size}
+              className="mx-auto mb-4 border-t-blue-600"
+            />
+            <div className="absolute inset-0 animate-ping opacity-20">
+              <LoadingSpinner
+                size={size}
+                className="mx-auto border-t-blue-400"
+              />
+            </div>
+          </div>
+          <p className="text-blue-900 text-lg font-semibold">{message}</p>
+          <p className="text-blue-600 text-sm mt-2">Mohon tunggu sebentar...</p>
         </div>
       </div>
     );
@@ -52,8 +64,8 @@ const Loading: React.FC<LoadingProps> = ({
 
   return (
     <div className="flex flex-col items-center justify-center p-8">
-      <LoadingSpinner size={size} className="mb-4" />
-      <p className="text-gray-600">{message}</p>
+      <LoadingSpinner size={size} className="mb-4 border-t-blue-600" />
+      <p className="text-blue-900 font-medium">{message}</p>
     </div>
   );
 };

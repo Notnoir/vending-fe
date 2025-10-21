@@ -330,11 +330,13 @@ export const PaymentQR: React.FC<PaymentQRProps> = ({
           )}
 
           {/* QR Code */}
-          <div className="flex justify-center p-6 bg-white rounded-lg border-2 border-[#00AA13]/20 shadow-sm">
+          <div className="flex justify-center p-6 bg-white rounded-lg border-2 border-blue-200 shadow-health">
             {isGeneratingQR ? (
               <div className="flex flex-col items-center space-y-4">
                 <LoadingSpinner size="lg" />
-                <p className="text-gray-600">Membuat QR Code Midtrans...</p>
+                <p className="text-blue-600 font-medium">
+                  Membuat QR Code Midtrans...
+                </p>
               </div>
             ) : qrisUrl ? (
               <QRCode
@@ -362,34 +364,34 @@ export const PaymentQR: React.FC<PaymentQRProps> = ({
           {/* Midtrans Badge */}
           {qrisUrl && !qrisUrl.includes(order.order_id) && (
             <div className="text-center">
-              <span className="inline-flex items-center px-3 py-1 rounded-full text-xs bg-gradient-to-r from-[#00AA13] to-[#008A10] text-white font-medium shadow-sm">
+              <span className="inline-flex items-center px-3 py-1 rounded-full text-xs bg-gradient-to-r from-[#0066cc] to-[#004a99] text-white font-medium shadow-sm">
                 🔒 Powered by Midtrans
               </span>
             </div>
           )}
 
           {/* Order Details */}
-          <div className="space-y-2 text-center bg-gradient-to-r from-[#FFF5F5] to-white rounded-lg p-4 border-2 border-[#FFC72C]/20">
-            <h3 className="font-bold text-lg text-[#B71C1C]">
+          <div className="space-y-2 text-center bg-gradient-to-r from-blue-50 to-white rounded-lg p-4 border-2 border-blue-200">
+            <h3 className="font-bold text-lg text-blue-900">
               {order.product_name}
             </h3>
             <p className="text-gray-600">Jumlah: {order.quantity} pcs</p>
-            <div className="text-3xl font-black text-[#00AA13]">
+            <div className="text-3xl font-black bg-gradient-to-r from-[#0066cc] to-[#004a99] bg-clip-text text-transparent">
               {formatPrice(order.total_amount)}
             </div>
             {midtransOrderId && (
-              <p className="text-xs text-gray-500 font-mono">
+              <p className="text-xs text-blue-600 font-mono">
                 Order ID: {midtransOrderId}
               </p>
             )}
           </div>
 
           {/* Countdown */}
-          <div className="text-center bg-gradient-to-r from-[#FFF5F5] to-white rounded-lg p-4 border-2 border-[#DA291C]/20">
-            <div className="text-2xl font-mono font-black text-[#DA291C]">
+          <div className="text-center bg-gradient-to-r from-blue-50 to-white rounded-lg p-4 border-2 border-blue-200">
+            <div className="text-2xl font-mono font-black bg-gradient-to-r from-[#0066cc] to-[#004a99] bg-clip-text text-transparent">
               {formatTime(timeLeft)}
             </div>
-            <p className="text-sm text-gray-600 font-semibold mt-1">
+            <p className="text-sm text-blue-700 font-semibold mt-1">
               Waktu tersisa
             </p>
           </div>
@@ -399,12 +401,12 @@ export const PaymentQR: React.FC<PaymentQRProps> = ({
             {isCheckingPayment ? (
               <div className="flex items-center justify-center space-x-2">
                 <LoadingSpinner size="sm" />
-                <span className="text-[#00AA13] font-medium">
+                <span className="text-blue-600 font-medium">
                   Mengecek pembayaran Midtrans...
                 </span>
               </div>
             ) : (
-              <p className="text-gray-600 font-medium">
+              <p className="text-blue-600 font-medium">
                 Menunggu pembayaran...
               </p>
             )}
@@ -426,17 +428,18 @@ export const PaymentQR: React.FC<PaymentQRProps> = ({
 
             {/* Test Payment Button (for demo) */}
             <Button
-              variant="mcd-yellow"
+              variant="secondary"
               fullWidth
               onClick={handleTestPayment}
               disabled={isCheckingPayment || isGeneratingQR}
+              className="bg-blue-100 hover:bg-blue-200 text-blue-700 border-blue-200"
             >
               {isCheckingPayment ? "Memproses..." : "🧪 Test Pembayaran (Demo)"}
             </Button>
 
             {/* Close Button */}
             <Button
-              variant="secondary"
+              variant="ghost"
               fullWidth
               onClick={onClose}
               disabled={isCheckingPayment}
@@ -446,8 +449,8 @@ export const PaymentQR: React.FC<PaymentQRProps> = ({
           </div>
 
           {/* Instructions */}
-          <div className="text-xs text-gray-600 space-y-1 bg-gradient-to-r from-white to-[#F0FFF4] rounded-lg p-4 border border-[#00AA13]/20">
-            <p className="font-bold text-[#00AA13] text-sm mb-2">
+          <div className="text-xs text-blue-700 space-y-1 bg-gradient-to-r from-white to-blue-50 rounded-lg p-4 border border-blue-200">
+            <p className="font-bold text-blue-900 text-sm mb-2">
               📱 Cara pembayaran:
             </p>
             <p>1. Buka aplikasi mobile banking atau e-wallet</p>

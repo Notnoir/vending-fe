@@ -45,10 +45,9 @@ const ProductCard: React.FC<ProductCardProps> = ({
   return (
     <Card
       className={cn(
-        "relative cursor-pointer transition-all duration-300 hover:shadow-xl border-2",
+        "relative cursor-pointer transition-all duration-300 hover:shadow-health-lg border-2 bg-white",
         isDisabled && "opacity-50 cursor-not-allowed border-gray-200",
-        !isDisabled &&
-          "hover:scale-105 hover:border-[#FFC72C] border-transparent"
+        !isDisabled && "hover:scale-105 hover:border-blue-400 border-blue-100"
       )}
       onClick={() => !isDisabled && onSelect(product)}
     >
@@ -58,9 +57,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
           <div
             className={cn(
               "px-3 py-1 rounded-full text-xs font-bold shadow-md",
-              isAvailable
-                ? "bg-[#FFC72C] text-[#B71C1C]"
-                : "bg-[#DA291C] text-white"
+              isAvailable ? "bg-blue-500 text-white" : "bg-red-500 text-white"
             )}
           >
             {isAvailable ? `${product.current_stock} pcs` : "Habis"}
@@ -68,7 +65,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         </div>
 
         {/* Product Image */}
-        <div className="relative h-40 w-full mb-3 rounded-xl overflow-hidden bg-gradient-to-br from-[#FFF5F5] to-white">
+        <div className="relative h-40 w-full mb-3 rounded-xl overflow-hidden bg-gradient-to-br from-blue-50 to-white shadow-inner">
           <Image
             src={getImageUrl(product.image_url)}
             alt={product.name}
@@ -77,7 +74,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
           {!isAvailable && (
-            <div className="absolute inset-0 bg-gray-900/50 flex items-center justify-center">
+            <div className="absolute inset-0 bg-gray-900/50 flex items-center justify-center backdrop-blur-sm">
               <span className="text-white font-bold text-lg">SOLD OUT</span>
             </div>
           )}
@@ -85,7 +82,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
         {/* Product Info */}
         <div className="space-y-2">
-          <h3 className="font-bold text-lg line-clamp-1 text-[#B71C1C]">
+          <h3 className="font-bold text-lg line-clamp-1 text-blue-900">
             {product.name}
           </h3>
 
@@ -94,23 +91,26 @@ const ProductCard: React.FC<ProductCardProps> = ({
           </p>
 
           <div className="flex items-center justify-between pt-2">
-            <div className="text-2xl font-black text-[#DA291C]">
+            <div className="text-2xl font-black text-blue-600">
               {formatPrice(product.final_price ?? product.price)}
             </div>
 
             {product.slot_number && (
-              <div className="text-xs font-semibold text-gray-500 bg-gray-100 px-2 py-1 rounded">
+              <div className="text-xs font-semibold text-blue-600 bg-blue-50 px-2 py-1 rounded border border-blue-200">
                 Slot {product.slot_number}
               </div>
             )}
           </div>
 
           <Button
-            variant={isAvailable ? "mcd" : "secondary"}
+            variant={isAvailable ? "primary" : "secondary"}
             size="md"
             fullWidth
             disabled={isDisabled}
-            className="mt-3 font-bold"
+            className={cn(
+              "mt-3 font-bold",
+              isAvailable && "bg-blue-600 hover:bg-blue-700 text-white"
+            )}
           >
             {isAvailable ? "Pilih Produk" : "Stok Habis"}
           </Button>

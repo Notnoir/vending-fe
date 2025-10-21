@@ -1,30 +1,33 @@
 @import "tailwindcss";
 
 :root {
-  /* McDonald's Theme Colors */
-  --mcd-primary-red: #da291c;
-  --mcd-primary-yellow: #ffc72c;
-  --mcd-dark-red: #b71c1c;
-  --mcd-light-yellow: #ffdd57;
-  --mcd-cream: #fff5e1;
+  /* Healthcare Theme Colors - Professional Medical Blue & White */
+  --health-primary-blue: #0066cc;
+  --health-dark-blue: #004a99;
+  --health-light-blue: #3399ff;
+  --health-accent-blue: #00b4d8;
+  --health-soft-blue: #e6f3ff;
+  --health-white: #ffffff;
+  --health-light-gray: #f8f9fa;
+  --health-border: #e0e7ff;
 
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #1a1a1a;
 
   /* Theme variables */
-  --primary: var(--mcd-primary-red);
-  --primary-dark: var(--mcd-dark-red);
-  --accent: var(--mcd-primary-yellow);
-  --accent-light: var(--mcd-light-yellow);
-  --background-light: var(--mcd-cream);
+  --primary: var(--health-primary-blue);
+  --primary-dark: var(--health-dark-blue);
+  --accent: var(--health-accent-blue);
+  --accent-light: var(--health-light-blue);
+  --background-light: var(--health-soft-blue);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --color-primary: var(--mcd-primary-red);
-  --color-secondary: var(--mcd-primary-yellow);
-  --color-accent: var(--mcd-primary-yellow);
+  --color-primary: var(--health-primary-blue);
+  --color-secondary: var(--health-accent-blue);
+  --color-accent: var(--health-light-blue);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
@@ -38,7 +41,7 @@ html {
 }
 
 body {
-  background: linear-gradient(to bottom, #fff5f5, #ffffff);
+  background: linear-gradient(to bottom, #f0f7ff, #ffffff);
   color: var(--foreground);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     "Helvetica Neue", Arial, sans-serif;
@@ -47,35 +50,40 @@ body {
   min-height: 100vh;
 }
 
-/* McDonald's inspired gradients */
-.gradient-red {
+/* Healthcare inspired gradients */
+.gradient-blue {
   background: linear-gradient(
     135deg,
-    var(--mcd-primary-red),
-    var(--mcd-dark-red)
+    var(--health-primary-blue),
+    var(--health-dark-blue)
   );
 }
 
-.gradient-yellow {
+.gradient-light-blue {
   background: linear-gradient(
     135deg,
-    var(--mcd-primary-yellow),
-    var(--mcd-light-yellow)
+    var(--health-light-blue),
+    var(--health-accent-blue)
   );
 }
 
-.gradient-mcd {
+.gradient-health {
   background: linear-gradient(
     135deg,
-    var(--mcd-primary-red),
-    var(--mcd-primary-yellow)
+    var(--health-primary-blue),
+    var(--health-accent-blue)
   );
 }
 
-/* Shadows */
-.shadow-mcd {
-  box-shadow: 0 4px 6px rgba(218, 41, 28, 0.1),
-    0 1px 3px rgba(218, 41, 28, 0.08);
+/* Professional Healthcare Shadows */
+.shadow-health {
+  box-shadow: 0 4px 6px rgba(0, 102, 204, 0.1),
+    0 1px 3px rgba(0, 102, 204, 0.08);
+}
+
+.shadow-health-lg {
+  box-shadow: 0 10px 25px rgba(0, 102, 204, 0.15),
+    0 5px 10px rgba(0, 102, 204, 0.1);
 }
 
 .shadow-mcd-lg {

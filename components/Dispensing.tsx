@@ -74,9 +74,9 @@ const Dispensing: React.FC<DispensingProps> = ({ productName, onComplete }) => {
       case "dispensing":
         return <LoadingSpinner size="lg" />;
       case "checking":
-        return <Package className="h-12 w-12 text-blue-600 animate-bounce" />;
+        return <Package className="h-12 w-12 text-[#0066cc] animate-bounce" />;
       case "complete":
-        return <CheckCircle className="h-12 w-12 text-green-600" />;
+        return <CheckCircle className="h-12 w-12 text-blue-600" />;
       case "failed":
         return <XCircle className="h-12 w-12 text-red-600" />;
     }
@@ -110,10 +110,10 @@ const Dispensing: React.FC<DispensingProps> = ({ productName, onComplete }) => {
 
   return (
     <div className="max-w-md mx-auto">
-      <Card>
-        <CardHeader className="text-center">
-          <CardTitle>Mengeluarkan Produk</CardTitle>
-          <p className="text-gray-600">{productName}</p>
+      <Card className="border-blue-200 shadow-health-lg">
+        <CardHeader className="text-center bg-gradient-to-b from-blue-50 to-white">
+          <CardTitle className="text-blue-900">Mengeluarkan Produk</CardTitle>
+          <p className="text-blue-600 font-medium">{productName}</p>
         </CardHeader>
 
         <CardContent className="text-center space-y-6">
@@ -122,18 +122,22 @@ const Dispensing: React.FC<DispensingProps> = ({ productName, onComplete }) => {
 
           {/* Progress Bar */}
           <div className="space-y-2">
-            <div className="w-full bg-gray-200 rounded-full h-3">
+            <div className="w-full bg-blue-100 rounded-full h-3">
               <div
-                className="bg-blue-600 h-3 rounded-full transition-all duration-300 ease-out"
+                className="bg-gradient-to-r from-[#0066cc] to-[#004a99] h-3 rounded-full transition-all duration-300 ease-out"
                 style={{ width: `${progress}%` }}
               />
             </div>
-            <p className="text-sm text-gray-600">{Math.round(progress)}%</p>
+            <p className="text-sm text-blue-600 font-semibold">
+              {Math.round(progress)}%
+            </p>
           </div>
 
           {/* Status Message */}
           <div className="space-y-2">
-            <h3 className="text-lg font-semibold">{getStageMessage()}</h3>
+            <h3 className="text-lg font-semibold text-blue-900">
+              {getStageMessage()}
+            </h3>
             <p className="text-gray-600">{getStageDescription()}</p>
           </div>
 
@@ -143,47 +147,47 @@ const Dispensing: React.FC<DispensingProps> = ({ productName, onComplete }) => {
               <div
                 className={`w-3 h-3 rounded-full ${
                   ["dispensing", "checking", "complete"].includes(stage)
-                    ? "bg-blue-600"
-                    : "bg-gray-300"
+                    ? "bg-[#0066cc] shadow-sm"
+                    : "bg-blue-100"
                 }`}
               />
-              <span className="text-sm">Dispensing</span>
+              <span className="text-sm text-blue-700">Dispensing</span>
             </div>
 
             <div className="flex items-center space-x-2">
               <div
                 className={`w-3 h-3 rounded-full ${
                   ["checking", "complete"].includes(stage)
-                    ? "bg-blue-600"
-                    : "bg-gray-300"
+                    ? "bg-[#0066cc] shadow-sm"
+                    : "bg-blue-100"
                 }`}
               />
-              <span className="text-sm">Checking</span>
+              <span className="text-sm text-blue-700">Checking</span>
             </div>
 
             <div className="flex items-center space-x-2">
               <div
                 className={`w-3 h-3 rounded-full ${
                   stage === "complete"
-                    ? "bg-green-600"
+                    ? "bg-blue-600 shadow-sm"
                     : stage === "failed"
-                    ? "bg-red-600"
-                    : "bg-gray-300"
+                    ? "bg-red-600 shadow-sm"
+                    : "bg-blue-100"
                 }`}
               />
-              <span className="text-sm">Complete</span>
+              <span className="text-sm text-blue-700">Complete</span>
             </div>
           </div>
 
           {/* Additional Info */}
           {stage === "dispensing" && (
-            <div className="text-xs text-gray-500 bg-gray-50 p-3 rounded-lg">
+            <div className="text-xs text-blue-700 bg-blue-50 p-3 rounded-lg border border-blue-100">
               <p>Proses ini biasanya memakan waktu 1-3 detik</p>
             </div>
           )}
 
           {stage === "failed" && (
-            <div className="text-sm text-red-600 bg-red-50 p-3 rounded-lg">
+            <div className="text-sm text-red-600 bg-red-50 p-3 rounded-lg border border-red-200">
               <p>Jika masalah berlanjut, silakan hubungi petugas</p>
               <p className="mt-1">Uang Anda akan dikembalikan otomatis</p>
             </div>
