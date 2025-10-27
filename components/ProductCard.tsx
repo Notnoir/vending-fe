@@ -2,8 +2,6 @@
 
 import React from "react";
 import Image from "next/image";
-import { Card, CardContent } from "@/components/ui/Card";
-import { Button } from "@/components/ui/Button";
 import { Product } from "@/lib/api";
 import { cn } from "@/lib/utils";
 
@@ -42,81 +40,88 @@ const ProductCard: React.FC<ProductCardProps> = ({
     return `${backendUrl}${imageUrl}`;
   };
 
+  // Get random soft background color like in template
+  const getCardBackground = () => {
+    const colors = ["bg-white"];
+    return colors[Math.floor(Math.random() * colors.length)];
+  };
+
   return (
-    <Card
+    <div
       className={cn(
-        "relative cursor-pointer transition-all duration-300 hover:shadow-health-lg border-2 bg-white",
-        isDisabled && "opacity-50 cursor-not-allowed border-gray-200",
-        !isDisabled && "hover:scale-105 hover:border-blue-400 border-blue-100"
+        "relative cursor-pointer transition-all duration-300 rounded-3xl overflow-hidden shadow-lg",
+        getCardBackground(),
+        isDisabled && "opacity-50 cursor-not-allowed",
+        !isDisabled && "hover:scale-105 hover:shadow-lg"
       )}
       onClick={() => !isDisabled && onSelect(product)}
     >
-      <CardContent className="p-4">
-        {/* Stock indicator */}
-        <div className="absolute top-2 right-2 z-10">
-          <div
-            className={cn(
-              "px-3 py-1 rounded-full text-xs font-bold shadow-md",
-              isAvailable ? "bg-blue-500 text-white" : "bg-red-500 text-white"
-            )}
-          >
-            {isAvailable ? `${product.current_stock} pcs` : "Habis"}
-          </div>
+      <div className="p-5 relative h-full flex flex-col">
+        {/* Product Title & Category */}
+        <div className="mb-3">
+          <h3 className="font-bold text-xl text-gray-800 mb-1">
+            {product.name}
+          </h3>
+          <p className="text-xs text-gray-600 font-medium">
+            {product.description || "Produk Kesehatan"}
+          </p>
         </div>
 
-        {/* Product Image */}
-        <div className="relative h-40 w-full mb-3 rounded-xl overflow-hidden bg-gradient-to-br from-blue-50 to-white shadow-inner">
+        {/* Product Image - Large centered with fixed size */}
+        <div className="relative h-48 w-full mb-4 rounded-2xl overflow-hidden bg-white/30">
           <Image
             src={getImageUrl(product.image_url)}
             alt={product.name}
             fill
             className="object-cover"
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
           {!isAvailable && (
-            <div className="absolute inset-0 bg-gray-900/50 flex items-center justify-center backdrop-blur-sm">
-              <span className="text-white font-bold text-lg">SOLD OUT</span>
+            <div className="absolute inset-0 bg-black/40 flex items-center justify-center backdrop-blur-sm">
+              <span className="text-white font-bold text-lg">HABIS</span>
             </div>
           )}
         </div>
 
-        {/* Product Info */}
-        <div className="space-y-2">
-          <h3 className="font-bold text-lg line-clamp-1 text-blue-900">
-            {product.name}
-          </h3>
-
-          <p className="text-gray-600 text-sm line-clamp-2">
-            {product.description}
-          </p>
-
-          <div className="flex items-center justify-between pt-2">
-            <div className="text-2xl font-black text-blue-600">
-              {formatPrice(product.final_price ?? product.price)}
-            </div>
-
-            {product.slot_number && (
-              <div className="text-xs font-semibold text-blue-600 bg-blue-50 px-2 py-1 rounded border border-blue-200">
-                Slot {product.slot_number}
-              </div>
-            )}
+        {/* Price and Cart Button */}
+        <div className="mt-auto flex items-center justify-between">
+          <div className="text-xl font-black text-gray-800">
+            {formatPrice(product.final_price ?? product.price)}
           </div>
 
-          <Button
-            variant={isAvailable ? "primary" : "secondary"}
-            size="md"
-            fullWidth
+          {/* Cart Button - circular like in template */}
+          <button
             disabled={isDisabled}
             className={cn(
-              "mt-3 font-bold",
-              isAvailable && "bg-blue-600 hover:bg-blue-700 text-white"
+              "w-12 h-12 rounded-full flex items-center justify-center shadow-lg transition-all",
+              isAvailable
+                ? "bg-gray-900 hover:bg-gray-800 active:scale-95"
+                : "bg-gray-400 cursor-not-allowed"
             )}
           >
-            {isAvailable ? "Pilih Produk" : "Stok Habis"}
-          </Button>
+            <svg
+              className="w-5 h-5 text-white"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+              />
+            </svg>
+          </button>
         </div>
-      </CardContent>
-    </Card>
+
+        {/* Stock badge - top right */}
+        {isAvailable && (
+          <div className="absolute top-3 right-3 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow">
+            {product.current_stock} pcs
+          </div>
+        )}
+      </div>
+    </div>
   );
 };
 

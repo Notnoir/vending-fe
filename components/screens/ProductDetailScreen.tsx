@@ -3,7 +3,7 @@
 import React from "react";
 import Image from "next/image";
 import { useVendingStore } from "@/lib/store";
-import { Card, CardContent } from "@/components/ui/Card";
+import { CardContent } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { ArrowLeft, Plus, Minus } from "lucide-react";
 
@@ -71,24 +71,21 @@ const ProductDetailScreen: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white p-4">
+    <div className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-2xl mx-auto">
         {/* Header */}
         <div className="flex items-center mb-6">
-          <Button
-            variant="ghost"
-            size="sm"
+          <button
             onClick={handleBack}
-            className="mr-4"
+            className="p-2 rounded-full bg-white shadow-md hover:shadow-lg transition-shadow mr-4"
           >
-            <ArrowLeft className="h-5 w-5 mr-2" />
-            Kembali
-          </Button>
-          <h1 className="text-2xl font-bold text-blue-900">Detail Produk</h1>
+            <ArrowLeft className="h-5 w-5 text-gray-700" />
+          </button>
+          <h1 className="text-2xl font-bold text-gray-900">Detail Produk</h1>
         </div>
 
-        <Card>
-          <CardContent className="p-6">
+        <div className="bg-white rounded-3xl shadow-md p-6">
+          <CardContent className="p-0">
             <div className="grid md:grid-cols-2 gap-6">
               {/* Product Image */}
               <div className="space-y-4">
@@ -97,7 +94,7 @@ const ProductDetailScreen: React.FC = () => {
                     src={getImageUrl(selectedProduct.image_url)}
                     alt={selectedProduct.name}
                     fill
-                    className="object-cover rounded-lg"
+                    className="object-cover rounded-2xl"
                     sizes="(max-width: 768px) 100vw, 50vw"
                   />
                 </div>
@@ -131,7 +128,7 @@ const ProductDetailScreen: React.FC = () => {
               {/* Product Info */}
               <div className="space-y-4">
                 <div>
-                  <h2 className="text-2xl font-bold text-blue-900 mb-2">
+                  <h2 className="text-2xl font-bold text-gray-900 mb-2">
                     {selectedProduct.name}
                   </h2>
                   <p className="text-gray-600">{selectedProduct.description}</p>
@@ -139,7 +136,7 @@ const ProductDetailScreen: React.FC = () => {
                 {/* Category */}
                 {selectedProduct.category && (
                   <div className="inline-block">
-                    <span className="px-3 py-1 bg-blue-100 text-blue-700 text-sm rounded-full font-medium">
+                    <span className="px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded-full font-medium">
                       {selectedProduct.category}
                     </span>
                   </div>
@@ -147,7 +144,7 @@ const ProductDetailScreen: React.FC = () => {
                 {/* Price */}
                 <div className="space-y-1">
                   <p className="text-sm text-gray-600">Harga per unit:</p>
-                  <p className="text-3xl font-bold bg-gradient-to-r from-[#0066cc] to-[#004a99] bg-clip-text text-transparent">
+                  <p className="text-3xl font-bold text-gray-900">
                     {formatPrice(unitPrice)}
                   </p>
                 </div>{" "}
@@ -180,7 +177,7 @@ const ProductDetailScreen: React.FC = () => {
                         }}
                         min={1}
                         max={maxQuantity}
-                        className="w-full px-3 py-2 text-center border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 text-center rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
                       />
                     </div>
 
@@ -200,12 +197,12 @@ const ProductDetailScreen: React.FC = () => {
                   </p>
                 </div>
                 {/* Total Price */}
-                <div className="border-t border-blue-100 pt-4">
-                  <div className="flex justify-between items-center">
-                    <span className="text-lg font-medium text-blue-900">
+                <div className="border-t border-gray-200 pt-4">
+                  <div className="flex justify-between items-center bg-gray-100 rounded-2xl p-4">
+                    <span className="text-lg font-medium text-gray-900">
                       Total:
                     </span>
-                    <span className="text-2xl font-bold bg-gradient-to-r from-[#0066cc] to-[#004a99] bg-clip-text text-transparent">
+                    <span className="text-2xl font-bold text-gray-900">
                       {formatPrice(totalPrice)}
                     </span>
                   </div>
@@ -233,7 +230,7 @@ const ProductDetailScreen: React.FC = () => {
               </div>
             </div>
           </CardContent>
-        </Card>
+        </div>
       </div>
     </div>
   );

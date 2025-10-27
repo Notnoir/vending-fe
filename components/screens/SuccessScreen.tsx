@@ -2,7 +2,7 @@
 
 import React, { useEffect, useCallback } from "react";
 import { useVendingStore } from "@/lib/store";
-import { Card, CardContent } from "@/components/ui/Card";
+import { CardContent } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { CheckCircle, Gift, Star } from "lucide-react";
 
@@ -47,44 +47,44 @@ const SuccessScreen: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-100 p-4 flex items-center justify-center">
+    <div className="min-h-screen bg-gray-50 p-6 flex items-center justify-center">
       <div className="max-w-md mx-auto text-center">
-        <Card className="border-blue-200 shadow-health-lg">
-          <CardContent className="p-8 space-y-6">
+        <div className="border-gray-200 shadow-md bg-white rounded-3xl p-8 space-y-6">
+          <CardContent className="p-0">
             {/* Success Icon */}
             <div className="relative">
-              <div className="w-24 h-24 bg-gradient-to-br from-blue-100 to-blue-200 rounded-full flex items-center justify-center mx-auto shadow-health">
-                <CheckCircle className="h-16 w-16 text-blue-600" />
+              <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto">
+                <CheckCircle className="h-16 w-16 text-green-600" />
               </div>
 
               {/* Celebration stars */}
-              <Star className="absolute -top-2 -left-2 h-6 w-6 text-blue-400 fill-current animate-pulse" />
-              <Star className="absolute -top-2 -right-2 h-4 w-4 text-blue-400 fill-current animate-pulse delay-300" />
-              <Star className="absolute -bottom-2 -left-2 h-4 w-4 text-blue-400 fill-current animate-pulse delay-700" />
-              <Star className="absolute -bottom-2 -right-2 h-6 w-6 text-blue-400 fill-current animate-pulse delay-500" />
+              <Star className="absolute -top-2 -left-2 h-6 w-6 text-green-400 fill-current animate-pulse" />
+              <Star className="absolute -top-2 -right-2 h-4 w-4 text-green-400 fill-current animate-pulse delay-300" />
+              <Star className="absolute -bottom-2 -left-2 h-4 w-4 text-green-400 fill-current animate-pulse delay-700" />
+              <Star className="absolute -bottom-2 -right-2 h-6 w-6 text-green-400 fill-current animate-pulse delay-500" />
             </div>
 
             {/* Success Message */}
             <div className="space-y-2">
-              <h1 className="text-2xl font-bold text-blue-900">Berhasil! 🎉</h1>
-              <p className="text-blue-700">Produk Anda telah berhasil keluar</p>
+              <h1 className="text-2xl font-bold text-gray-900">Berhasil! 🎉</h1>
+              <p className="text-gray-700">Produk Anda telah berhasil keluar</p>
             </div>
 
             {/* Product Info */}
-            <div className="bg-blue-50 p-4 rounded-lg space-y-2 border border-blue-200">
+            <div className="bg-gray-50 p-4 rounded-2xl space-y-2 border border-gray-200">
               <div className="flex items-center justify-center space-x-2">
-                <Gift className="h-5 w-5 text-blue-600" />
-                <span className="font-semibold text-blue-900">
+                <Gift className="h-5 w-5 text-gray-700" />
+                <span className="font-semibold text-gray-900">
                   {selectedProduct.name}
                 </span>
               </div>
 
-              <p className="text-sm text-blue-700 font-medium">
+              <p className="text-sm text-gray-700 font-medium">
                 {quantity} pcs - {formatPrice(currentOrder.total_amount)}
               </p>
 
               {currentOrder.order_id && (
-                <p className="text-xs text-blue-600 font-mono">
+                <p className="text-xs text-gray-600 font-mono">
                   Order ID: {currentOrder.order_id}
                 </p>
               )}
@@ -92,16 +92,16 @@ const SuccessScreen: React.FC = () => {
 
             {/* Instructions */}
             <div className="space-y-3">
-              <div className="bg-gradient-to-r from-blue-50 to-blue-100 p-4 rounded-lg border border-blue-200">
-                <h3 className="font-semibold text-blue-900 mb-2">
+              <div className="bg-gray-100 p-4 rounded-2xl border border-gray-200">
+                <h3 className="font-semibold text-gray-900 mb-2">
                   Silakan Ambil Produk Anda
                 </h3>
-                <p className="text-sm text-blue-700">
+                <p className="text-sm text-gray-700">
                   Periksa area pengambilan di bagian bawah mesin
                 </p>
               </div>
 
-              <div className="text-xs text-blue-700 space-y-1">
+              <div className="text-xs text-gray-700 space-y-1">
                 <p>• Pastikan semua produk telah diambil</p>
                 <p>• Simpan struk digital ini sebagai bukti</p>
                 <p>• Terima kasih atas kepercayaan Anda!</p>
@@ -125,8 +125,8 @@ const SuccessScreen: React.FC = () => {
             </div>
 
             {/* Rating */}
-            <div className="border-t border-blue-100 pt-4">
-              <p className="text-sm text-blue-700 mb-2 font-medium">
+            <div className="border-t border-gray-200 pt-4">
+              <p className="text-sm text-gray-700 mb-2 font-medium">
                 Bagaimana pengalaman Anda?
               </p>
 
@@ -134,7 +134,7 @@ const SuccessScreen: React.FC = () => {
                 {[1, 2, 3, 4, 5].map((star) => (
                   <button
                     key={star}
-                    className="text-blue-400 hover:text-blue-500 transition-colors"
+                    className="text-gray-400 hover:text-gray-600 transition-colors"
                   >
                     <Star className="h-6 w-6 fill-current" />
                   </button>
@@ -142,11 +142,11 @@ const SuccessScreen: React.FC = () => {
               </div>
             </div>
           </CardContent>
-        </Card>
+        </div>
 
         {/* Additional Info */}
         <div className="mt-6 text-center">
-          <p className="text-sm text-blue-600">
+          <p className="text-sm text-gray-600">
             Butuh bantuan? Hubungi petugas atau scan QR code bantuan
           </p>
         </div>

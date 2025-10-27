@@ -3,10 +3,9 @@
 import React, { useState } from "react";
 import { useVendingStore } from "@/lib/store";
 import { vendingAPI } from "@/lib/api";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Loading } from "@/components/ui/Loading";
-import { ArrowLeft, CreditCard, Smartphone } from "lucide-react";
+import { ArrowLeft, Smartphone } from "lucide-react";
 import toast from "react-hot-toast";
 
 const OrderSummaryScreen: React.FC = () => {
@@ -118,180 +117,165 @@ const OrderSummaryScreen: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white p-4">
+    <div className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-2xl mx-auto">
-        {/* Header */}
-        <div className="flex items-center mb-6">
-          <Button
-            variant="ghost"
-            size="sm"
+        {/* Header with Back Button */}
+        <div className="flex items-center justify-between mb-6">
+          <button
             onClick={handleBack}
-            className="mr-4"
             disabled={isLoading}
+            className="p-2 rounded-full bg-white shadow-md hover:shadow-lg transition-shadow"
           >
-            <ArrowLeft className="h-5 w-5 mr-2" />
-            Kembali
-          </Button>
-          <h1 className="text-2xl font-bold text-blue-900">
-            Ringkasan Pesanan
-          </h1>
+            <ArrowLeft className="h-5 w-5 text-gray-700" />
+          </button>
+          <h1 className="text-2xl font-bold text-gray-900">Cart</h1>
+          <div className="w-12 h-12 rounded-full bg-gray-900 flex items-center justify-center text-white font-bold text-lg shadow-md">
+            {quantity}
+          </div>
         </div>
 
-        <div className="space-y-6">
-          {/* Order Summary Card */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <CreditCard className="h-5 w-5 mr-2" />
-                Detail Pesanan
-              </CardTitle>
-            </CardHeader>
-
-            <CardContent className="space-y-4">
-              {/* Product Info */}
-              <div className="flex items-center space-x-4 p-4 bg-blue-50 rounded-lg border border-blue-100">
-                <div className="w-16 h-16 bg-white rounded-lg flex items-center justify-center shadow-sm">
+        {/* Cart Items - Rounded container */}
+        <div className="bg-white rounded-3xl p-6 mb-6 shadow-md">
+          {/* Product Items */}
+          <div className="space-y-3 mb-6">
+            {Array.from({ length: quantity }).map((_, index) => (
+              <div
+                key={index}
+                className="flex items-center space-x-3 bg-gray-50 rounded-2xl p-3 border border-gray-200"
+              >
+                {/* Product Image */}
+                <div className="w-14 h-14 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden">
                   <span className="text-2xl">📦</span>
                 </div>
 
+                {/* Product Info */}
                 <div className="flex-1">
-                  <h3 className="font-semibold text-lg text-blue-900">
+                  <h3 className="text-gray-900 font-semibold">
                     {selectedProduct.name}
                   </h3>
-                  <p className="text-gray-600 text-sm">
-                    {selectedProduct.description}
+                  <p className="text-gray-600 text-xs">
+                    {selectedProduct.description || "Produk"}
                   </p>
-                  {selectedProduct.slot_number && (
-                    <p className="text-blue-600 text-xs mt-1 font-medium">
-                      Slot {selectedProduct.slot_number}
-                    </p>
-                  )}
                 </div>
 
-                <div className="text-right">
-                  <p className="text-sm text-blue-600 font-medium">
-                    Qty: {quantity}
-                  </p>
-                  <p className="font-semibold text-blue-900">
-                    {formatPrice(unitPrice)}
-                  </p>
+                {/* Price */}
+                <div className="bg-gray-900 text-white font-bold px-3 py-1.5 rounded-full text-sm">
+                  {formatPrice(unitPrice)}
                 </div>
               </div>
+            ))}
+          </div>
 
-              {/* Price Breakdown */}
-              <div className="space-y-2 border-t border-blue-100 pt-4">
-                <div className="flex justify-between text-sm text-gray-700">
-                  <span>Harga per unit:</span>
-                  <span className="font-medium">{formatPrice(unitPrice)}</span>
-                </div>
-
-                <div className="flex justify-between text-sm text-gray-700">
-                  <span>Jumlah:</span>
-                  <span className="font-medium">{quantity} pcs</span>
-                </div>
-
-                <div className="flex justify-between font-semibold text-lg border-t border-blue-100 pt-2">
-                  <span className="text-blue-900">Total:</span>
-                  <span className="bg-gradient-to-r from-[#0066cc] to-[#004a99] bg-clip-text text-transparent">
-                    {formatPrice(totalPrice)}
-                  </span>
-                </div>
+          {/* Tax & Total Card */}
+          <div className="bg-gray-100 rounded-2xl p-5 border border-gray-200">
+            <div className="relative z-10">
+              {/* Tax Amount */}
+              <div className="flex items-center justify-between mb-3 pb-3 border-b border-gray-300">
+                <span className="text-gray-700 font-medium text-sm">
+                  Tax Amount
+                </span>
+                <span className="text-gray-900 font-bold">
+                  {formatPrice(totalPrice * 0.11)}
+                </span>
               </div>
-            </CardContent>
-          </Card>
 
-          {/* Customer Info (Optional) */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <Smartphone className="h-5 w-5 mr-2" />
-                Informasi Kontak (Opsional)
-              </CardTitle>
-            </CardHeader>
+              {/* Total Amount */}
+              <div>
+                <p className="text-gray-700 font-medium text-sm mb-1">
+                  Total Amount
+                </p>
+                <p className="text-3xl font-black text-gray-900">
+                  {formatPrice(totalPrice * 1.11)}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
 
-            <CardContent>
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Nomor WhatsApp/Telepon
-                  </label>
-                  <input
-                    type="tel"
-                    value={customerPhone}
-                    onChange={handlePhoneChange}
-                    placeholder="+62 812-3456-7890"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    disabled={isLoading}
+        {/* Contact Info (Optional) */}
+        {customerPhone && (
+          <div className="bg-white rounded-2xl p-3 mb-4 border border-gray-200 shadow-sm">
+            <div className="flex items-center space-x-2 text-gray-900">
+              <Smartphone className="h-4 w-4 text-gray-600" />
+              <span className="text-sm font-medium">{customerPhone}</span>
+            </div>
+          </div>
+        )}
+
+        {/* Make Payment Button */}
+        <button
+          onClick={handleCreateOrder}
+          disabled={isLoading}
+          className="w-full bg-gray-900 hover:bg-gray-800 text-white font-bold text-lg py-5 rounded-full shadow-md transition-all hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+        >
+          {isLoading ? (
+            <div className="flex items-center">
+              <Loading />
+              <span className="ml-2">Processing...</span>
+            </div>
+          ) : (
+            <>
+              <span>Make Payment</span>
+              <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
                   />
-                  <p className="text-xs text-gray-500 mt-1">
-                    Untuk notifikasi status pesanan (opsional)
-                  </p>
-                </div>
+                </svg>
               </div>
-            </CardContent>
-          </Card>
+            </>
+          )}
+        </button>
 
-          {/* Payment Method Info */}
-          <Card>
-            <CardContent className="p-4 bg-gradient-to-r from-blue-50 to-white">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h4 className="font-medium text-blue-900">
-                    Metode Pembayaran
-                  </h4>
-                  <p className="text-sm text-blue-600">QRIS - Scan & Pay</p>
-                </div>
+        {/* Optional: Phone Input */}
+        <div className="mt-4">
+          <details className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
+            <summary className="p-3 cursor-pointer text-gray-900 font-medium flex items-center justify-between hover:bg-gray-50 transition-colors">
+              <span className="flex items-center space-x-2 text-sm">
+                <Smartphone className="h-4 w-4 text-gray-600" />
+                <span>Add Contact (Optional)</span>
+              </span>
+              <svg
+                className="w-4 h-4 text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </summary>
+            <div className="p-3 pt-0 bg-gray-50">
+              <input
+                type="tel"
+                value={customerPhone}
+                onChange={handlePhoneChange}
+                placeholder="+62 812-3456-7890"
+                className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-gray-500 focus:border-transparent text-sm"
+                disabled={isLoading}
+              />
+              <p className="text-xs text-gray-600 mt-1.5">
+                For order status notifications
+              </p>
+            </div>
+          </details>
+        </div>
 
-                <div className="flex space-x-2">
-                  <div className="w-8 h-8 bg-blue-500 rounded flex items-center justify-center shadow-sm">
-                    <span className="text-xs font-bold text-white">Q</span>
-                  </div>
-                  <div className="w-8 h-8 bg-blue-600 rounded flex items-center justify-center shadow-sm">
-                    <span className="text-xs font-bold text-white">💳</span>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Action Buttons */}
-          <div className="space-y-3">
-            <Button
-              variant="primary"
-              size="lg"
-              fullWidth
-              onClick={handleCreateOrder}
-              disabled={isLoading}
-              className="h-14"
-            >
-              {isLoading ? (
-                <div className="flex items-center">
-                  <Loading />
-                  <span className="ml-2">Memproses...</span>
-                </div>
-              ) : (
-                `Bayar ${formatPrice(totalPrice)}`
-              )}
-            </Button>
-
-            <Button
-              variant="ghost"
-              size="lg"
-              fullWidth
-              onClick={handleBack}
-              disabled={isLoading}
-            >
-              Ubah Pesanan
-            </Button>
-          </div>
-
-          {/* Terms */}
-          <div className="text-xs text-blue-600 text-center space-y-1">
-            <p>Dengan melanjutkan, Anda menyetujui syarat dan ketentuan</p>
-            <p className="font-medium">
-              ⏱️ Pembayaran akan expired dalam 15 menit
-            </p>
-          </div>
+        {/* Terms */}
+        <div className="text-xs text-gray-600 text-center mt-4">
+          <p>⏱️ Payment will expire in 15 minutes</p>
         </div>
       </div>
     </div>

@@ -5,8 +5,7 @@ import { useVendingStore } from "@/lib/store";
 import { vendingAPI, Product } from "@/lib/api";
 import ProductCard from "@/components/ProductCard";
 import { Loading } from "@/components/ui/Loading";
-import { Button } from "@/components/ui/Button";
-import { RefreshCw, Wifi, WifiOff, Clock, Settings } from "lucide-react";
+import { RefreshCw, Wifi, WifiOff, Settings } from "lucide-react";
 import Link from "next/link";
 import toast from "react-hot-toast";
 
@@ -15,8 +14,7 @@ const HomeScreen: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
 
-  const { setSelectedProduct, setCurrentScreen, isOnline, machineId } =
-    useVendingStore();
+  const { setSelectedProduct, setCurrentScreen, isOnline } = useVendingStore();
 
   const loadProducts = async () => {
     try {
@@ -58,81 +56,74 @@ const HomeScreen: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#f0f7ff] to-white p-4">
-      {/* Header */}
-      <div className="max-w-6xl mx-auto mb-6">
-        <div className="bg-gradient-to-r from-[#0066cc] to-[#004a99] rounded-2xl shadow-health-lg p-6 text-white">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold flex items-center">
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-7xl mx-auto p-6">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h1 className="text-4xl font-bold text-gray-900 mb-2">MediVend</h1>
+            <div className="flex items-center space-x-4 text-gray-600">
+              <div className="flex items-center space-x-2">
+                <span className="font-semibold">{products.length} items</span>
+              </div>
+              <button className="flex items-center space-x-1 hover:text-gray-900">
                 <svg
-                  className="w-10 h-10 mr-3"
-                  fill="currentColor"
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
                   viewBox="0 0 24 24"
                 >
-                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"
+                  />
                 </svg>
-                MediVend {machineId}
-              </h1>
-              <p className="text-blue-100 text-sm mt-1">
-                Produk Kesehatan & Wellness
-              </p>
-            </div>
-
-            <div className="flex items-center space-x-4">
-              {/* Connection Status */}
-              <div className="flex items-center space-x-2">
-                {isOnline ? (
-                  <div className="flex items-center bg-emerald-500 px-3 py-1 rounded-full shadow-sm">
-                    <Wifi className="h-4 w-4 mr-1" />
-                    <span className="text-sm font-medium">Online</span>
-                  </div>
-                ) : (
-                  <div className="flex items-center bg-red-500 px-3 py-1 rounded-full shadow-sm">
-                    <WifiOff className="h-4 w-4 mr-1" />
-                    <span className="text-sm font-medium">Offline</span>
-                  </div>
-                )}
-              </div>
-
-              {/* Last Update */}
-              <div className="flex items-center bg-white/25 px-3 py-1 rounded-full backdrop-blur-sm">
-                <Clock className="h-4 w-4 mr-1" />
-                <span className="text-sm font-medium">
-                  {formatTime(lastUpdate)}
-                </span>
-              </div>
-
-              {/* Refresh Button */}
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={loadProducts}
-                disabled={isLoading}
-                className="bg-white text-blue-600 hover:bg-blue-50"
-              >
-                <RefreshCw
-                  className={`h-4 w-4 mr-2 ${isLoading ? "animate-spin" : ""}`}
-                />
-                Refresh
-              </Button>
-
-              {/* Admin Button */}
-              <Link href="/admin">
-                <Button variant="secondary" size="sm">
-                  <Settings className="h-4 w-4 mr-2" />
-                  Admin
-                </Button>
-              </Link>
+              </button>
             </div>
           </div>
-        </div>
-      </div>
 
-      {/* Products Grid */}
-      <div className="max-w-6xl mx-auto">
+          <div className="flex items-center space-x-4">
+            {/* Connection Status */}
+            {isOnline ? (
+              <div className="flex items-center bg-emerald-100 text-emerald-700 px-4 py-2 rounded-full">
+                <Wifi className="h-4 w-4 mr-2" />
+                <span className="text-sm font-semibold">Online</span>
+              </div>
+            ) : (
+              <div className="flex items-center bg-red-100 text-red-700 px-4 py-2 rounded-full">
+                <WifiOff className="h-4 w-4 mr-2" />
+                <span className="text-sm font-semibold">Offline</span>
+              </div>
+            )}
+
+            {/* Refresh Button */}
+            <button
+              onClick={loadProducts}
+              disabled={isLoading}
+              className="p-2 rounded-full bg-white shadow-md hover:shadow-lg transition-shadow"
+            >
+              <RefreshCw
+                className={`h-5 w-5 text-gray-700 ${
+                  isLoading ? "animate-spin" : ""
+                }`}
+              />
+            </button>
+
+            {/* Admin Button */}
+            <Link href="/admin">
+              <button className="flex items-center bg-blue-600 text-white px-4 py-2 rounded-full hover:bg-blue-700 transition-colors">
+                <Settings className="h-4 w-4 mr-2" />
+                <span className="text-sm font-semibold">Admin</span>
+              </button>
+            </Link>
+          </div>
+        </div>
+
+        {/* Products Grid */}
         {products.length === 0 ? (
-          <div className="text-center py-16">
+          <div className="text-center py-20">
             <div className="w-32 h-32 mx-auto mb-6 bg-gray-100 rounded-full flex items-center justify-center">
               <svg
                 className="h-16 w-16 text-gray-400"
@@ -151,23 +142,21 @@ const HomeScreen: React.FC = () => {
             <h3 className="text-2xl font-bold text-gray-700 mb-3">
               Tidak Ada Produk Tersedia
             </h3>
-            <p className="text-gray-500 mb-6 max-w-md mx-auto">
-              Semua produk sedang habis atau mesin dalam maintenance. Silakan
-              coba lagi nanti.
+            <p className="text-gray-500 mb-6">
+              Silakan refresh atau coba lagi nanti
             </p>
-            <Button variant="primary" onClick={loadProducts}>
+            <button
+              onClick={loadProducts}
+              className="inline-flex items-center bg-blue-600 text-white px-6 py-3 rounded-full hover:bg-blue-700 transition-colors"
+            >
               <RefreshCw className="h-5 w-5 mr-2" />
               Coba Lagi
-            </Button>
+            </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-8">
-            {products.map((product, index) => (
-              <div
-                key={product.id}
-                className="transform transition-all duration-200"
-                style={{ animationDelay: `${index * 0.1}s` }}
-              >
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {products.map((product) => (
+              <div key={product.id} className="animate-fadeIn">
                 <ProductCard
                   product={product}
                   onSelect={handleProductSelect}
@@ -177,58 +166,10 @@ const HomeScreen: React.FC = () => {
             ))}
           </div>
         )}
-      </div>
 
-      {/* Footer Info */}
-      <div className="max-w-6xl mx-auto mt-8 pb-8">
-        <div className="bg-gradient-to-r from-white to-blue-50 rounded-2xl shadow-health p-6 border border-blue-100">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-6 text-gray-700">
-              <div className="flex items-center space-x-2">
-                <div className="w-3 h-3 bg-blue-500 rounded-full shadow-sm animate-pulse"></div>
-                <span className="font-semibold text-blue-600">
-                  Tersedia {products.length} produk kesehatan
-                </span>
-              </div>
-              <span className="text-blue-300">•</span>
-              <div className="flex items-center space-x-2">
-                <svg
-                  className="w-5 h-5 text-blue-600"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4zM18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" />
-                </svg>
-                <span className="font-medium">
-                  Pembayaran Aman QRIS & Midtrans
-                </span>
-              </div>
-            </div>
-
-            <div className="flex items-center space-x-4">
-              <span className="text-gray-600 font-medium">Butuh bantuan?</span>
-              <Button
-                variant="primary"
-                size="sm"
-                className="bg-blue-600 hover:bg-blue-700"
-              >
-                <svg
-                  className="w-4 h-4 mr-2"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-                Bantuan
-              </Button>
-            </div>
-          </div>
+        {/* Footer Status */}
+        <div className="mt-8 text-center text-sm text-gray-500">
+          <p>Last updated: {formatTime(lastUpdate)}</p>
         </div>
       </div>
     </div>

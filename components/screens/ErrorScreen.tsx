@@ -2,7 +2,7 @@
 
 import React, { useEffect, useCallback } from "react";
 import { useVendingStore } from "@/lib/store";
-import { Card, CardContent } from "@/components/ui/Card";
+import { CardContent } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { XCircle, AlertTriangle, Phone, RefreshCw } from "lucide-react";
 
@@ -66,11 +66,11 @@ const ErrorScreen: React.FC = () => {
         error?.includes("pembayaran"))
     ) {
       return (
-        <div className="bg-blue-50 p-4 rounded-lg">
-          <h4 className="font-semibold text-blue-800 mb-2">
+        <div className="bg-gray-100 p-4 rounded-2xl border border-gray-200">
+          <h4 className="font-semibold text-gray-800 mb-2">
             💰 Informasi Pengembalian Dana
           </h4>
-          <div className="text-sm text-blue-700 space-y-1">
+          <div className="text-sm text-gray-700 space-y-1">
             <p>• Dana akan dikembalikan otomatis dalam 1-3 hari kerja</p>
             <p>• Pengembalian ke rekening/e-wallet yang sama</p>
             <p>• Order ID: {currentOrder.order_id}</p>
@@ -82,13 +82,13 @@ const ErrorScreen: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-red-50 to-orange-50 p-4 flex items-center justify-center">
+    <div className="min-h-screen bg-gray-50 p-6 flex items-center justify-center">
       <div className="max-w-md mx-auto text-center">
-        <Card className="border-red-200 shadow-health-lg">
-          <CardContent className="p-8 space-y-6">
+        <div className="border-gray-200 shadow-md bg-white rounded-3xl p-8 space-y-6">
+          <CardContent className="p-0">
             {/* Error Icon */}
             <div className="relative">
-              <div className="w-24 h-24 bg-red-100 rounded-full flex items-center justify-center mx-auto shadow-md">
+              <div className="w-24 h-24 bg-red-100 rounded-full flex items-center justify-center mx-auto">
                 <XCircle className="h-16 w-16 text-red-600" />
               </div>
 
@@ -106,7 +106,7 @@ const ErrorScreen: React.FC = () => {
 
             {/* Product Info (if available) */}
             {selectedProduct && (
-              <div className="bg-red-50 p-4 rounded-lg space-y-2">
+              <div className="bg-red-50 p-4 rounded-2xl space-y-2 border border-red-200">
                 <div className="font-semibold text-red-800">
                   {selectedProduct.name}
                 </div>
@@ -120,7 +120,7 @@ const ErrorScreen: React.FC = () => {
 
             {/* Error Details */}
             {error && (
-              <div className="bg-gray-50 p-3 rounded-lg">
+              <div className="bg-gray-50 p-3 rounded-2xl border border-gray-200">
                 <p className="text-xs text-gray-600 font-mono">
                   Error: {error}
                 </p>
@@ -131,7 +131,7 @@ const ErrorScreen: React.FC = () => {
             {getRefundInfo()}
 
             {/* Instructions */}
-            <div className="bg-yellow-50 p-4 rounded-lg">
+            <div className="bg-yellow-50 p-4 rounded-2xl border border-yellow-200">
               <h3 className="font-semibold text-yellow-800 mb-2 flex items-center">
                 <AlertTriangle className="h-4 w-4 mr-2" />
                 Apa yang harus dilakukan?
@@ -151,7 +151,7 @@ const ErrorScreen: React.FC = () => {
                 size="lg"
                 fullWidth
                 onClick={handleTryAgain}
-                className="bg-orange-500 hover:bg-orange-600"
+                className="bg-gray-900 hover:bg-gray-800"
               >
                 <RefreshCw className="h-4 w-4 mr-2" />
                 Coba Lagi
@@ -162,34 +162,34 @@ const ErrorScreen: React.FC = () => {
                 size="lg"
                 fullWidth
                 onClick={handleBackToHome}
-                className="border border-blue-200 hover:bg-blue-50"
+                className="border border-gray-200 hover:bg-gray-50"
               >
                 Kembali ke Beranda
               </Button>
             </div>
 
             {/* Contact Info */}
-            <div className="border-t border-blue-100 pt-4 space-y-3">
+            <div className="border-t border-gray-200 pt-4 space-y-3">
               <Button
                 variant="ghost"
                 size="sm"
                 fullWidth
-                className="text-blue-600 hover:text-blue-800 hover:bg-blue-50"
+                className="text-gray-700 hover:text-gray-900 hover:bg-gray-50"
               >
                 <Phone className="h-4 w-4 mr-2" />
                 Hubungi Petugas: 0800-1234-5678
               </Button>
 
-              <p className="text-xs text-blue-600">
+              <p className="text-xs text-gray-600">
                 Otomatis kembali ke beranda dalam 15 detik
               </p>
             </div>
           </CardContent>
-        </Card>
+        </div>
 
         {/* Additional Help */}
         <div className="mt-6 text-center">
-          <p className="text-sm text-blue-700">
+          <p className="text-sm text-gray-600">
             Untuk bantuan lebih lanjut, scan QR code bantuan atau tekan tombol
             Help
           </p>
