@@ -255,8 +255,8 @@ export default function ProductForm({
             onChange={handleInputChange}
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
           >
-            <option value="minuman">Minuman</option>
-            <option value="snack">Snack</option>
+            <option value="obat">Obat</option>
+            <option value="vitamin">Vitamin</option>
           </select>
         </div>
       </div>
