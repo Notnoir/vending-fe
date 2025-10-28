@@ -62,9 +62,6 @@ const ProductCard: React.FC<ProductCardProps> = ({
           <h3 className="font-bold text-xl text-gray-800 mb-1">
             {product.name}
           </h3>
-          <p className="text-xs text-gray-600 font-medium">
-            {product.description || "Produk Kesehatan"}
-          </p>
         </div>
 
         {/* Product Image - Large centered with fixed size */}
