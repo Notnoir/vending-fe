@@ -30,6 +30,7 @@ export const PaymentQR: React.FC<PaymentQRProps> = ({
   const [midtransOrderId, setMidtransOrderId] = useState<string>("");
   const [hasCheckedInitialStatus, setHasCheckedInitialStatus] = useState(false);
   const [qrGenerationError, setQrGenerationError] = useState<string>("");
+  const [savedToken, setSavedToken] = useState<string | null>(null);
 
   const generateMidtransQRIS = useCallback(async () => {
     try {
@@ -43,8 +44,28 @@ export const PaymentQR: React.FC<PaymentQRProps> = ({
       const orderId = order.order_id;
       setMidtransOrderId(orderId);
 
-      // Always create Midtrans Snap transaction to get proper QR URL
-      console.log("� Creating Midtrans Snap transaction...");
+      // Check if we already have a token saved for this order
+      const storageKey = `midtrans_token_${orderId}`;
+      const existingToken = localStorage.getItem(storageKey);
+
+      if (existingToken && savedToken === existingToken) {
+        console.log("♻️ Reusing existing Midtrans token from cache");
+        // Token already loaded, no need to create new transaction
+        return;
+      }
+
+      if (existingToken) {
+        console.log("♻️ Found existing Midtrans token in localStorage");
+        setSavedToken(existingToken);
+        // Get redirect URL from existing token
+        const redirectUrl = `https://app.sandbox.midtrans.com/snap/v4/redirection/${existingToken}`;
+        setQrisUrl(redirectUrl);
+        toast.success("QR Code Midtrans berhasil dimuat");
+        return;
+      }
+
+      // Create new Midtrans Snap transaction
+      console.log("🆕 Creating new Midtrans Snap transaction...");
 
       const paymentRequest: PaymentRequest = {
         orderId: orderId,
@@ -66,6 +87,10 @@ export const PaymentQR: React.FC<PaymentQRProps> = ({
       // Create Midtrans Snap transaction
       const response = await paymentService.createTransaction(paymentRequest);
 
+      // Save token to localStorage and state
+      localStorage.setItem(storageKey, response.token);
+      setSavedToken(response.token);
+
       // Use redirect_url as QR content (Snap v4 URL)
       console.log("✅ Midtrans Snap transaction created");
       console.log("🔗 Redirect URL:", response.redirect_url);
@@ -81,7 +106,23 @@ export const PaymentQR: React.FC<PaymentQRProps> = ({
 
       if (errorMessage.includes("order_id not unique")) {
         console.log("⚠️ Order ID already exists in Midtrans");
-        toast.error("Order ID sudah digunakan. Silakan buat pesanan baru.");
+
+        // Try to get token from localStorage as fallback
+        const storageKey = `midtrans_token_${order.order_id}`;
+        const existingToken = localStorage.getItem(storageKey);
+
+        if (existingToken) {
+          console.log("✅ Found existing token in localStorage, using it");
+          setSavedToken(existingToken);
+          const redirectUrl = `https://app.sandbox.midtrans.com/snap/v4/redirection/${existingToken}`;
+          setQrisUrl(redirectUrl);
+          toast.success("QR Code Midtrans berhasil dimuat dari cache");
+        } else {
+          toast.error("Order sudah digunakan. Silakan buat pesanan baru.");
+          setTimeout(() => {
+            onClose();
+          }, 2000);
+        }
       } else if (errorMessage.includes("server key not configured")) {
         toast.error(
           "⚙️ Konfigurasi Midtrans belum lengkap. Hubungi administrator."
@@ -91,7 +132,11 @@ export const PaymentQR: React.FC<PaymentQRProps> = ({
       }
 
       // Fallback: use backend payment URL if exists
-      if (order.payment_url && !order.payment_url.includes("midtrans://")) {
+      if (
+        !qrisUrl &&
+        order.payment_url &&
+        !order.payment_url.includes("midtrans://")
+      ) {
         console.log("🔄 Using fallback payment URL from backend");
         setQrisUrl(order.payment_url);
       }
@@ -105,6 +150,9 @@ export const PaymentQR: React.FC<PaymentQRProps> = ({
     order.quantity,
     order.product_name,
     order.payment_url,
+    savedToken,
+    qrisUrl,
+    onClose,
   ]);
 
   // Generate Midtrans QRIS on component mount

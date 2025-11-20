@@ -1,9 +1,11 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { LoadingSpinner } from "@/components/ui/Loading";
-import { CheckCircle, XCircle, Package } from "lucide-react";
+import { CheckCircle, XCircle, Package, Clock } from "lucide-react";
+import { useVendingStore } from "@/lib/store";
+import { vendingAPI } from "@/lib/api";
 
 interface DispensingProps {
   productName: string;
@@ -12,11 +14,12 @@ interface DispensingProps {
 
 const Dispensing: React.FC<DispensingProps> = ({ productName, onComplete }) => {
   const [stage, setStage] = useState<
-    "dispensing" | "checking" | "complete" | "failed"
+    "waiting_payment" | "dispensing" | "checking" | "complete" | "failed"
   >("dispensing");
   const [progress, setProgress] = useState(0);
+  const { currentOrder } = useVendingStore();
 
-  useEffect(() => {
+  const startDispensingProcess = useCallback(() => {
     // Simulate dispensing process
     const stages = [
       { stage: "dispensing" as const, duration: 2000, progress: 0 },
@@ -69,8 +72,67 @@ const Dispensing: React.FC<DispensingProps> = ({ productName, onComplete }) => {
     return () => clearInterval(interval);
   }, [onComplete]);
 
+  useEffect(() => {
+    // Check if order is paid or still pending
+    const checkOrderStatus = async () => {
+      if (!currentOrder) return;
+
+      try {
+        const order = await vendingAPI.getOrderStatus(currentOrder.order_id);
+
+        if (order.status === "PENDING") {
+          // Payment not confirmed yet, show waiting state
+          setStage("waiting_payment");
+
+          // Poll every 5 seconds for status update
+          const pollInterval = setInterval(async () => {
+            try {
+              const updatedOrder = await vendingAPI.getOrderStatus(
+                currentOrder.order_id
+              );
+
+              if (
+                updatedOrder.status === "PAID" ||
+                updatedOrder.status === "DISPENSING" ||
+                updatedOrder.status === "COMPLETED"
+              ) {
+                clearInterval(pollInterval);
+                // Trigger dispense
+                await vendingAPI.triggerDispense(currentOrder.order_id);
+                setStage("dispensing");
+                startDispensingProcess();
+              }
+            } catch (error) {
+              console.error("Error polling order status:", error);
+            }
+          }, 5000);
+
+          // Cleanup on unmount
+          return () => clearInterval(pollInterval);
+        } else if (order.status === "PAID" || order.status === "DISPENSING") {
+          // Already paid, start dispensing
+          setStage("dispensing");
+          startDispensingProcess();
+        } else if (order.status === "COMPLETED") {
+          // Already completed
+          setStage("complete");
+          setTimeout(() => onComplete(true), 2000);
+        }
+      } catch (error) {
+        console.error("Error checking order status:", error);
+        // If error, assume we should dispense
+        setStage("dispensing");
+        startDispensingProcess();
+      }
+    };
+
+    checkOrderStatus();
+  }, [currentOrder, onComplete, startDispensingProcess]);
+
   const getStageIcon = () => {
     switch (stage) {
+      case "waiting_payment":
+        return <Clock className="h-12 w-12 text-yellow-600 animate-pulse" />;
       case "dispensing":
         return <LoadingSpinner size="lg" />;
       case "checking":
@@ -84,6 +146,8 @@ const Dispensing: React.FC<DispensingProps> = ({ productName, onComplete }) => {
 
   const getStageMessage = () => {
     switch (stage) {
+      case "waiting_payment":
+        return "Menunggu konfirmasi pembayaran...";
       case "dispensing":
         return "Mengeluarkan produk...";
       case "checking":
@@ -97,6 +161,8 @@ const Dispensing: React.FC<DispensingProps> = ({ productName, onComplete }) => {
 
   const getStageDescription = () => {
     switch (stage) {
+      case "waiting_payment":
+        return "Silakan selesaikan pembayaran Anda. Produk akan keluar otomatis setelah pembayaran terkonfirmasi.";
       case "dispensing":
         return "Motor sedang memutar untuk mengeluarkan produk";
       case "checking":
@@ -121,17 +187,19 @@ const Dispensing: React.FC<DispensingProps> = ({ productName, onComplete }) => {
           <div className="flex justify-center">{getStageIcon()}</div>
 
           {/* Progress Bar */}
-          <div className="space-y-2">
-            <div className="w-full bg-blue-100 rounded-full h-3">
-              <div
-                className="bg-gradient-to-r from-[#0066cc] to-[#004a99] h-3 rounded-full transition-all duration-300 ease-out"
-                style={{ width: `${progress}%` }}
-              />
+          {stage !== "waiting_payment" && (
+            <div className="space-y-2">
+              <div className="w-full bg-blue-100 rounded-full h-3">
+                <div
+                  className="bg-gradient-to-r from-[#0066cc] to-[#004a99] h-3 rounded-full transition-all duration-300 ease-out"
+                  style={{ width: `${progress}%` }}
+                />
+              </div>
+              <p className="text-sm text-blue-600 font-semibold">
+                {Math.round(progress)}%
+              </p>
             </div>
-            <p className="text-sm text-blue-600 font-semibold">
-              {Math.round(progress)}%
-            </p>
-          </div>
+          )}
 
           {/* Status Message */}
           <div className="space-y-2">
@@ -142,44 +210,59 @@ const Dispensing: React.FC<DispensingProps> = ({ productName, onComplete }) => {
           </div>
 
           {/* Stage Indicators */}
-          <div className="flex justify-center space-x-4">
-            <div className="flex items-center space-x-2">
-              <div
-                className={`w-3 h-3 rounded-full ${
-                  ["dispensing", "checking", "complete"].includes(stage)
-                    ? "bg-[#0066cc] shadow-sm"
-                    : "bg-blue-100"
-                }`}
-              />
-              <span className="text-sm text-blue-700">Dispensing</span>
-            </div>
+          {stage !== "waiting_payment" && (
+            <div className="flex justify-center space-x-4">
+              <div className="flex items-center space-x-2">
+                <div
+                  className={`w-3 h-3 rounded-full ${
+                    ["dispensing", "checking", "complete"].includes(stage)
+                      ? "bg-[#0066cc] shadow-sm"
+                      : "bg-blue-100"
+                  }`}
+                />
+                <span className="text-sm text-blue-700">Dispensing</span>
+              </div>
 
-            <div className="flex items-center space-x-2">
-              <div
-                className={`w-3 h-3 rounded-full ${
-                  ["checking", "complete"].includes(stage)
-                    ? "bg-[#0066cc] shadow-sm"
-                    : "bg-blue-100"
-                }`}
-              />
-              <span className="text-sm text-blue-700">Checking</span>
-            </div>
+              <div className="flex items-center space-x-2">
+                <div
+                  className={`w-3 h-3 rounded-full ${
+                    ["checking", "complete"].includes(stage)
+                      ? "bg-[#0066cc] shadow-sm"
+                      : "bg-blue-100"
+                  }`}
+                />
+                <span className="text-sm text-blue-700">Checking</span>
+              </div>
 
-            <div className="flex items-center space-x-2">
-              <div
-                className={`w-3 h-3 rounded-full ${
-                  stage === "complete"
-                    ? "bg-blue-600 shadow-sm"
-                    : stage === "failed"
-                    ? "bg-red-600 shadow-sm"
-                    : "bg-blue-100"
-                }`}
-              />
-              <span className="text-sm text-blue-700">Complete</span>
+              <div className="flex items-center space-x-2">
+                <div
+                  className={`w-3 h-3 rounded-full ${
+                    stage === "complete"
+                      ? "bg-blue-600 shadow-sm"
+                      : stage === "failed"
+                      ? "bg-red-600 shadow-sm"
+                      : "bg-blue-100"
+                  }`}
+                />
+                <span className="text-sm text-blue-700">Complete</span>
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Additional Info */}
+          {stage === "waiting_payment" && (
+            <div className="text-sm text-yellow-700 bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+              <p className="font-semibold mb-2">Menunggu Pembayaran</p>
+              <p>
+                Produk akan dikeluarkan otomatis setelah pembayaran Anda
+                terkonfirmasi oleh sistem.
+              </p>
+              <p className="mt-2 text-xs">
+                Status: Memeriksa pembayaran setiap 5 detik...
+              </p>
+            </div>
+          )}
+
           {stage === "dispensing" && (
             <div className="text-xs text-blue-700 bg-blue-50 p-3 rounded-lg border border-blue-100">
               <p>Proses ini biasanya memakan waktu 1-3 detik</p>

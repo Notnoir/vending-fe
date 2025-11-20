@@ -101,19 +101,27 @@ const PaymentScreen: React.FC = () => {
         paymentCompleted = true; // Mark as completed
         await handlePaymentSuccess();
       } else if (result.transaction_status === "pending") {
-        // For VA/Bank Transfer - show message and go back to home
-        console.log("⏳ Payment pending (VA/Bank Transfer)");
+        // For VA/Bank Transfer - payment instructions shown
+        console.log(
+          "⏳ Payment pending (VA/Bank Transfer) - instructions shown to user"
+        );
         paymentCompleted = true; // Mark as completed (pending is valid)
+
+        // Verify payment (will update order status to PAID in pending state)
+        try {
+          await vendingAPI.verifyPayment(currentOrder.order_id, "SUCCESS");
+          console.log("✅ Payment verified as pending");
+        } catch (error) {
+          console.error("❌ Failed to verify pending payment:", error);
+        }
+
+        // Show message explaining the payment is pending
         toast.success(
-          "Instruksi pembayaran telah ditampilkan. Silakan selesaikan pembayaran Anda."
+          "Instruksi pembayaran telah ditampilkan. Selesaikan pembayaran untuk mendapatkan produk."
         );
 
-        // Wait a bit for user to read the message
-        setTimeout(() => {
-          resetTransaction();
-          setPaymentToken(null); // Clear token
-          setCurrentScreen("home");
-        }, 2000);
+        // Go to dispensing screen with pending state
+        setCurrentScreen("dispensing");
       } else {
         // Unknown status - log and stay on payment screen
         console.log("⚠️ Unknown payment status:", result.transaction_status);
@@ -262,7 +270,19 @@ const PaymentScreen: React.FC = () => {
           <div className="space-y-4">
             <div
               className="cursor-pointer hover:border-gray-400 hover:shadow-lg transition-all duration-200 border border-gray-200 bg-white rounded-3xl shadow-md p-6 hover:bg-gray-50"
-              onClick={() => setPaymentMethod("midtrans")}
+              onClick={async () => {
+                try {
+                  // Update payment method in backend
+                  await vendingAPI.updatePaymentMethod(
+                    currentOrder.order_id,
+                    "midtrans"
+                  );
+                  setPaymentMethod("midtrans");
+                } catch (error) {
+                  console.error("Failed to update payment method:", error);
+                  toast.error("Gagal memilih metode pembayaran");
+                }
+              }}
             >
               <div className="flex items-center space-x-4">
                 <div className="bg-gray-900 p-3 rounded-xl">
@@ -282,7 +302,19 @@ const PaymentScreen: React.FC = () => {
 
             <div
               className="cursor-pointer hover:border-gray-400 hover:shadow-lg transition-all duration-200 border border-gray-200 bg-white rounded-3xl shadow-md p-6 hover:bg-gray-50"
-              onClick={() => setPaymentMethod("qris")}
+              onClick={async () => {
+                try {
+                  // Update payment method in backend
+                  await vendingAPI.updatePaymentMethod(
+                    currentOrder.order_id,
+                    "qris"
+                  );
+                  setPaymentMethod("qris");
+                } catch (error) {
+                  console.error("Failed to update payment method:", error);
+                  toast.error("Gagal memilih metode pembayaran");
+                }
+              }}
             >
               <div className="flex items-center space-x-4">
                 <div className="bg-gray-700 p-3 rounded-xl">

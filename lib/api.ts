@@ -107,6 +107,7 @@ export const vendingAPI = {
     slot_id: number;
     quantity?: number;
     customer_phone?: string;
+    payment_method?: "qris" | "va" | "gopay" | "shopeepay";
   }): Promise<Order> => {
     const response = await api.post("/orders", orderData);
     return response.data;
@@ -123,6 +124,16 @@ export const vendingAPI = {
     status: "SUCCESS" | "FAILED" = "SUCCESS"
   ) => {
     const response = await api.post(`/payments/verify/${orderId}`, { status });
+    return response.data;
+  },
+
+  updatePaymentMethod: async (
+    orderId: string,
+    paymentMethod: "qris" | "va" | "gopay" | "shopeepay" | "midtrans"
+  ) => {
+    const response = await api.patch(`/payments/method/${orderId}`, {
+      payment_method: paymentMethod,
+    });
     return response.data;
   },
 

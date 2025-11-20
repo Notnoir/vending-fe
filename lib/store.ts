@@ -67,7 +67,14 @@ export const useVendingStore = create<VendingStore>()(
 
       setMachineStatus: (online) => set({ isOnline: online }),
 
-      resetTransaction: () =>
+      resetTransaction: () => {
+        // Clear Midtrans token from localStorage when resetting
+        const currentOrder = useVendingStore.getState().currentOrder;
+        if (currentOrder?.order_id) {
+          const storageKey = `midtrans_token_${currentOrder.order_id}`;
+          localStorage.removeItem(storageKey);
+        }
+
         set({
           selectedProduct: null,
           quantity: 1,
@@ -75,7 +82,8 @@ export const useVendingStore = create<VendingStore>()(
           currentScreen: "home",
           error: null,
           isLoading: false,
-        }),
+        });
+      },
     }),
     {
       name: "vending-store", // localStorage key
