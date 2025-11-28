@@ -9,7 +9,7 @@ const API_BASE_URL =
 
 const api = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 10000,
+  timeout: 60000,
   headers: {
     "Content-Type": "application/json",
   },
@@ -47,6 +47,14 @@ api.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
+export interface HealthAssistantResponse {
+  success: boolean;
+  message: string;
+  isHealthRelated?: boolean;
+  recommendedProducts?: Product[];
+  timestamp?: string;
+}
 
 export interface Product {
   id: number;
@@ -158,6 +166,30 @@ export const vendingAPI = {
     const response = await api.post(`/machines/${machineId}/status`, {
       status,
     });
+    return response.data;
+  },
+
+  // Health Assistant
+  chatWithAssistant: async (
+    message: string,
+    conversationHistory?: Array<{ role: string; content: string }>
+  ): Promise<HealthAssistantResponse> => {
+    const response = await api.post("/health-assistant/chat", {
+      message,
+      conversationHistory: conversationHistory || [],
+    });
+    return response.data;
+  },
+
+  getProductRecommendations: async (symptoms: string) => {
+    const response = await api.post("/health-assistant/recommendations", {
+      symptoms,
+    });
+    return response.data;
+  },
+
+  getAssistantStatus: async () => {
+    const response = await api.get("/health-assistant/status");
     return response.data;
   },
 };

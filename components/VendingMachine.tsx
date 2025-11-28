@@ -9,6 +9,7 @@ import PaymentScreen from "./screens/PaymentScreen";
 import DispensingScreen from "./screens/DispensingScreen";
 import SuccessScreen from "./screens/SuccessScreen";
 import ErrorScreen from "./screens/ErrorScreen";
+import FloatingHealthAssistant from "./FloatingHealthAssistant";
 import { Loading } from "./ui/Loading";
 
 const VendingMachine: React.FC = () => {
@@ -25,31 +26,39 @@ const VendingMachine: React.FC = () => {
   }
 
   // Render appropriate screen based on current state
+  let screenContent;
   switch (currentScreen) {
     case "home":
-      return <HomeScreen />;
-
+      screenContent = <HomeScreen />;
+      break;
     case "product-detail":
-      return <ProductDetailScreen />;
-
+      screenContent = <ProductDetailScreen />;
+      break;
     case "order-summary":
-      return <OrderSummaryScreen />;
-
+      screenContent = <OrderSummaryScreen />;
+      break;
     case "payment":
-      return <PaymentScreen />;
-
+      screenContent = <PaymentScreen />;
+      break;
     case "dispensing":
-      return <DispensingScreen />;
-
+      screenContent = <DispensingScreen />;
+      break;
     case "success":
-      return <SuccessScreen />;
-
+      screenContent = <SuccessScreen />;
+      break;
     case "error":
-      return <ErrorScreen />;
-
+      screenContent = <ErrorScreen />;
+      break;
     default:
-      return <HomeScreen />;
+      screenContent = <HomeScreen />;
   }
+
+  return (
+    <>
+      {screenContent}
+      <FloatingHealthAssistant />
+    </>
+  );
 };
 
 export default VendingMachine;
