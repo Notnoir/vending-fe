@@ -38,6 +38,7 @@ export default function PrescriptionScanModal({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [step, setStep] = useState<"tutorial" | "scan" | "result">("tutorial");
+  const [pollErrorCount, setPollErrorCount] = useState(0);
 
   // Create scan session function
   const createScanSession = useCallback(async () => {
@@ -69,7 +70,11 @@ export default function PrescriptionScanModal({
       }
     } catch (err) {
       console.error("Error creating session:", err);
-      setError("Terjadi kesalahan. Silakan coba lagi.");
+      const errorMessage =
+        err instanceof TypeError && err.message.includes("fetch")
+          ? "Tidak dapat terhubung ke server. Pastikan backend sedang berjalan."
+          : "Terjadi kesalahan. Silakan coba lagi.";
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -97,7 +102,15 @@ export default function PrescriptionScanModal({
         const response = await fetch(
           `${API_BASE_URL}/prescription-scan/status/${session.sessionId}`
         );
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
         const data = await response.json();
+
+        // Reset error count on successful fetch
+        setPollErrorCount(0);
 
         if (data.success) {
           setSession((prev) => ({
@@ -114,16 +127,24 @@ export default function PrescriptionScanModal({
         }
       } catch (err) {
         console.error("Error polling status:", err);
+        setPollErrorCount((prev) => prev + 1);
+
+        // Stop polling after 5 consecutive errors
+        if (pollErrorCount >= 5) {
+          setError("Koneksi terputus. Silakan coba lagi atau refresh halaman.");
+          clearInterval(pollInterval);
+        }
       }
     }, 2000); // Poll every 2 seconds
 
     return () => clearInterval(pollInterval);
-  }, [session]);
+  }, [session, pollErrorCount]);
 
   const handleClose = () => {
     setSession(null);
     setStep("tutorial");
     setError(null);
+    setPollErrorCount(0);
     onClose();
   };
 
