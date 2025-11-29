@@ -5,14 +5,16 @@ import { useVendingStore } from "@/lib/store";
 import { vendingAPI, Product } from "@/lib/api";
 import ProductCard from "@/components/ProductCard";
 import { Loading } from "@/components/ui/Loading";
-import { RefreshCw, Wifi, WifiOff, Settings } from "lucide-react";
+import { RefreshCw, Wifi, WifiOff, Settings, FileText } from "lucide-react";
 import Link from "next/link";
 import toast from "react-hot-toast";
+import PrescriptionScanModal from "@/components/PrescriptionScanModal";
 
 const HomeScreen: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
+  const [isPrescriptionModalOpen, setIsPrescriptionModalOpen] = useState(false);
 
   const { setSelectedProduct, setCurrentScreen, isOnline } = useVendingStore();
 
@@ -98,6 +100,16 @@ const HomeScreen: React.FC = () => {
               </div>
             )}
 
+            {/* Prescription Scan Button */}
+            <button
+              onClick={() => setIsPrescriptionModalOpen(true)}
+              className="flex px-4 py-2 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-md hover:shadow-lg transition-shadow"
+              title="Scan Resep Dokter"
+            >
+              <FileText className="h-5 w-5 mr-2" />
+              <span className="text-sm font-semibold">Scan Resep</span>
+            </button>
+
             {/* Refresh Button */}
             <button
               onClick={loadProducts}
@@ -172,6 +184,12 @@ const HomeScreen: React.FC = () => {
           <p>Last updated: {formatTime(lastUpdate)}</p>
         </div>
       </div>
+
+      {/* Prescription Scan Modal */}
+      <PrescriptionScanModal
+        isOpen={isPrescriptionModalOpen}
+        onClose={() => setIsPrescriptionModalOpen(false)}
+      />
     </div>
   );
 };

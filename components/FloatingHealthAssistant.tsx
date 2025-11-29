@@ -131,13 +131,10 @@ export default function FloatingHealthAssistant() {
     return (
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white p-4 rounded-full shadow-2xl hover:shadow-3xl transition-all duration-300 z-50 group animate-bounce"
+        className="fixed bottom-6 right-6 bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-full shadow-2xl hover:shadow-3xl transition-all duration-300 z-50 group"
         aria-label="Buka Asisten Kesehatan"
       >
         <MessageCircle className="w-7 h-7" />
-        <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center animate-pulse">
-          AI
-        </span>
       </button>
     );
   }
@@ -147,7 +144,7 @@ export default function FloatingHealthAssistant() {
       <div className="fixed bottom-6 right-6 z-50">
         <button
           onClick={() => setIsMinimized(false)}
-          className="bg-gradient-to-r from-green-600 to-blue-600 text-white px-6 py-3 rounded-full shadow-2xl flex items-center gap-2 hover:scale-105 transition-transform"
+          className="bg-blue-600 text-white px-6 py-3 rounded-full shadow-2xl flex items-center gap-2 hover:scale-105 transition-transform"
         >
           <Bot className="w-5 h-5" />
           <span className="font-semibold">Asisten Kesehatan</span>
@@ -161,7 +158,7 @@ export default function FloatingHealthAssistant() {
     <>
       <div className="fixed bottom-6 right-6 w-[400px] max-w-[calc(100vw-3rem)] h-[600px] max-h-[calc(100vh-3rem)] bg-white rounded-2xl shadow-2xl flex flex-col z-50 border border-gray-200">
         {/* Header */}
-        <div className="bg-gradient-to-r from-blue-600 to-green-600 text-white p-4 rounded-t-2xl flex items-center justify-between">
+        <div className="bg-blue-600 text-white p-4 rounded-t-2xl flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="bg-white/20 backdrop-blur-sm p-2 rounded-lg">
               <Sparkles className="w-5 h-5" />
