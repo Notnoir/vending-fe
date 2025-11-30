@@ -1,6 +1,14 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { X, Camera, Smartphone, Upload, CheckCircle } from "lucide-react";
+import {
+  X,
+  Camera,
+  Smartphone,
+  Upload,
+  CheckCircle,
+  ShoppingCart,
+} from "lucide-react";
 import Image from "next/image";
+import { Product } from "@/lib/api";
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api";
@@ -8,6 +16,7 @@ const API_BASE_URL =
 interface PrescriptionScanModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onAddToCart?: (product: Product) => void;
 }
 
 interface ScanSession {
@@ -27,17 +36,20 @@ interface ScanSession {
         instructions?: string;
       }>;
     };
+    products?: Product[];
+    unavailableCount?: number;
   };
 }
 
 export default function PrescriptionScanModal({
   isOpen,
   onClose,
+  onAddToCart,
 }: PrescriptionScanModalProps) {
   const [session, setSession] = useState<ScanSession | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [step, setStep] = useState<"tutorial" | "scan" | "result">("tutorial");
+  const [step, setStep] = useState<"scan" | "result">("scan");
   const [pollErrorCount, setPollErrorCount] = useState(0);
 
   // Create scan session function
@@ -142,10 +154,26 @@ export default function PrescriptionScanModal({
 
   const handleClose = () => {
     setSession(null);
-    setStep("tutorial");
+    setStep("scan");
     setError(null);
     setPollErrorCount(0);
     onClose();
+  };
+
+  const formatPrice = (price: number) => {
+    return new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
+      minimumFractionDigits: 0,
+    }).format(price);
+  };
+
+  const getImageUrl = (imageUrl: string | null) => {
+    if (!imageUrl) return "/images/placeholder-product.jpg";
+    if (imageUrl.startsWith("http")) return imageUrl;
+    const backendUrl =
+      process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3001";
+    return `${backendUrl}${imageUrl}`;
   };
 
   if (!isOpen) return null;
@@ -168,46 +196,6 @@ export default function PrescriptionScanModal({
         </div>
 
         <div className="p-6">
-          {/* Tutorial Step */}
-          {step === "tutorial" && (
-            <div className="space-y-6">
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <h3 className="font-bold text-blue-900 mb-2 flex items-center gap-2">
-                  <Smartphone className="w-5 h-5" />
-                  Cara Menggunakan:
-                </h3>
-                <ol className="list-decimal list-inside space-y-2 text-blue-800">
-                  <li>Buka kamera HP Anda</li>
-                  <li>Scan QR code yang akan muncul di layar berikutnya</li>
-                  <li>Ambil foto resep dokter Anda dengan jelas</li>
-                  <li>Upload foto tersebut</li>
-                  <li>Tunggu sistem membaca resep Anda</li>
-                </ol>
-              </div>
-
-              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                <h3 className="font-bold text-yellow-900 mb-2">
-                  💡 Tips Foto yang Bagus:
-                </h3>
-                <ul className="list-disc list-inside space-y-1 text-yellow-800 text-sm">
-                  <li>Pastikan pencahayaan cukup terang</li>
-                  <li>Foto dari atas (tegak lurus)</li>
-                  <li>Pastikan semua teks terlihat jelas</li>
-                  <li>Hindari bayangan pada resep</li>
-                  <li>Gunakan latar belakang kontras</li>
-                </ul>
-              </div>
-
-              <button
-                onClick={() => setStep("scan")}
-                disabled={loading || !session}
-                className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white py-4 rounded-lg font-bold text-lg hover:from-blue-600 hover:to-purple-700 transition disabled:opacity-50"
-              >
-                {loading ? "Mempersiapkan..." : "Lanjutkan ke QR Code"}
-              </button>
-            </div>
-          )}
-
           {/* Scan Step */}
           {step === "scan" && session && (
             <div className="space-y-6">
@@ -253,12 +241,32 @@ export default function PrescriptionScanModal({
                 </p>
               </div>
 
-              <button
-                onClick={() => setStep("tutorial")}
-                className="w-full bg-gray-200 text-gray-700 py-3 rounded-lg font-medium hover:bg-gray-300 transition"
-              >
-                Kembali ke Tutorial
-              </button>
+              {/* Cara Penggunaan - Below QR Code */}
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <h3 className="font-bold text-blue-900 mb-2 flex items-center gap-2">
+                  <Smartphone className="w-5 h-5" />
+                  Cara Menggunakan:
+                </h3>
+                <ol className="list-decimal list-inside space-y-2 text-blue-800 text-sm">
+                  <li>Buka kamera HP Anda</li>
+                  <li>Scan QR code di atas</li>
+                  <li>Ambil foto resep dokter dengan jelas</li>
+                  <li>Upload foto</li>
+                  <li>Tunggu hasil analisis</li>
+                </ol>
+              </div>
+
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                <h3 className="font-bold text-yellow-900 mb-2 text-sm">
+                  💡 Tips Foto yang Bagus:
+                </h3>
+                <ul className="list-disc list-inside space-y-1 text-yellow-800 text-xs">
+                  <li>Pencahayaan terang</li>
+                  <li>Foto tegak lurus</li>
+                  <li>Teks jelas terbaca</li>
+                  <li>Hindari bayangan</li>
+                </ul>
+              </div>
             </div>
           )}
 
@@ -359,6 +367,80 @@ export default function PrescriptionScanModal({
                 </div>
               )}
 
+              {/* Product Cards */}
+              {session.result.products &&
+                session.result.products.length > 0 && (
+                  <div>
+                    <h4 className="font-bold text-gray-900 mb-3 flex items-center gap-2">
+                      <ShoppingCart className="w-5 h-5" />
+                      Produk Tersedia:
+                    </h4>
+                    <div className="grid grid-cols-2 gap-4">
+                      {session.result.products.map((product) => {
+                        if (!product) return null;
+
+                        return (
+                          <div
+                            key={product.id}
+                            className="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition"
+                          >
+                            {/* Product Image */}
+                            <div className="relative h-32 w-full bg-gray-100">
+                              <Image
+                                src={getImageUrl(product.image_url)}
+                                alt={product.name || "Product"}
+                                fill
+                                className="object-cover"
+                              />
+                              {/* Stock badge */}
+                              {(product.current_stock ?? 0) > 0 && (
+                                <div className="absolute top-2 right-2 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                                  {product.current_stock} pcs
+                                </div>
+                              )}
+                            </div>
+
+                            {/* Product Info */}
+                            <div className="p-3 space-y-2">
+                              <h5 className="font-bold text-gray-800 text-sm line-clamp-2">
+                                {product.name}
+                              </h5>
+
+                              <div className="flex items-center justify-between">
+                                <div className="text-base font-bold text-gray-900">
+                                  {formatPrice(
+                                    product.final_price ?? product.price
+                                  )}
+                                </div>
+
+                                {/* Buy Button */}
+                                <button
+                                  onClick={() => onAddToCart?.(product)}
+                                  disabled={(product.current_stock ?? 0) === 0}
+                                  className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-xs font-medium disabled:opacity-50 disabled:cursor-not-allowed transition"
+                                >
+                                  Beli
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+              {/* Unavailable Products Warning */}
+              {session.result.unavailableCount &&
+                session.result.unavailableCount > 0 && (
+                  <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                    <p className="text-yellow-800 text-sm">
+                      ⚠️ Beberapa obat tidak tersedia di mesin ini. (
+                      {session.result.unavailableCount} item)
+                    </p>
+                  </div>
+                )}
+
               <div className="flex gap-3">
                 <button
                   onClick={handleClose}
@@ -369,7 +451,7 @@ export default function PrescriptionScanModal({
                 <button
                   onClick={() => {
                     setSession(null);
-                    setStep("tutorial");
+                    setStep("scan");
                     createScanSession();
                   }}
                   className="flex-1 bg-gray-200 text-gray-700 py-3 rounded-lg font-medium hover:bg-gray-300 transition"

@@ -189,6 +189,7 @@ const HomeScreen: React.FC = () => {
       <PrescriptionScanModal
         isOpen={isPrescriptionModalOpen}
         onClose={() => setIsPrescriptionModalOpen(false)}
+        onAddToCart={handleProductSelect}
       />
     </div>
   );
