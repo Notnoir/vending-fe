@@ -5,7 +5,14 @@ import Image from "next/image";
 import { useVendingStore } from "@/lib/store";
 import { CardContent } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
-import { ArrowLeft, Plus, Minus } from "lucide-react";
+import {
+  ArrowLeft,
+  Plus,
+  Minus,
+  Stethoscope,
+  Pill,
+  ShieldCheck,
+} from "lucide-react";
 
 const ProductDetailScreen: React.FC = () => {
   const {
@@ -71,30 +78,35 @@ const ProductDetailScreen: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-cyan-50 p-6">
       <div className="max-w-2xl mx-auto">
         {/* Header */}
         <div className="flex items-center mb-6">
           <button
             onClick={handleBack}
-            className="p-2 rounded-full bg-white shadow-md hover:shadow-lg transition-shadow mr-4"
+            className="p-2 rounded-full bg-white/90 border border-emerald-100 text-emerald-700 shadow-sm hover:shadow-lg transition-shadow mr-4"
           >
-            <ArrowLeft className="h-5 w-5 text-gray-700" />
+            <ArrowLeft className="h-5 w-5" />
           </button>
-          <h1 className="text-2xl font-bold text-gray-900">Detail Produk</h1>
+          <div>
+            <div className="flex items-center gap-2 text-emerald-600 font-semibold uppercase tracking-wide text-xs">
+              <Stethoscope className="h-4 w-4" /> Detail Produk
+            </div>
+            <h1 className="text-2xl font-bold text-gray-900">Informasi Obat</h1>
+          </div>
         </div>
 
-        <div className="bg-white rounded-3xl shadow-md p-6">
+        <div className="bg-white/95 rounded-3xl border border-emerald-100 shadow-xl shadow-emerald-50 p-6">
           <CardContent className="p-0">
             <div className="grid md:grid-cols-2 gap-6">
               {/* Product Image */}
               <div className="space-y-4">
-                <div className="relative h-64 w-full">
+                <div className="relative h-64 w-full rounded-2xl bg-gradient-to-br from-white to-emerald-50 p-2 shadow-inner">
                   <Image
                     src={getImageUrl(selectedProduct.image_url)}
                     alt={selectedProduct.name}
                     fill
-                    className="object-cover rounded-2xl"
+                    className="object-cover rounded-2xl ring-1 ring-emerald-100"
                     sizes="(max-width: 768px) 100vw, 50vw"
                   />
                 </div>
@@ -136,14 +148,16 @@ const ProductDetailScreen: React.FC = () => {
                 {/* Category */}
                 {selectedProduct.category && (
                   <div className="inline-block">
-                    <span className="px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded-full font-medium">
+                    <span className="px-3 py-1 bg-emerald-50 text-emerald-700 text-sm rounded-full font-semibold border border-emerald-100">
                       {selectedProduct.category}
                     </span>
                   </div>
                 )}
                 {/* Price */}
                 <div className="space-y-1">
-                  <p className="text-sm text-gray-600">Harga per unit:</p>
+                  <p className="text-sm text-gray-600 flex items-center gap-2">
+                    <Pill className="h-4 w-4 text-emerald-500" /> Harga per unit
+                  </p>
                   <p className="text-3xl font-bold text-gray-900">
                     {formatPrice(unitPrice)}
                   </p>
@@ -177,7 +191,7 @@ const ProductDetailScreen: React.FC = () => {
                         }}
                         min={1}
                         max={maxQuantity}
-                        className="w-full px-3 py-2 text-center rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 text-center rounded-full border border-emerald-100 bg-white/90 shadow-inner focus:outline-none focus:ring-2 focus:ring-emerald-400"
                       />
                     </div>
 
@@ -197,10 +211,10 @@ const ProductDetailScreen: React.FC = () => {
                   </p>
                 </div>
                 {/* Total Price */}
-                <div className="border-t border-gray-200 pt-4">
-                  <div className="flex justify-between items-center bg-gray-100 rounded-2xl p-4">
-                    <span className="text-lg font-medium text-gray-900">
-                      Total:
+                <div className="border-t border-emerald-100 pt-4">
+                  <div className="flex justify-between items-center rounded-2xl bg-gradient-to-r from-emerald-50 to-cyan-50 p-4">
+                    <span className="text-lg font-semibold text-emerald-700 flex items-center gap-2">
+                      <ShieldCheck className="h-5 w-5" /> Total
                     </span>
                     <span className="text-2xl font-bold text-gray-900">
                       {formatPrice(totalPrice)}
@@ -214,6 +228,7 @@ const ProductDetailScreen: React.FC = () => {
                     size="lg"
                     fullWidth
                     onClick={handleContinue}
+                    className="bg-gradient-to-r from-emerald-500 via-cyan-500 to-emerald-600 text-white shadow-lg shadow-emerald-100 hover:opacity-90"
                   >
                     Lanjut ke Pembayaran
                   </Button>
@@ -223,6 +238,7 @@ const ProductDetailScreen: React.FC = () => {
                     size="lg"
                     fullWidth
                     onClick={handleBack}
+                    className="border border-emerald-100 text-emerald-700 hover:bg-emerald-50"
                   >
                     Pilih Produk Lain
                   </Button>
