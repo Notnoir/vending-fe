@@ -5,7 +5,16 @@ import { useVendingStore } from "@/lib/store";
 import { vendingAPI, Product } from "@/lib/api";
 import ProductCard from "@/components/ProductCard";
 import { Loading } from "@/components/ui/Loading";
-import { RefreshCw, Wifi, WifiOff, Settings, FileText } from "lucide-react";
+import {
+  RefreshCw,
+  Wifi,
+  WifiOff,
+  Settings,
+  FileText,
+  Stethoscope,
+  Pill,
+  ShieldCheck,
+} from "lucide-react";
 import Link from "next/link";
 import toast from "react-hot-toast";
 import PrescriptionScanModal from "@/components/PrescriptionScanModal";
@@ -58,17 +67,26 @@ const HomeScreen: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto p-6">
+    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-cyan-50">
+      <div className="max-w-7xl mx-auto px-6 py-10">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center justify-between mb-8 rounded-3xl border border-emerald-100 bg-white/80 p-6 shadow-lg shadow-emerald-50">
           <div>
+            <div className="flex items-center gap-3 text-emerald-700">
+              <Stethoscope className="h-6 w-6" />
+              <p className="text-sm font-semibold tracking-wide uppercase">
+                Apotek Digital & Vending Obat
+              </p>
+            </div>
             <h1 className="text-4xl font-bold text-gray-900 mb-2">MediVend</h1>
-            <div className="flex items-center space-x-4 text-gray-600">
+            <div className="flex items-center space-x-6 text-gray-600">
               <div className="flex items-center space-x-2">
-                <span className="font-semibold">{products.length} items</span>
+                <Pill className="h-4 w-4 text-emerald-500" />
+                <span className="font-semibold text-gray-800">
+                  {products.length} obat siap jual
+                </span>
               </div>
-              <button className="flex items-center space-x-1 hover:text-gray-900">
+              <button className="flex items-center space-x-1 text-emerald-600 hover:text-emerald-800">
                 <svg
                   className="w-5 h-5"
                   fill="none"
@@ -89,32 +107,38 @@ const HomeScreen: React.FC = () => {
           <div className="flex items-center space-x-4">
             {/* Connection Status */}
             {isOnline ? (
-              <div className="flex items-center bg-emerald-100 text-emerald-700 px-4 py-2 rounded-full">
+              <div className="flex items-center border border-emerald-200 bg-emerald-50/80 text-emerald-700 px-4 py-2 rounded-full shadow-sm">
                 <Wifi className="h-4 w-4 mr-2" />
-                <span className="text-sm font-semibold">Online</span>
+                <span className="text-sm font-semibold tracking-wide">
+                  Online
+                </span>
               </div>
             ) : (
-              <div className="flex items-center bg-red-100 text-red-700 px-4 py-2 rounded-full">
+              <div className="flex items-center border border-red-200 bg-red-50 px-4 py-2 rounded-full text-red-600 shadow-sm">
                 <WifiOff className="h-4 w-4 mr-2" />
-                <span className="text-sm font-semibold">Offline</span>
+                <span className="text-sm font-semibold tracking-wide">
+                  Offline
+                </span>
               </div>
             )}
 
             {/* Prescription Scan Button */}
             <button
               onClick={() => setIsPrescriptionModalOpen(true)}
-              className="flex px-4 py-2 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-md hover:shadow-lg transition-shadow"
+              className="flex items-center px-5 py-2 rounded-full bg-gradient-to-r from-cyan-500 via-emerald-500 to-emerald-600 text-white shadow-lg shadow-emerald-100 hover:shadow-xl transition-all"
               title="Scan Resep Dokter"
             >
               <FileText className="h-5 w-5 mr-2" />
-              <span className="text-sm font-semibold">Scan Resep</span>
+              <span className="text-sm font-semibold tracking-wide">
+                Scan Resep
+              </span>
             </button>
 
             {/* Refresh Button */}
             <button
               onClick={loadProducts}
               disabled={isLoading}
-              className="p-2 rounded-full bg-white shadow-md hover:shadow-lg transition-shadow"
+              className="p-2 rounded-full bg-white/80 text-emerald-700 border border-emerald-100 shadow-md hover:bg-emerald-50 transition-colors"
             >
               <RefreshCw
                 className={`h-5 w-5 text-gray-700 ${
@@ -125,9 +149,11 @@ const HomeScreen: React.FC = () => {
 
             {/* Admin Button */}
             <Link href="/admin">
-              <button className="flex items-center bg-blue-600 text-white px-4 py-2 rounded-full hover:bg-blue-700 transition-colors">
+              <button className="flex items-center bg-emerald-600 text-white px-4 py-2 rounded-full hover:bg-emerald-700 transition-colors shadow-md">
                 <Settings className="h-4 w-4 mr-2" />
-                <span className="text-sm font-semibold">Admin</span>
+                <span className="text-sm font-semibold tracking-wide">
+                  Admin
+                </span>
               </button>
             </Link>
           </div>
@@ -135,10 +161,10 @@ const HomeScreen: React.FC = () => {
 
         {/* Products Grid */}
         {products.length === 0 ? (
-          <div className="text-center py-20">
-            <div className="w-32 h-32 mx-auto mb-6 bg-gray-100 rounded-full flex items-center justify-center">
+          <div className="text-center py-20 rounded-3xl border border-dashed border-emerald-200 bg-white/70">
+            <div className="w-32 h-32 mx-auto mb-6 bg-emerald-50 rounded-full flex items-center justify-center shadow-inner">
               <svg
-                className="h-16 w-16 text-gray-400"
+                className="h-16 w-16 text-emerald-400"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -151,24 +177,27 @@ const HomeScreen: React.FC = () => {
                 />
               </svg>
             </div>
-            <h3 className="text-2xl font-bold text-gray-700 mb-3">
-              Tidak Ada Produk Tersedia
+            <h3 className="text-2xl font-bold text-gray-800 mb-3">
+              Stok belum tersedia
             </h3>
             <p className="text-gray-500 mb-6">
-              Silakan refresh atau coba lagi nanti
+              Refresh panel untuk menarik data terbaru dari apotek pusat.
             </p>
             <button
               onClick={loadProducts}
-              className="inline-flex items-center bg-blue-600 text-white px-6 py-3 rounded-full hover:bg-blue-700 transition-colors"
+              className="inline-flex items-center bg-gradient-to-r from-emerald-500 to-cyan-500 text-white px-6 py-3 rounded-full shadow-lg hover:opacity-90 transition"
             >
               <RefreshCw className="h-5 w-5 mr-2" />
-              Coba Lagi
+              Muat ulang
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 rounded-3xl border border-emerald-100 bg-white/80 p-6 shadow-xl shadow-emerald-50">
             {products.map((product) => (
-              <div key={product.id} className="animate-fadeIn">
+              <div
+                key={product.id}
+                className="animate-fadeIn rounded-2xl border border-transparent bg-gradient-to-br from-white to-emerald-50/40 p-0.5 shadow-sm hover:shadow-md hover:-translate-y-1 transition"
+              >
                 <ProductCard
                   product={product}
                   onSelect={handleProductSelect}
@@ -180,8 +209,11 @@ const HomeScreen: React.FC = () => {
         )}
 
         {/* Footer Status */}
-        <div className="mt-8 text-center text-sm text-gray-500">
-          <p>Last updated: {formatTime(lastUpdate)}</p>
+        <div className="mt-8 text-center text-sm text-gray-600">
+          <div className="inline-flex items-center gap-2 rounded-full border border-emerald-100 bg-white/80 px-4 py-2 shadow-sm">
+            <ShieldCheck className="h-4 w-4 text-emerald-500" />
+            <p>Last update {formatTime(lastUpdate)}</p>
+          </div>
         </div>
       </div>
 
