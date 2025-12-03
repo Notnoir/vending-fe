@@ -192,11 +192,11 @@ const HomeScreen: React.FC = () => {
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 rounded-3xl border border-emerald-100 bg-white/80 p-6 shadow-xl shadow-emerald-50">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-7 rounded-3xl border border-emerald-100 bg-white/85 p-6 shadow-xl shadow-emerald-50">
             {products.map((product) => (
               <div
                 key={product.id}
-                className="animate-fadeIn rounded-2xl border border-transparent bg-gradient-to-br from-white to-emerald-50/40 p-0.5 shadow-sm hover:shadow-md hover:-translate-y-1 transition"
+                className="animate-fadeIn rounded-2xl bg-white/95 ring-1 ring-emerald-50/80 shadow-sm shadow-emerald-100 hover:-translate-y-1 hover:ring-emerald-200 hover:shadow-xl transition-transform"
               >
                 <ProductCard
                   product={product}
