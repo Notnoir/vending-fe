@@ -5,7 +5,14 @@ import { useVendingStore } from "@/lib/store";
 import { vendingAPI } from "@/lib/api";
 import { Button } from "@/components/ui/Button";
 import { Loading } from "@/components/ui/Loading";
-import { ArrowLeft, Smartphone } from "lucide-react";
+import {
+  ArrowLeft,
+  Smartphone,
+  ClipboardCheck,
+  Pill,
+  ShieldCheck,
+  Stethoscope,
+} from "lucide-react";
 import toast from "react-hot-toast";
 
 const OrderSummaryScreen: React.FC = () => {
@@ -117,35 +124,40 @@ const OrderSummaryScreen: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen bg-emerald-50 p-6">
       <div className="max-w-2xl mx-auto">
         {/* Header with Back Button */}
         <div className="flex items-center justify-between mb-6">
           <button
             onClick={handleBack}
             disabled={isLoading}
-            className="p-2 rounded-full bg-white shadow-md hover:shadow-lg transition-shadow"
+            className="p-2 rounded-full bg-white border border-emerald-100 text-emerald-700 shadow-sm hover:shadow-md transition"
           >
-            <ArrowLeft className="h-5 w-5 text-gray-700" />
+            <ArrowLeft className="h-5 w-5" />
           </button>
-          <h1 className="text-2xl font-bold text-gray-900">Cart</h1>
-          <div className="w-12 h-12 rounded-full bg-gray-900 flex items-center justify-center text-white font-bold text-lg shadow-md">
+          <div className="text-center">
+            <div className="flex items-center justify-center gap-2 text-emerald-600 text-xs font-semibold uppercase tracking-[0.2em]">
+              <Stethoscope className="h-4 w-4" /> Pesanan Obat
+            </div>
+            <h1 className="text-2xl font-bold text-gray-900">Cart</h1>
+          </div>
+          <div className="w-12 h-12 rounded-full bg-emerald-600 flex items-center justify-center text-white font-bold text-lg shadow-md">
             {quantity}
           </div>
         </div>
 
         {/* Cart Items - Rounded container */}
-        <div className="bg-white rounded-3xl p-6 mb-6 shadow-md">
+        <div className="bg-white rounded-3xl p-6 mb-6 shadow-md border border-emerald-100">
           {/* Product Items */}
           <div className="space-y-3 mb-6">
             {Array.from({ length: quantity }).map((_, index) => (
               <div
                 key={index}
-                className="flex items-center space-x-3 bg-gray-50 rounded-2xl p-3 border border-gray-200"
+                className="flex items-center space-x-3 bg-emerald-50 rounded-2xl p-3 border border-emerald-100"
               >
                 {/* Product Image */}
-                <div className="w-14 h-14 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden">
-                  <span className="text-2xl">📦</span>
+                <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center border border-emerald-100 text-emerald-600">
+                  <Pill className="h-6 w-6" />
                 </div>
 
                 {/* Product Info */}
@@ -159,7 +171,7 @@ const OrderSummaryScreen: React.FC = () => {
                 </div>
 
                 {/* Price */}
-                <div className="bg-gray-900 text-white font-bold px-3 py-1.5 rounded-full text-sm">
+                <div className="bg-emerald-600 text-white font-bold px-3 py-1.5 rounded-full text-sm">
                   {formatPrice(unitPrice)}
                 </div>
               </div>
@@ -167,12 +179,12 @@ const OrderSummaryScreen: React.FC = () => {
           </div>
 
           {/* Tax & Total Card */}
-          <div className="bg-gray-100 rounded-2xl p-5 border border-gray-200">
+          <div className="bg-emerald-50 rounded-2xl p-5 border border-emerald-100">
             <div className="relative z-10">
               {/* Tax Amount */}
-              <div className="flex items-center justify-between mb-3 pb-3 border-b border-gray-300">
-                <span className="text-gray-700 font-medium text-sm">
-                  Tax Amount
+              <div className="flex items-center justify-between mb-3 pb-3 border-b border-emerald-100">
+                <span className="text-emerald-700 font-semibold text-sm flex items-center gap-2">
+                  <ClipboardCheck className="h-4 w-4" /> Tax Amount
                 </span>
                 <span className="text-gray-900 font-bold">
                   {formatPrice(totalPrice * 0.11)}
@@ -181,8 +193,8 @@ const OrderSummaryScreen: React.FC = () => {
 
               {/* Total Amount */}
               <div>
-                <p className="text-gray-700 font-medium text-sm mb-1">
-                  Total Amount
+                <p className="text-emerald-700 font-semibold text-sm mb-1 flex items-center gap-2">
+                  <ShieldCheck className="h-5 w-5" /> Total Amount
                 </p>
                 <p className="text-3xl font-black text-gray-900">
                   {formatPrice(totalPrice * 1.11)}
@@ -194,9 +206,9 @@ const OrderSummaryScreen: React.FC = () => {
 
         {/* Contact Info (Optional) */}
         {customerPhone && (
-          <div className="bg-white rounded-2xl p-3 mb-4 border border-gray-200 shadow-sm">
+          <div className="bg-white rounded-2xl p-3 mb-4 border border-emerald-100 shadow-sm">
             <div className="flex items-center space-x-2 text-gray-900">
-              <Smartphone className="h-4 w-4 text-gray-600" />
+              <Smartphone className="h-4 w-4 text-emerald-600" />
               <span className="text-sm font-medium">{customerPhone}</span>
             </div>
           </div>
@@ -206,7 +218,7 @@ const OrderSummaryScreen: React.FC = () => {
         <button
           onClick={handleCreateOrder}
           disabled={isLoading}
-          className="w-full bg-gray-900 hover:bg-gray-800 text-white font-bold text-lg py-5 rounded-full shadow-md transition-all hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+          className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-lg py-5 rounded-full shadow-md transition-all hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
         >
           {isLoading ? (
             <div className="flex items-center">
@@ -237,10 +249,10 @@ const OrderSummaryScreen: React.FC = () => {
 
         {/* Optional: Phone Input */}
         <div className="mt-4">
-          <details className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
+          <details className="bg-white rounded-2xl border border-emerald-100 overflow-hidden shadow-sm">
             <summary className="p-3 cursor-pointer text-gray-900 font-medium flex items-center justify-between hover:bg-gray-50 transition-colors">
               <span className="flex items-center space-x-2 text-sm">
-                <Smartphone className="h-4 w-4 text-gray-600" />
+                <Smartphone className="h-4 w-4 text-emerald-600" />
                 <span>Add Contact (Optional)</span>
               </span>
               <svg
@@ -257,13 +269,13 @@ const OrderSummaryScreen: React.FC = () => {
                 />
               </svg>
             </summary>
-            <div className="p-3 pt-0 bg-gray-50">
+            <div className="p-3 pt-0 bg-emerald-50/60">
               <input
                 type="tel"
                 value={customerPhone}
                 onChange={handlePhoneChange}
                 placeholder="+62 812-3456-7890"
-                className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-gray-500 focus:border-transparent text-sm"
+                className="w-full px-3 py-2 bg-white border border-emerald-100 rounded-xl text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm"
                 disabled={isLoading}
               />
               <p className="text-xs text-gray-600 mt-1.5">
@@ -275,7 +287,10 @@ const OrderSummaryScreen: React.FC = () => {
 
         {/* Terms */}
         <div className="text-xs text-gray-600 text-center mt-4">
-          <p>⏱️ Payment will expire in 15 minutes</p>
+          <p className="inline-flex items-center gap-1 text-emerald-700">
+            <ShieldCheck className="h-3.5 w-3.5" /> Payment will expire in 15
+            minutes
+          </p>
         </div>
       </div>
     </div>
