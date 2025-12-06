@@ -67,12 +67,12 @@ const HomeScreen: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-cyan-50">
+    <div className="min-h-screen bg-sky-50">
       <div className="max-w-7xl mx-auto px-6 py-10">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8 rounded-3xl border border-emerald-100 bg-white/80 p-6 shadow-lg shadow-emerald-50">
+        <div className="flex items-center justify-between mb-8 rounded-3xl border border-sky-100 bg-white/80 p-6 shadow-lg shadow-sky-50">
           <div>
-            <div className="flex items-center gap-3 text-emerald-700">
+            <div className="flex items-center gap-3 text-sky-700">
               <Stethoscope className="h-6 w-6" />
               <p className="text-sm font-semibold tracking-wide uppercase">
                 Apotek Digital & Vending Obat
@@ -81,12 +81,12 @@ const HomeScreen: React.FC = () => {
             <h1 className="text-4xl font-bold text-gray-900 mb-2">MediVend</h1>
             <div className="flex items-center space-x-6 text-gray-600">
               <div className="flex items-center space-x-2">
-                <Pill className="h-4 w-4 text-emerald-500" />
+                <Pill className="h-4 w-4 text-sky-500" />
                 <span className="font-semibold text-gray-800">
                   {products.length} obat siap jual
                 </span>
               </div>
-              <button className="flex items-center space-x-1 text-emerald-600 hover:text-emerald-800">
+              <button className="flex items-center space-x-1 text-sky-600 hover:text-sky-800">
                 <svg
                   className="w-5 h-5"
                   fill="none"
@@ -107,7 +107,7 @@ const HomeScreen: React.FC = () => {
           <div className="flex items-center space-x-4">
             {/* Connection Status */}
             {isOnline ? (
-              <div className="flex items-center border border-emerald-200 bg-emerald-50/80 text-emerald-700 px-4 py-2 rounded-full shadow-sm">
+              <div className="flex items-center border border-sky-200 bg-sky-50/80 text-sky-700 px-4 py-2 rounded-full shadow-sm">
                 <Wifi className="h-4 w-4 mr-2" />
                 <span className="text-sm font-semibold tracking-wide">
                   Online
@@ -125,7 +125,7 @@ const HomeScreen: React.FC = () => {
             {/* Prescription Scan Button */}
             <button
               onClick={() => setIsPrescriptionModalOpen(true)}
-              className="flex items-center px-5 py-2 rounded-full bg-gradient-to-r from-cyan-500 via-emerald-500 to-emerald-600 text-white shadow-lg shadow-emerald-100 hover:shadow-xl transition-all"
+              className="flex items-center px-5 py-2 rounded-full bg-sky-600 text-white shadow-lg shadow-sky-100 hover:bg-sky-700 transition-colors"
               title="Scan Resep Dokter"
             >
               <FileText className="h-5 w-5 mr-2" />
@@ -138,7 +138,7 @@ const HomeScreen: React.FC = () => {
             <button
               onClick={loadProducts}
               disabled={isLoading}
-              className="p-2 rounded-full bg-white/80 text-emerald-700 border border-emerald-100 shadow-md hover:bg-emerald-50 transition-colors"
+              className="p-2 rounded-full bg-white/80 text-sky-700 border border-sky-100 shadow-md hover:bg-sky-50 transition-colors"
             >
               <RefreshCw
                 className={`h-5 w-5 text-gray-700 ${
@@ -149,7 +149,7 @@ const HomeScreen: React.FC = () => {
 
             {/* Admin Button */}
             <Link href="/admin">
-              <button className="flex items-center bg-emerald-600 text-white px-4 py-2 rounded-full hover:bg-emerald-700 transition-colors shadow-md">
+              <button className="flex items-center bg-sky-600 text-white px-4 py-2 rounded-full hover:bg-sky-700 transition-colors shadow-md">
                 <Settings className="h-4 w-4 mr-2" />
                 <span className="text-sm font-semibold tracking-wide">
                   Admin
@@ -161,10 +161,10 @@ const HomeScreen: React.FC = () => {
 
         {/* Products Grid */}
         {products.length === 0 ? (
-          <div className="text-center py-20 rounded-3xl border border-dashed border-emerald-200 bg-white/70">
-            <div className="w-32 h-32 mx-auto mb-6 bg-emerald-50 rounded-full flex items-center justify-center shadow-inner">
+          <div className="text-center py-20 rounded-3xl border border-dashed border-sky-200 bg-white/70">
+            <div className="w-32 h-32 mx-auto mb-6 bg-sky-50 rounded-full flex items-center justify-center shadow-inner">
               <svg
-                className="h-16 w-16 text-emerald-400"
+                className="h-16 w-16 text-sky-400"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -185,18 +185,18 @@ const HomeScreen: React.FC = () => {
             </p>
             <button
               onClick={loadProducts}
-              className="inline-flex items-center bg-gradient-to-r from-emerald-500 to-cyan-500 text-white px-6 py-3 rounded-full shadow-lg hover:opacity-90 transition"
+              className="inline-flex items-center bg-sky-600 text-white px-6 py-3 rounded-full shadow-lg hover:bg-sky-700 transition-colors"
             >
               <RefreshCw className="h-5 w-5 mr-2" />
               Muat ulang
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-7 rounded-3xl border border-emerald-100 bg-white/85 p-6 shadow-xl shadow-emerald-50">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-7 rounded-3xl border border-sky-100 bg-white/85 p-6 shadow-xl shadow-sky-50">
             {products.map((product) => (
               <div
                 key={product.id}
-                className="animate-fadeIn rounded-2xl bg-white/95 ring-1 ring-emerald-50/80 shadow-sm shadow-emerald-100 hover:-translate-y-1 hover:ring-emerald-200 hover:shadow-xl transition-transform"
+                className="animate-fadeIn rounded-2xl bg-white/95 ring-1 ring-sky-50/80 shadow-sm shadow-sky-100 hover:-translate-y-1 hover:ring-sky-200 hover:shadow-xl transition-transform"
               >
                 <ProductCard
                   product={product}
@@ -210,8 +210,8 @@ const HomeScreen: React.FC = () => {
 
         {/* Footer Status */}
         <div className="mt-8 text-center text-sm text-gray-600">
-          <div className="inline-flex items-center gap-2 rounded-full border border-emerald-100 bg-white/80 px-4 py-2 shadow-sm">
-            <ShieldCheck className="h-4 w-4 text-emerald-500" />
+          <div className="inline-flex items-center gap-2 rounded-full border border-sky-100 bg-white/80 px-4 py-2 shadow-sm">
+            <ShieldCheck className="h-4 w-4 text-sky-500" />
             <p>Last update {formatTime(lastUpdate)}</p>
           </div>
         </div>

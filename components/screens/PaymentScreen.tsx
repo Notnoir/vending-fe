@@ -237,18 +237,18 @@ const PaymentScreen: React.FC = () => {
   // Show payment method selection if no method is chosen
   if (!paymentMethod) {
     return (
-      <div className="min-h-screen bg-emerald-50 p-6">
+      <div className="min-h-screen bg-sky-50 p-6">
         <div className="max-w-2xl mx-auto">
           {/* Header */}
           <div className="flex items-center mb-6">
             <button
               onClick={handleBackToSummary}
-              className="p-2 rounded-full bg-white border border-emerald-100 text-emerald-700 shadow-sm hover:shadow-md transition mr-4"
+              className="p-2 rounded-full bg-white border border-sky-100 text-sky-700 shadow-sm hover:shadow-md transition mr-4"
             >
               <ArrowLeft className="h-5 w-5" />
             </button>
             <div>
-              <div className="flex items-center gap-2 text-emerald-600 text-xs font-semibold uppercase tracking-widest">
+              <div className="flex items-center gap-2 text-sky-600 text-xs font-semibold uppercase tracking-widest">
                 <Stethoscope className="h-4 w-4" /> Pembayaran
               </div>
               <h1 className="text-2xl font-bold text-gray-900">
@@ -258,12 +258,12 @@ const PaymentScreen: React.FC = () => {
           </div>
 
           {/* Order Summary */}
-          <div className="mb-6 bg-white rounded-3xl shadow-md border border-emerald-100 p-6">
-            <div className="bg-emerald-50 rounded-2xl p-4 border border-emerald-100">
+          <div className="mb-6 bg-white rounded-3xl shadow-md border border-sky-100 p-6">
+            <div className="bg-sky-50 rounded-2xl p-4 border border-sky-100">
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="font-bold text-lg text-gray-900 flex items-center gap-2">
-                    <Pill className="h-5 w-5 text-emerald-600" />
+                    <Pill className="h-5 w-5 text-sky-600" />
                     {selectedProduct.name}
                   </h3>
                   <p className="text-gray-600">
@@ -282,7 +282,7 @@ const PaymentScreen: React.FC = () => {
           {/* Payment Methods */}
           <div className="space-y-4">
             <div
-              className="cursor-pointer hover:border-emerald-300 hover:shadow-lg transition-all duration-200 border border-emerald-100 bg-white rounded-3xl shadow-md p-6 hover:bg-emerald-50"
+              className="cursor-pointer hover:border-sky-300 hover:shadow-lg transition-all duration-200 border border-sky-100 bg-white rounded-3xl shadow-md p-6 hover:bg-sky-50"
               onClick={async () => {
                 try {
                   // Update payment method in backend
@@ -298,7 +298,7 @@ const PaymentScreen: React.FC = () => {
               }}
             >
               <div className="flex items-center space-x-4">
-                <div className="bg-emerald-600 p-3 rounded-xl text-white">
+                <div className="bg-sky-600 p-3 rounded-xl text-white">
                   <CreditCard className="h-6 w-6" />
                 </div>
                 <div className="flex-1">
@@ -309,12 +309,12 @@ const PaymentScreen: React.FC = () => {
                     Visa, Mastercard, Bank Transfer, E-Wallet
                   </p>
                 </div>
-                <div className="text-emerald-600 font-bold text-xl">→</div>
+                <div className="text-sky-600 font-bold text-xl">→</div>
               </div>
             </div>
 
             <div
-              className="cursor-pointer hover:border-emerald-300 hover:shadow-lg transition-all duration-200 border border-emerald-100 bg-white rounded-3xl shadow-md p-6 hover:bg-emerald-50"
+              className="cursor-pointer hover:border-sky-300 hover:shadow-lg transition-all duration-200 border border-sky-100 bg-white rounded-3xl shadow-md p-6 hover:bg-sky-50"
               onClick={async () => {
                 try {
                   // Update payment method in backend
@@ -339,7 +339,7 @@ const PaymentScreen: React.FC = () => {
                     Scan QR Code dengan aplikasi mobile banking
                   </p>
                 </div>
-                <div className="text-emerald-600 font-bold text-xl">→</div>
+                <div className="text-sky-600 font-bold text-xl">→</div>
               </div>
             </div>
           </div>
@@ -351,7 +351,7 @@ const PaymentScreen: React.FC = () => {
   // Show Midtrans payment
   if (paymentMethod === "midtrans") {
     return (
-      <div className="min-h-screen bg-emerald-50 p-6">
+      <div className="min-h-screen bg-sky-50 p-6">
         <div className="max-w-2xl mx-auto">
           <div className="flex items-center mb-6">
             <button
@@ -359,12 +359,12 @@ const PaymentScreen: React.FC = () => {
                 setPaymentMethod(null);
                 setPaymentToken(null); // Clear token when going back
               }}
-              className="p-2 rounded-full bg-white border border-emerald-100 text-emerald-700 shadow-sm hover:shadow-md transition mr-4"
+              className="p-2 rounded-full bg-white border border-sky-100 text-sky-700 shadow-sm hover:shadow-md transition mr-4"
             >
               <ArrowLeft className="h-5 w-5" />
             </button>
             <div>
-              <div className="flex items-center gap-2 text-emerald-600 text-xs font-semibold uppercase tracking-widest">
+              <div className="flex items-center gap-2 text-sky-600 text-xs font-semibold uppercase tracking-widest">
                 <ShieldCheck className="h-4 w-4" /> Midtrans
               </div>
               <h1 className="text-2xl font-bold text-gray-900">
@@ -373,8 +373,8 @@ const PaymentScreen: React.FC = () => {
             </div>
           </div>
 
-          <div className="border border-emerald-100 bg-white rounded-3xl shadow-md p-8 text-center">
-            <div className="bg-emerald-600 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 text-white">
+          <div className="border border-sky-100 bg-white rounded-3xl shadow-md p-8 text-center">
+            <div className="bg-sky-600 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 text-white">
               <CreditCard className="h-10 w-10" />
             </div>
 
@@ -385,7 +385,7 @@ const PaymentScreen: React.FC = () => {
               Klik tombol di bawah untuk membuka halaman pembayaran yang aman
             </p>
 
-            <div className="bg-emerald-50 rounded-2xl p-4 mb-6 border border-emerald-100">
+            <div className="bg-sky-50 rounded-2xl p-4 mb-6 border border-sky-100">
               <div className="flex justify-between items-center">
                 <span className="font-semibold text-gray-900">
                   {selectedProduct.name}
@@ -402,7 +402,7 @@ const PaymentScreen: React.FC = () => {
               variant="primary"
               fullWidth
               size="lg"
-              className="mb-4 bg-emerald-600 hover:bg-emerald-700"
+              className="mb-4 bg-sky-600 hover:bg-sky-700"
             >
               {isProcessing ? "Memproses..." : "💳 Bayar Sekarang"}
             </Button>
@@ -418,7 +418,7 @@ const PaymentScreen: React.FC = () => {
 
   // Show QRIS payment (existing implementation)
   return (
-    <div className="min-h-screen bg-emerald-50 p-6">
+    <div className="min-h-screen bg-sky-50 p-6">
       <div className="max-w-2xl mx-auto">
         <div className="flex items-center mb-6">
           <button
@@ -426,12 +426,12 @@ const PaymentScreen: React.FC = () => {
               setPaymentMethod(null);
               setPaymentToken(null); // Clear token when going back
             }}
-            className="p-2 rounded-full bg-white border border-emerald-100 text-emerald-700 shadow-sm hover:shadow-md transition mr-4"
+            className="p-2 rounded-full bg-white border border-sky-100 text-sky-700 shadow-sm hover:shadow-md transition mr-4"
           >
             <ArrowLeft className="h-5 w-5" />
           </button>
           <div>
-            <div className="flex items-center gap-2 text-sky-700 text-xs font-semibold uppercase tracking-widest">
+            <div className="flex items-center gap-2 text-blue-700 text-xs font-semibold uppercase tracking-widest">
               <QrCode className="h-4 w-4" /> QRIS
             </div>
             <h1 className="text-2xl font-bold text-gray-900">

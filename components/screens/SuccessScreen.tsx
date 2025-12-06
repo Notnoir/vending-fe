@@ -53,15 +53,15 @@ const SuccessScreen: React.FC = () => {
           <CardContent className="p-0">
             {/* Success Icon */}
             <div className="relative">
-              <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto">
-                <CheckCircle className="h-16 w-16 text-green-600" />
+              <div className="w-24 h-24 bg-sky-100 rounded-full flex items-center justify-center mx-auto">
+                <CheckCircle className="h-16 w-16 text-sky-600" />
               </div>
 
               {/* Celebration stars */}
-              <Star className="absolute -top-2 -left-2 h-6 w-6 text-green-400 fill-current animate-pulse" />
-              <Star className="absolute -top-2 -right-2 h-4 w-4 text-green-400 fill-current animate-pulse delay-300" />
-              <Star className="absolute -bottom-2 -left-2 h-4 w-4 text-green-400 fill-current animate-pulse delay-700" />
-              <Star className="absolute -bottom-2 -right-2 h-6 w-6 text-green-400 fill-current animate-pulse delay-500" />
+              <Star className="absolute -top-2 -left-2 h-6 w-6 text-sky-400 fill-current animate-pulse" />
+              <Star className="absolute -top-2 -right-2 h-4 w-4 text-sky-400 fill-current animate-pulse delay-300" />
+              <Star className="absolute -bottom-2 -left-2 h-4 w-4 text-sky-400 fill-current animate-pulse delay-700" />
+              <Star className="absolute -bottom-2 -right-2 h-6 w-6 text-sky-400 fill-current animate-pulse delay-500" />
             </div>
 
             {/* Success Message */}
