@@ -73,7 +73,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
           {/* Stock badge - top right on image */}
           {isAvailable && (
-            <div className="absolute top-3 right-3 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow">
+            <div className="absolute top-3 right-3 bg-sky-600 text-white text-xs font-bold px-2 py-1 rounded-full shadow">
               {product.current_stock} pcs
             </div>
           )}
