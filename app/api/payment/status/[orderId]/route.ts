@@ -7,6 +7,8 @@ const core = new midtransClient.CoreApi({
   serverKey: process.env.MIDTRANS_SERVER_KEY || "SB-Mid-server-YOUR_SERVER_KEY",
 });
 
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3001";
+
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ orderId: string }> }
@@ -21,13 +23,47 @@ export async function GET(
       );
     }
 
+    console.log("🔍 Checking payment status for:", orderId);
+
     // Check if we have valid Midtrans credentials
     const serverKey = process.env.MIDTRANS_SERVER_KEY;
     if (!serverKey || serverKey === "SB-Mid-server-YOUR_SERVER_KEY") {
-      // Demo mode - return mock response
-      console.log("Demo mode: Returning mock payment status for:", orderId);
+      // Demo mode - check backend order status as fallback
+      console.log("⚠️ Demo mode: Checking backend order status for:", orderId);
+      
+      try {
+        const backendResponse = await fetch(`${BACKEND_URL}/api/orders/${orderId}`);
+        
+        if (backendResponse.ok) {
+          const orderData = await backendResponse.json();
+          console.log("📦 Backend order status:", orderData.payment_status);
+          
+          // Map backend payment status to Midtrans format
+          const transactionStatus = orderData.payment_status === "PAID" 
+            ? "settlement" 
+            : orderData.payment_status === "FAILED"
+            ? "deny"
+            : "pending";
 
-      const mockStatus = {
+          return NextResponse.json({
+            _mock: true,
+            _source: "backend",
+            order_id: orderId,
+            transaction_status: transactionStatus,
+            transaction_time: orderData.created_at,
+            payment_type: "qris",
+            fraud_status: "accept",
+            status_code: transactionStatus === "settlement" ? "200" : "201",
+            status_message: `Transaction is ${transactionStatus}`,
+            gross_amount: orderData.total_amount?.toString() || "0",
+          });
+        }
+      } catch (backendError) {
+        console.error("❌ Backend check error:", backendError);
+      }
+
+      // Final fallback - return pending
+      return NextResponse.json({
         _mock: true,
         order_id: orderId,
         transaction_status: "pending",
@@ -37,32 +73,52 @@ export async function GET(
         status_code: "201",
         status_message: "Transaction is pending",
         gross_amount: "0",
-      };
-
-      // Simulate different statuses based on order ID pattern for testing
-      if (orderId.includes("success") || orderId.includes("paid")) {
-        mockStatus.transaction_status = "settlement";
-        mockStatus.status_code = "200";
-        mockStatus.status_message = "Transaction is successful";
-      } else if (orderId.includes("failed") || orderId.includes("deny")) {
-        mockStatus.transaction_status = "deny";
-        mockStatus.status_code = "400";
-        mockStatus.status_message = "Transaction is denied";
-      }
-
-      return NextResponse.json(mockStatus);
+      });
     }
 
     try {
       // Check transaction status with real Midtrans
+      console.log("💳 Checking Midtrans API for:", orderId);
       const statusResponse = await core.transaction.status(orderId);
+      console.log("✅ Midtrans status:", statusResponse.transaction_status);
       return NextResponse.json(statusResponse);
     } catch (midtransError: unknown) {
-      console.error("Midtrans API error:", midtransError);
+      console.error("❌ Midtrans API error:", midtransError);
 
-      // Always fallback to demo mode if Midtrans fails (for development)
-      console.log("Falling back to demo mode due to Midtrans error");
-      const mockStatus = {
+      // Fallback to backend order status
+      console.log("🔄 Falling back to backend order status");
+      try {
+        const backendResponse = await fetch(`${BACKEND_URL}/api/orders/${orderId}`);
+        
+        if (backendResponse.ok) {
+          const orderData = await backendResponse.json();
+          console.log("📦 Backend order status (fallback):", orderData.payment_status);
+          
+          const transactionStatus = orderData.payment_status === "PAID" 
+            ? "settlement" 
+            : orderData.payment_status === "FAILED"
+            ? "deny"
+            : "pending";
+
+          return NextResponse.json({
+            _mock: true,
+            _source: "backend_fallback",
+            order_id: orderId,
+            transaction_status: transactionStatus,
+            transaction_time: orderData.created_at,
+            payment_type: "qris",
+            fraud_status: "accept",
+            status_code: transactionStatus === "settlement" ? "200" : "201",
+            status_message: `Transaction is ${transactionStatus}`,
+            gross_amount: orderData.total_amount?.toString() || "0",
+          });
+        }
+      } catch (backendError) {
+        console.error("❌ Backend fallback error:", backendError);
+      }
+
+      // Final fallback
+      return NextResponse.json({
         _mock: true,
         order_id: orderId,
         transaction_status: "pending",
@@ -70,11 +126,9 @@ export async function GET(
         payment_type: "qris",
         fraud_status: "accept",
         status_code: "201",
-        status_message: "Transaction is pending (demo mode)",
+        status_message: "Transaction is pending (fallback)",
         gross_amount: "0",
-      };
-
-      return NextResponse.json(mockStatus);
+      });
     }
   } catch (error) {
     console.error("Payment status check error:", error);
