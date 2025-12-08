@@ -47,7 +47,7 @@ export default function PrescriptionScanModal({
   onAddToCart,
 }: PrescriptionScanModalProps) {
   const [session, setSession] = useState<ScanSession | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [step, setStep] = useState<"scan" | "result">("scan");
   const [pollErrorCount, setPollErrorCount] = useState(0);
