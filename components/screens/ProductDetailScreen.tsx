@@ -78,25 +78,25 @@ const ProductDetailScreen: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-sky-50 p-6">
+    <div className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-2xl mx-auto">
         {/* Header */}
         <div className="flex items-center mb-6">
           <button
             onClick={handleBack}
-            className="p-2 rounded-full bg-white/90 border border-sky-100 text-sky-700 shadow-sm hover:shadow-lg transition-shadow mr-4"
+            className="p-2 rounded-full bg-white/90 border border-gray-100 text-teal-400 shadow-sm hover:shadow-lg transition-shadow mr-4"
           >
             <ArrowLeft className="h-5 w-5" />
           </button>
           <div>
-            <div className="flex items-center gap-2 text-sky-600 font-semibold uppercase tracking-wide text-xs">
+            <div className="flex items-center gap-2 text-teal-500 font-semibold uppercase tracking-wide text-xs">
               <Stethoscope className="h-4 w-4" /> Detail Produk
             </div>
             <h1 className="text-2xl font-bold text-gray-900">Informasi Obat</h1>
           </div>
         </div>
 
-        <div className="bg-white/95 rounded-3xl border border-sky-100 shadow-xl shadow-sky-50 p-6">
+        <div className="bg-white/95 rounded-3xl border border-gray-100 shadow-xl shadow-gray-50 p-6">
           <CardContent className="p-0">
             <div className="grid md:grid-cols-2 gap-6">
               {/* Product Image */}
@@ -106,7 +106,7 @@ const ProductDetailScreen: React.FC = () => {
                     src={getImageUrl(selectedProduct.image_url)}
                     alt={selectedProduct.name}
                     fill
-                    className="object-cover rounded-2xl ring-1 ring-sky-100"
+                    className="object-cover rounded-2xl ring-1 ring-gray-100"
                     sizes="(max-width: 768px) 100vw, 50vw"
                   />
                 </div>
@@ -118,7 +118,7 @@ const ProductDetailScreen: React.FC = () => {
                     <span
                       className={`font-semibold ${
                         (selectedProduct.current_stock ?? 0) > 5
-                          ? "text-blue-600"
+                          ? "text-teal-400"
                           : "text-orange-600"
                       }`}
                     >
@@ -148,7 +148,7 @@ const ProductDetailScreen: React.FC = () => {
                 {/* Category */}
                 {selectedProduct.category && (
                   <div className="inline-block">
-                    <span className="px-3 py-1 bg-sky-50 text-sky-700 text-sm rounded-full font-semibold border border-sky-100">
+                    <span className="px-3 py-1 bg-teal-50 text-teal-500 text-sm rounded-full font-semibold border border-gray-100">
                       {selectedProduct.category}
                     </span>
                   </div>
@@ -156,7 +156,7 @@ const ProductDetailScreen: React.FC = () => {
                 {/* Price */}
                 <div className="space-y-1">
                   <p className="text-sm text-gray-600 flex items-center gap-2">
-                    <Pill className="h-4 w-4 text-sky-500" /> Harga per unit
+                    <Pill className="h-4 w-4 text-teal-500" /> Harga per unit
                   </p>
                   <p className="text-3xl font-bold text-gray-900">
                     {formatPrice(unitPrice)}
@@ -174,7 +174,7 @@ const ProductDetailScreen: React.FC = () => {
                       size="sm"
                       onClick={() => handleQuantityChange(-1)}
                       disabled={quantity <= 1}
-                      className="p-2"
+                      className="p-2 bg-white/90 text-teal-500 border border-gray-100 hover:bg-teal-50"
                     >
                       <Minus className="h-4 w-4" />
                     </Button>
@@ -191,7 +191,7 @@ const ProductDetailScreen: React.FC = () => {
                         }}
                         min={1}
                         max={maxQuantity}
-                        className="w-full px-3 py-2 text-center rounded-full border border-sky-100 bg-white/90 shadow-inner focus:outline-none focus:ring-2 focus:ring-sky-400"
+                        className="w-full px-3 py-2 text-center rounded-2xl border border-gray-100 bg-white/90 focus:outline-none focus:ring-1 focus:ring-teal-200"
                       />
                     </div>
 
@@ -200,7 +200,7 @@ const ProductDetailScreen: React.FC = () => {
                       size="sm"
                       onClick={() => handleQuantityChange(1)}
                       disabled={quantity >= maxQuantity}
-                      className="p-2"
+                      className="p-2 bg-white/90 text-teal-500 border border-gray-100 hover:bg-teal-50"
                     >
                       <Plus className="h-4 w-4" />
                     </Button>
@@ -211,9 +211,9 @@ const ProductDetailScreen: React.FC = () => {
                   </p>
                 </div>
                 {/* Total Price */}
-                <div className="border-t border-sky-100 pt-4">
-                  <div className="flex justify-between items-center rounded-2xl bg-sky-50 p-4">
-                    <span className="text-lg font-semibold text-sky-700 flex items-center gap-2">
+                <div className="border-t border-gray-100 pt-4">
+                  <div className="flex justify-between items-center rounded-2xl bg-teal-50 p-4">
+                    <span className="text-lg font-semibold text-teal-500 flex items-center gap-2">
                       <ShieldCheck className="h-5 w-5" /> Total
                     </span>
                     <span className="text-2xl font-bold text-gray-900">
@@ -228,7 +228,7 @@ const ProductDetailScreen: React.FC = () => {
                     size="lg"
                     fullWidth
                     onClick={handleContinue}
-                    className="bg-sky-600 text-white shadow-lg shadow-sky-100 hover:bg-sky-700"
+                    className="bg-teal-400 text-white shadow-lg shadow-teal-100 hover:bg-teal-600"
                   >
                     Lanjut ke Pembayaran
                   </Button>
@@ -238,7 +238,7 @@ const ProductDetailScreen: React.FC = () => {
                     size="lg"
                     fullWidth
                     onClick={handleBack}
-                    className="border border-sky-100 text-sky-700 hover:bg-sky-50"
+                    className="border border-teal-100 text-teal-500 hover:bg-teal-50"
                   >
                     Pilih Produk Lain
                   </Button>

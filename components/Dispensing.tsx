@@ -1,9 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
-import { LoadingSpinner } from "@/components/ui/Loading";
-import { CheckCircle, XCircle, Package, Clock } from "lucide-react";
+import { CheckCircle, Settings, Package, AlertCircle } from "lucide-react";
 import { useVendingStore } from "@/lib/store";
 import { vendingAPI } from "@/lib/api";
 
@@ -129,154 +127,236 @@ const Dispensing: React.FC<DispensingProps> = ({ productName, onComplete }) => {
     checkOrderStatus();
   }, [currentOrder, onComplete, startDispensingProcess]);
 
-  const getStageIcon = () => {
-    switch (stage) {
-      case "waiting_payment":
-        return <Clock className="h-12 w-12 text-yellow-600 animate-pulse" />;
-      case "dispensing":
-        return <LoadingSpinner size="lg" />;
-      case "checking":
-        return <Package className="h-12 w-12 text-[#0066cc] animate-bounce" />;
-      case "complete":
-        return <CheckCircle className="h-12 w-12 text-blue-600" />;
-      case "failed":
-        return <XCircle className="h-12 w-12 text-red-600" />;
-    }
-  };
+  // Calculate circular progress
+  const radius = 75;
+  const circumference = 2 * Math.PI * radius;
+  const strokeDashoffset = circumference - (progress / 100) * circumference;
 
-  const getStageMessage = () => {
-    switch (stage) {
-      case "waiting_payment":
-        return "Menunggu konfirmasi pembayaran...";
-      case "dispensing":
-        return "Mengeluarkan produk...";
-      case "checking":
-        return "Memeriksa produk keluar...";
-      case "complete":
-        return "Produk berhasil keluar!";
-      case "failed":
-        return "Gagal mengeluarkan produk";
+  const getStepStatus = (step: 1 | 2 | 3) => {
+    if (stage === "waiting_payment") return "pending";
+    if (stage === "complete" || stage === "failed") {
+      return step <= 3 ? "completed" : "pending";
     }
-  };
-
-  const getStageDescription = () => {
-    switch (stage) {
-      case "waiting_payment":
-        return "Silakan selesaikan pembayaran Anda. Produk akan keluar otomatis setelah pembayaran terkonfirmasi.";
-      case "dispensing":
-        return "Motor sedang memutar untuk mengeluarkan produk";
-      case "checking":
-        return "Sensor sedang memastikan produk keluar dengan benar";
-      case "complete":
-        return "Silakan ambil produk Anda di bawah";
-      case "failed":
-        return "Mohon hubungi petugas atau coba lagi";
+    if (stage === "dispensing") {
+      return step === 1 ? "completed" : step === 2 ? "active" : "pending";
     }
+    if (stage === "checking") {
+      return step <= 2 ? "completed" : step === 3 ? "active" : "pending";
+    }
+    return "pending";
   };
 
   return (
-    <div className="max-w-md mx-auto">
-      <Card className="border-blue-200 shadow-health-lg">
-        <CardHeader className="text-center bg-gradient-to-b from-blue-50 to-white">
-          <CardTitle className="text-blue-900">Mengeluarkan Produk</CardTitle>
-          <p className="text-blue-600 font-medium">{productName}</p>
-        </CardHeader>
+    <div className="w-full max-w-md mx-auto bg-slate-50 rounded-2xl shadow-lg p-6 md:p-8">
+      {/* Header */}
+      <header className="text-center mb-8">
+        <h1 className="text-2xl font-bold text-slate-800">
+          Dispensing Your Item
+        </h1>
+        <p className="text-slate-500 mt-1">{productName}</p>
+      </header>
 
-        <CardContent className="text-center space-y-6">
-          {/* Icon */}
-          <div className="flex justify-center">{getStageIcon()}</div>
+      {/* Main Content */}
+      <main className="flex flex-col items-center">
+        {/* Circular Progress */}
+        <div className="relative w-48 h-48 mb-8">
+          <svg className="w-full h-full" viewBox="0 0 160 160">
+            {/* Background Circle */}
+            <circle
+              className="text-slate-200"
+              cx="80"
+              cy="80"
+              fill="transparent"
+              r={radius}
+              stroke="currentColor"
+              strokeWidth="10"
+            />
+            {/* Progress Circle */}
+            <circle
+              className="text-teal-500 transition-all duration-1000 ease-linear"
+              cx="80"
+              cy="80"
+              fill="transparent"
+              r={radius}
+              stroke="currentColor"
+              strokeLinecap="round"
+              strokeWidth="10"
+              strokeDasharray={circumference}
+              strokeDashoffset={strokeDashoffset}
+              transform="rotate(-90 80 80)"
+            />
+          </svg>
 
-          {/* Progress Bar */}
-          {stage !== "waiting_payment" && (
-            <div className="space-y-2">
-              <div className="w-full bg-blue-100 rounded-full h-3">
-                <div
-                  className="bg-gradient-to-r from-[#0066cc] to-[#004a99] h-3 rounded-full transition-all duration-300 ease-out"
-                  style={{ width: `${progress}%` }}
-                />
-              </div>
-              <p className="text-sm text-blue-600 font-semibold">
-                {Math.round(progress)}%
+          {/* Center Text */}
+          <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
+            <span className="text-4xl font-bold text-teal-500">
+              {Math.round(progress)}%
+            </span>
+            <span className="text-sm text-slate-500">
+              {stage === "waiting_payment"
+                ? "Waiting..."
+                : stage === "dispensing"
+                ? "Dispensing..."
+                : stage === "checking"
+                ? "Verifying..."
+                : stage === "complete"
+                ? "Complete!"
+                : "Failed"}
+            </span>
+          </div>
+        </div>
+
+        {/* Step Indicators */}
+        <div className="w-full space-y-5">
+          {/* Step 1: Payment Verified */}
+          <div className="flex items-center">
+            <div
+              className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center transition-all ${
+                getStepStatus(1) === "completed"
+                  ? "bg-teal-500 shadow-[0_0_15px_rgba(20,184,166,0.5)]"
+                  : "bg-slate-300"
+              }`}
+            >
+              <CheckCircle
+                className={`w-4 h-4 ${
+                  getStepStatus(1) === "completed"
+                    ? "text-white"
+                    : "text-slate-500"
+                }`}
+              />
+            </div>
+            <div className="ml-4 flex-1">
+              <p
+                className={`font-medium ${
+                  getStepStatus(1) === "completed"
+                    ? "text-slate-800"
+                    : "text-slate-500"
+                }`}
+              >
+                Payment Verified
+              </p>
+              <p className="text-sm text-slate-500">
+                {getStepStatus(1) === "completed"
+                  ? "Your payment was successful."
+                  : "Waiting for payment confirmation..."}
               </p>
             </div>
-          )}
-
-          {/* Status Message */}
-          <div className="space-y-2">
-            <h3 className="text-lg font-semibold text-blue-900">
-              {getStageMessage()}
-            </h3>
-            <p className="text-gray-600">{getStageDescription()}</p>
           </div>
 
-          {/* Stage Indicators */}
-          {stage !== "waiting_payment" && (
-            <div className="flex justify-center space-x-4">
-              <div className="flex items-center space-x-2">
-                <div
-                  className={`w-3 h-3 rounded-full ${
-                    ["dispensing", "checking", "complete"].includes(stage)
-                      ? "bg-[#0066cc] shadow-sm"
-                      : "bg-blue-100"
+          {/* Step 2: Sending Command to Machine */}
+          <div
+            className={`flex items-center transition-opacity ${
+              getStepStatus(2) === "pending" ? "opacity-40" : "opacity-100"
+            }`}
+          >
+            <div
+              className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center transition-all ${
+                getStepStatus(2) === "completed"
+                  ? "bg-teal-500 shadow-[0_0_15px_rgba(20,184,166,0.5)]"
+                  : getStepStatus(2) === "active"
+                  ? "bg-teal-500 shadow-[0_0_15px_rgba(20,184,166,0.5)] animate-pulse"
+                  : "bg-slate-300"
+              }`}
+            >
+              {getStepStatus(2) === "completed" ? (
+                <CheckCircle className="w-4 h-4 text-white" />
+              ) : (
+                <Settings
+                  className={`w-4 h-4 ${
+                    getStepStatus(2) === "active"
+                      ? "text-white animate-spin"
+                      : "text-slate-500"
                   }`}
                 />
-                <span className="text-sm text-blue-700">Dispensing</span>
-              </div>
-
-              <div className="flex items-center space-x-2">
-                <div
-                  className={`w-3 h-3 rounded-full ${
-                    ["checking", "complete"].includes(stage)
-                      ? "bg-[#0066cc] shadow-sm"
-                      : "bg-blue-100"
-                  }`}
-                />
-                <span className="text-sm text-blue-700">Checking</span>
-              </div>
-
-              <div className="flex items-center space-x-2">
-                <div
-                  className={`w-3 h-3 rounded-full ${
-                    stage === "complete"
-                      ? "bg-blue-600 shadow-sm"
-                      : stage === "failed"
-                      ? "bg-red-600 shadow-sm"
-                      : "bg-blue-100"
-                  }`}
-                />
-                <span className="text-sm text-blue-700">Complete</span>
-              </div>
+              )}
             </div>
-          )}
-
-          {/* Additional Info */}
-          {stage === "waiting_payment" && (
-            <div className="text-sm text-yellow-700 bg-yellow-50 p-4 rounded-lg border border-yellow-200">
-              <p className="font-semibold mb-2">Menunggu Pembayaran</p>
-              <p>
-                Produk akan dikeluarkan otomatis setelah pembayaran Anda
-                terkonfirmasi oleh sistem.
+            <div className="ml-4 flex-1">
+              <p
+                className={`font-medium ${
+                  getStepStatus(2) === "pending"
+                    ? "text-slate-500"
+                    : "text-slate-800"
+                }`}
+              >
+                Sending Command to Machine
               </p>
-              <p className="mt-2 text-xs">
-                Status: Memeriksa pembayaran setiap 5 detik...
+              <p className="text-sm text-slate-500">
+                {getStepStatus(2) === "completed"
+                  ? "Device connected successfully."
+                  : getStepStatus(2) === "active"
+                  ? "Connecting to the device..."
+                  : "Waiting for device connection..."}
               </p>
             </div>
-          )}
+          </div>
 
-          {stage === "dispensing" && (
-            <div className="text-xs text-blue-700 bg-blue-50 p-3 rounded-lg border border-blue-100">
-              <p>Proses ini biasanya memakan waktu 1-3 detik</p>
+          {/* Step 3: Item Dispensed */}
+          <div
+            className={`flex items-center transition-opacity ${
+              getStepStatus(3) === "pending" ? "opacity-40" : "opacity-100"
+            }`}
+          >
+            <div
+              className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center transition-all ${
+                getStepStatus(3) === "completed"
+                  ? "bg-teal-500 shadow-[0_0_15px_rgba(20,184,166,0.5)]"
+                  : getStepStatus(3) === "active"
+                  ? "bg-teal-500 shadow-[0_0_15px_rgba(20,184,166,0.5)] animate-pulse"
+                  : "bg-slate-300"
+              }`}
+            >
+              {getStepStatus(3) === "completed" ? (
+                <CheckCircle className="w-4 h-4 text-white" />
+              ) : (
+                <Package
+                  className={`w-4 h-4 ${
+                    getStepStatus(3) === "active" ||
+                    getStepStatus(3) === "completed"
+                      ? "text-white"
+                      : "text-slate-500"
+                  }`}
+                />
+              )}
             </div>
-          )}
+            <div className="ml-4 flex-1">
+              <p
+                className={`font-medium ${
+                  getStepStatus(3) === "pending"
+                    ? "text-slate-500"
+                    : "text-slate-800"
+                }`}
+              >
+                Item Dispensed
+              </p>
+              <p className="text-sm text-slate-500">
+                {getStepStatus(3) === "completed"
+                  ? "Please collect your item!"
+                  : getStepStatus(3) === "active"
+                  ? "Dispensing your item..."
+                  : "Waiting for device confirmation..."}
+              </p>
+            </div>
+          </div>
+        </div>
+      </main>
 
-          {stage === "failed" && (
-            <div className="text-sm text-red-600 bg-red-50 p-3 rounded-lg border border-red-200">
-              <p>Jika masalah berlanjut, silakan hubungi petugas</p>
-              <p className="mt-1">Uang Anda akan dikembalikan otomatis</p>
+      {/* Footer */}
+      <footer className="mt-12 text-center">
+        {stage === "failed" && (
+          <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <div className="flex items-center justify-center mb-2">
+              <AlertCircle className="w-5 h-5 text-red-600 mr-2" />
+              <p className="font-semibold text-red-600">Dispensing Failed</p>
             </div>
-          )}
-        </CardContent>
-      </Card>
+            <p className="text-sm text-red-600">
+              Your money will be refunded automatically.
+            </p>
+          </div>
+        )}
+        <button className="w-full text-slate-500 hover:text-slate-700 transition-colors py-3 rounded-lg bg-slate-100">
+          Having an Issue?
+        </button>
+      </footer>
     </div>
   );
 };

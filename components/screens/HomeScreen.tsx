@@ -9,15 +9,16 @@ import {
   RefreshCw,
   Wifi,
   WifiOff,
-  Settings,
+  // Settings,
   FileText,
   Stethoscope,
-  Pill,
+  // Pill,
   ShieldCheck,
 } from "lucide-react";
-import Link from "next/link";
+// import Link from "next/link";
 import toast from "react-hot-toast";
 import PrescriptionScanModal from "@/components/PrescriptionScanModal";
+import Image from "next/image";
 
 const HomeScreen: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -67,47 +68,58 @@ const HomeScreen: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-sky-50">
+    <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-6 py-10">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8 rounded-3xl border border-sky-100 bg-white/80 p-6 shadow-lg shadow-sky-50">
-          <div>
-            <div className="flex items-center gap-3 text-sky-700">
-              <Stethoscope className="h-6 w-6" />
-              <p className="text-sm font-semibold tracking-wide uppercase">
-                Apotek Digital & Vending Obat
-              </p>
-            </div>
-            <h1 className="text-4xl font-bold text-gray-900 mb-2">MediVend</h1>
-            <div className="flex items-center space-x-6 text-gray-600">
-              <div className="flex items-center space-x-2">
-                <Pill className="h-4 w-4 text-sky-500" />
-                <span className="font-semibold text-gray-800">
-                  {products.length} obat siap jual
-                </span>
+        <div className="flex items-center justify-between mb-8 rounded-3xl border border-gray-100 bg-white/80 p-6 shadow-lg shadow-teal-50">
+          <div className="flex items-center space-x-4">
+            <Image
+              src="/MediVendLogo.png"
+              alt="MediVend Logo"
+              width={50}
+              height={50}
+              className="object-contain"
+            />
+
+            <div>
+              <div className="flex items-center gap-3 text-teal-500">
+                <Stethoscope className="h-6 w-6" />
+                <p className="text-sm font-semibold tracking-wide uppercase">
+                  Apotek Digital & Vending Obat
+                </p>
               </div>
-              <button className="flex items-center space-x-1 text-sky-600 hover:text-sky-800">
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"
-                  />
-                </svg>
-              </button>
+              <h1 className="text-4xl font-bold text-gray-900 mb-2">
+                MediVend
+              </h1>
+              <div className="flex items-center space-x-6 text-gray-600">
+                <div className="flex items-center space-x-2">
+                  <span className="font-semibold text-gray-800">
+                    {products.length} obat tersedia
+                  </span>
+                </div>
+                <button className="flex items-center space-x-1 text-teal-400 hover:text-teal-800">
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"
+                    />
+                  </svg>
+                </button>
+              </div>
             </div>
           </div>
 
           <div className="flex items-center space-x-4">
             {/* Connection Status */}
             {isOnline ? (
-              <div className="flex items-center border border-sky-200 bg-sky-50/80 text-sky-700 px-4 py-2 rounded-full shadow-sm">
+              <div className="flex items-center border border-emerald-200 bg-emerald-50 text-emerald-500 px-4 py-2 rounded-full shadow-sm">
                 <Wifi className="h-4 w-4 mr-2" />
                 <span className="text-sm font-semibold tracking-wide">
                   Online
@@ -125,7 +137,7 @@ const HomeScreen: React.FC = () => {
             {/* Prescription Scan Button */}
             <button
               onClick={() => setIsPrescriptionModalOpen(true)}
-              className="flex items-center px-5 py-2 rounded-full bg-sky-600 text-white shadow-lg shadow-sky-100 hover:bg-sky-700 transition-colors"
+              className="flex items-center px-5 py-2 rounded-full bg-teal-400 text-white shadow-lg shadow-teal-100 hover:bg-teal-600 transition-colors"
               title="Scan Resep Dokter"
             >
               <FileText className="h-5 w-5 mr-2" />
@@ -138,7 +150,7 @@ const HomeScreen: React.FC = () => {
             <button
               onClick={loadProducts}
               disabled={isLoading}
-              className="p-2 rounded-full bg-white/80 text-sky-700 border border-sky-100 shadow-md hover:bg-sky-50 transition-colors"
+              className="p-2 rounded-full bg-white/80 text-teal-700 border border-gray-100 shadow-md hover:bg-gray-50 transition-colors"
             >
               <RefreshCw
                 className={`h-5 w-5 text-gray-700 ${
@@ -148,23 +160,23 @@ const HomeScreen: React.FC = () => {
             </button>
 
             {/* Admin Button */}
-            <Link href="/admin">
-              <button className="flex items-center bg-sky-600 text-white px-4 py-2 rounded-full hover:bg-sky-700 transition-colors shadow-md">
+            {/* <Link href="/admin">
+              <button className="flex items-center bg-teal-600 text-white px-4 py-2 rounded-full hover:bg-teal-700 transition-colors shadow-md">
                 <Settings className="h-4 w-4 mr-2" />
                 <span className="text-sm font-semibold tracking-wide">
                   Admin
                 </span>
               </button>
-            </Link>
+            </Link> */}
           </div>
         </div>
 
         {/* Products Grid */}
         {products.length === 0 ? (
-          <div className="text-center py-20 rounded-3xl border border-dashed border-sky-200 bg-white/70">
-            <div className="w-32 h-32 mx-auto mb-6 bg-sky-50 rounded-full flex items-center justify-center shadow-inner">
+          <div className="text-center py-20 rounded-3xl border border-dashed border-gray-200 bg-white/70">
+            <div className="w-32 h-32 mx-auto mb-6 bg-teal-50 rounded-full flex items-center justify-center shadow-inner">
               <svg
-                className="h-16 w-16 text-sky-400"
+                className="h-16 w-16 text-teal-400"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -185,18 +197,18 @@ const HomeScreen: React.FC = () => {
             </p>
             <button
               onClick={loadProducts}
-              className="inline-flex items-center bg-sky-600 text-white px-6 py-3 rounded-full shadow-lg hover:bg-sky-700 transition-colors"
+              className="inline-flex items-center bg-teal-600 text-white px-6 py-3 rounded-full shadow-lg hover:bg-teal-700 transition-colors"
             >
               <RefreshCw className="h-5 w-5 mr-2" />
               Muat ulang
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-7 rounded-3xl border border-sky-100 bg-white/85 p-6 shadow-xl shadow-sky-50">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-7 rounded-3xl border-2 border-gray-100 bg-white/85 p-6 shadow-xl shadow-teal-50">
             {products.map((product) => (
               <div
                 key={product.id}
-                className="animate-fadeIn rounded-2xl bg-white/95 ring-1 ring-sky-50/80 shadow-sm shadow-sky-100 hover:-translate-y-1 hover:ring-sky-200 hover:shadow-xl transition-transform"
+                className="animate-fadeIn rounded-2xl bg-white/95 ring-1 ring-gray-50/80 shadow-sm shadow-gray-100 hover:-translate-y-1 hover:ring-gray-200 hover:shadow-xl transition-transform"
               >
                 <ProductCard
                   product={product}
@@ -210,8 +222,8 @@ const HomeScreen: React.FC = () => {
 
         {/* Footer Status */}
         <div className="mt-8 text-center text-sm text-gray-600">
-          <div className="inline-flex items-center gap-2 rounded-full border border-sky-100 bg-white/80 px-4 py-2 shadow-sm">
-            <ShieldCheck className="h-4 w-4 text-sky-500" />
+          <div className="inline-flex items-center gap-2 rounded-full border border-teal-100 bg-white/80 px-4 py-2 shadow-sm">
+            <ShieldCheck className="h-4 w-4 text-teal-500" />
             <p>Last update {formatTime(lastUpdate)}</p>
           </div>
         </div>

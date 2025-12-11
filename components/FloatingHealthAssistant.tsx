@@ -11,7 +11,7 @@ import {
   AlertCircle,
   Sparkles,
   X,
-  MessageCircle,
+  // MessageCircle,
   Minimize2,
   ShoppingCart,
 } from "lucide-react";
@@ -131,10 +131,17 @@ export default function FloatingHealthAssistant() {
     return (
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-full shadow-2xl hover:shadow-3xl transition-all duration-300 z-50 group"
+        className="fixed bottom-6 right-6 bg-teal-400 hover:bg-teal-500 text-white p-4 rounded-full shadow-2xl hover:shadow-3xl transition-all duration-300 z-50 group"
         aria-label="Buka Asisten Kesehatan"
       >
-        <MessageCircle className="w-7 h-7" />
+        <svg
+          className="w-7 h-7"
+          fill="currentColor"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 640 512"
+        >
+          <path d="M352 0c0-17.7-14.3-32-32-32S288-17.7 288 0l0 64-96 0c-53 0-96 43-96 96l0 224c0 53 43 96 96 96l256 0c53 0 96-43 96-96l0-224c0-53-43-96-96-96l-96 0 0-64zM160 368c0-13.3 10.7-24 24-24l32 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-32 0c-13.3 0-24-10.7-24-24zm120 0c0-13.3 10.7-24 24-24l32 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-32 0c-13.3 0-24-10.7-24-24zm120 0c0-13.3 10.7-24 24-24l32 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-32 0c-13.3 0-24-10.7-24-24zM224 176a48 48 0 1 1 0 96 48 48 0 1 1 0-96zm144 48a48 48 0 1 1 96 0 48 48 0 1 1 -96 0zM64 224c0-17.7-14.3-32-32-32S0 206.3 0 224l0 96c0 17.7 14.3 32 32 32s32-14.3 32-32l0-96zm544-32c-17.7 0-32 14.3-32 32l0 96c0 17.7 14.3 32 32 32s32-14.3 32-32l0-96c0-17.7-14.3-32-32-32z" />
+        </svg>
       </button>
     );
   }
@@ -144,7 +151,7 @@ export default function FloatingHealthAssistant() {
       <div className="fixed bottom-6 right-6 z-50">
         <button
           onClick={() => setIsMinimized(false)}
-          className="bg-blue-600 text-white px-6 py-3 rounded-full shadow-2xl flex items-center gap-2 hover:scale-105 transition-transform"
+          className="bg-teal-400 text-white px-6 py-3 rounded-full shadow-2xl flex items-center gap-2 hover:scale-105 transition-transform"
         >
           <Bot className="w-5 h-5" />
           <span className="font-semibold">Asisten Kesehatan</span>
@@ -158,14 +165,14 @@ export default function FloatingHealthAssistant() {
     <>
       <div className="fixed bottom-6 right-6 w-[400px] max-w-[calc(100vw-3rem)] h-[600px] max-h-[calc(100vh-3rem)] bg-white rounded-2xl shadow-2xl flex flex-col z-50 border border-gray-200">
         {/* Header */}
-        <div className="bg-blue-600 text-white p-4 rounded-t-2xl flex items-center justify-between">
+        <div className="bg-teal-400 text-white p-4 rounded-t-2xl flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="bg-white/20 backdrop-blur-sm p-2 rounded-lg">
               <Sparkles className="w-5 h-5" />
             </div>
             <div>
               <h3 className="font-bold text-lg">Asisten Kesehatan AI</h3>
-              <p className="text-xs text-blue-100">Online</p>
+              <p className="text-xs font-semibold text-teal-100">Online</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -187,7 +194,7 @@ export default function FloatingHealthAssistant() {
         </div>
 
         {/* Messages */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gradient-to-br from-blue-50 to-green-50">
+        <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gradient-to-br from-teal-50 to-white">
           {messages.map((message, index) => {
             console.log(`🔍 Rendering message ${index}:`, {
               role: message.role,
@@ -206,14 +213,22 @@ export default function FloatingHealthAssistant() {
                 <div
                   className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${
                     message.role === "user"
-                      ? "bg-gradient-to-br from-blue-500 to-blue-600"
-                      : "bg-gradient-to-br from-green-500 to-green-600"
+                      ? "bg-gradient-to-br from-teal-500 to-teal-400"
+                      : "bg-gradient-to-br from-teal-300 to-teal-400"
                   }`}
                 >
                   {message.role === "user" ? (
                     <User className="w-4 h-4 text-white" />
                   ) : (
-                    <Bot className="w-4 h-4 text-white" />
+                    // <Bot className="w-4 h-4 text-white" />
+                    <svg
+                      className="w-4 h-4 text-white"
+                      fill="currentColor"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 640 512"
+                    >
+                      <path d="M352 0c0-17.7-14.3-32-32-32S288-17.7 288 0l0 64-96 0c-53 0-96 43-96 96l0 224c0 53 43 96 96 96l256 0c53 0 96-43 96-96l0-224c0-53-43-96-96-96l-96 0 0-64zM160 368c0-13.3 10.7-24 24-24l32 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-32 0c-13.3 0-24-10.7-24-24zm120 0c0-13.3 10.7-24 24-24l32 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-32 0c-13.3 0-24-10.7-24-24zm120 0c0-13.3 10.7-24 24-24l32 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-32 0c-13.3 0-24-10.7-24-24zM224 176a48 48 0 1 1 0 96 48 48 0 1 1 0-96zm144 48a48 48 0 1 1 96 0 48 48 0 1 1 -96 0zM64 224c0-17.7-14.3-32-32-32S0 206.3 0 224l0 96c0 17.7 14.3 32 32 32s32-14.3 32-32l0-96zm544-32c-17.7 0-32 14.3-32 32l0 96c0 17.7 14.3 32 32 32s32-14.3 32-32l0-96c0-17.7-14.3-32-32-32z" />
+                    </svg>
                   )}
                 </div>
 
@@ -225,7 +240,7 @@ export default function FloatingHealthAssistant() {
                   <div
                     className={`inline-block p-3 rounded-xl text-sm shadow-sm ${
                       message.role === "user"
-                        ? "bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-tr-none"
+                        ? "bg-gradient-to-br from-teal-500 to-teal-600 text-white rounded-tr-none"
                         : "bg-white text-gray-800 rounded-tl-none"
                     }`}
                   >
@@ -272,7 +287,7 @@ export default function FloatingHealthAssistant() {
                                       setCurrentScreen("product-detail");
                                       setIsOpen(false);
                                     }}
-                                    className="bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 text-white px-3 py-1 rounded-lg text-xs font-semibold flex items-center gap-1 transition-all"
+                                    className="bg-gradient-to-r from-teal-600 to-green-600 hover:from-teal-700 hover:to-green-700 text-white px-3 py-1 rounded-lg text-xs font-semibold flex items-center gap-1 transition-all"
                                   >
                                     <ShoppingCart className="w-3 h-3" />
                                     Beli
@@ -302,8 +317,16 @@ export default function FloatingHealthAssistant() {
 
           {isLoading && (
             <div className="flex gap-2">
-              <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center">
-                <Bot className="w-4 h-4 text-white" />
+              <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-teal-300 to-teal-400 flex items-center justify-center">
+                {/* <Bot className="w-4 h-4 text-white" /> */}
+                <svg
+                  className="w-4 h-4 text-white"
+                  fill="currentColor"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 640 512"
+                >
+                  <path d="M352 0c0-17.7-14.3-32-32-32S288-17.7 288 0l0 64-96 0c-53 0-96 43-96 96l0 224c0 53 43 96 96 96l256 0c53 0 96-43 96-96l0-224c0-53-43-96-96-96l-96 0 0-64zM160 368c0-13.3 10.7-24 24-24l32 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-32 0c-13.3 0-24-10.7-24-24zm120 0c0-13.3 10.7-24 24-24l32 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-32 0c-13.3 0-24-10.7-24-24zm120 0c0-13.3 10.7-24 24-24l32 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-32 0c-13.3 0-24-10.7-24-24zM224 176a48 48 0 1 1 0 96 48 48 0 1 1 0-96zm144 48a48 48 0 1 1 96 0 48 48 0 1 1 -96 0zM64 224c0-17.7-14.3-32-32-32S0 206.3 0 224l0 96c0 17.7 14.3 32 32 32s32-14.3 32-32l0-96zm544-32c-17.7 0-32 14.3-32 32l0 96c0 17.7 14.3 32 32 32s32-14.3 32-32l0-96c0-17.7-14.3-32-32-32z" />
+                </svg>
               </div>
               <div className="bg-white p-3 rounded-xl rounded-tl-none shadow-sm">
                 <div className="flex items-center gap-2 text-gray-600">
@@ -330,7 +353,7 @@ export default function FloatingHealthAssistant() {
                 <button
                   key={index}
                   onClick={() => handleSuggestedQuestion(question)}
-                  className="w-full text-left p-2 bg-white hover:bg-blue-50 border border-gray-200 hover:border-blue-300 rounded-lg text-xs text-gray-700 transition-all"
+                  className="w-full text-left p-2 bg-white hover:bg-teal-50 border border-gray-200 hover:border-teal-300 rounded-lg text-xs text-gray-700 transition-all"
                 >
                   {question}
                 </button>
@@ -351,13 +374,13 @@ export default function FloatingHealthAssistant() {
               onChange={(e) => setInputMessage(e.target.value)}
               onFocus={() => setShowKeyboard(true)}
               placeholder="Ketik pertanyaan..."
-              className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
               disabled={isLoading}
             />
             <button
               type="submit"
               disabled={!inputMessage.trim() || isLoading}
-              className="bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 text-white p-2 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+              className="bg-teal-500 hover:bg-teal-600 text-white p-2 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all"
             >
               {isLoading ? (
                 <Loader2 className="w-5 h-5 animate-spin" />

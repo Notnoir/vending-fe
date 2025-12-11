@@ -73,7 +73,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
           {/* Stock badge - top right on image */}
           {isAvailable && (
-            <div className="absolute top-3 right-3 bg-sky-600 text-white text-xs font-bold px-2 py-1 rounded-full shadow">
+            <div className="absolute top-3 right-3 bg-teal-400 text-white text-xs font-bold px-2 py-1 rounded-full shadow">
               {product.current_stock} pcs
             </div>
           )}
@@ -98,7 +98,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
               className={cn(
                 "w-12 h-12 rounded-full flex items-center justify-center shadow-lg transition-all",
                 isAvailable
-                  ? "bg-gray-900 hover:bg-gray-800 active:scale-95"
+                  ? "bg-teal-400 hover:bg-teal-500 active:scale-95"
                   : "bg-gray-400 cursor-not-allowed"
               )}
             >
