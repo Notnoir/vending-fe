@@ -22,17 +22,23 @@ const OrderSummaryScreen: React.FC = () => {
   const {
     selectedProduct,
     quantity,
+    cartItems,
     setCurrentOrder,
     setCurrentScreen,
     setLoading,
     setError,
+    clearCart,
   } = useVendingStore();
 
-  if (!selectedProduct) {
+  // Check if cart has items or single product selected
+  const hasCartItems = cartItems.length > 0;
+  const hasSingleProduct = selectedProduct && quantity > 0;
+
+  if (!hasCartItems && !hasSingleProduct) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <p className="text-gray-600 mb-4">Produk tidak ditemukan</p>
+          <p className="text-gray-600 mb-4">Tidak ada produk dipilih</p>
           <Button variant="primary" onClick={() => setCurrentScreen("home")}>
             Kembali ke Beranda
           </Button>
@@ -49,34 +55,85 @@ const OrderSummaryScreen: React.FC = () => {
     }).format(price);
   };
 
-  const unitPrice = selectedProduct.final_price ?? selectedProduct.price;
-  const totalPrice = unitPrice * quantity;
+  // Calculate total for cart or single product
+  const displayItems = hasCartItems
+    ? cartItems.map((item) => ({
+        name: item.product.name,
+        description: item.product.description,
+        quantity: item.quantity,
+        unitPrice: item.product.final_price ?? item.product.price,
+        slot_id: item.product.slot_id,
+      }))
+    : selectedProduct
+    ? [
+        {
+          name: selectedProduct.name,
+          description: selectedProduct.description,
+          quantity,
+          unitPrice: selectedProduct.final_price ?? selectedProduct.price,
+          slot_id: selectedProduct.slot_id,
+        },
+      ]
+    : [];
+
+  const subtotal = displayItems.reduce(
+    (sum, item) => sum + item.unitPrice * item.quantity,
+    0
+  );
+  const tax = subtotal * 0.11;
+  const totalPrice = subtotal + tax;
 
   const handleBack = () => {
-    setCurrentScreen("product-detail");
+    if (hasCartItems) {
+      setCurrentScreen("cart");
+    } else {
+      setCurrentScreen("product-detail");
+    }
   };
 
   const handleCreateOrder = async () => {
-    if (!selectedProduct.slot_id) {
-      toast.error("Slot produk tidak ditemukan");
-      return;
-    }
-
     setIsLoading(true);
     setLoading(true);
 
     try {
-      const orderData = {
-        slot_id: selectedProduct.slot_id,
-        quantity,
-        ...(customerPhone && { customer_phone: customerPhone }),
-      };
+      let order;
 
-      console.log("Creating order with data:", orderData);
-      console.log("Backend URL: http://localhost:3001");
+      if (hasCartItems) {
+        // Multi-item order
+        const orderData = {
+          items: cartItems.map((item) => ({
+            slot_id: item.product.slot_id!,
+            quantity: item.quantity,
+          })),
+          ...(customerPhone && { customer_phone: customerPhone }),
+        };
 
-      const order = await vendingAPI.createOrder(orderData);
+        console.log("Creating multi-item order:", orderData);
+        order = await vendingAPI.createMultiItemOrder(orderData);
+
+        // Clear cart after successful order
+        clearCart();
+      } else if (selectedProduct?.slot_id) {
+        // Single item order
+        const orderData = {
+          slot_id: selectedProduct.slot_id,
+          quantity,
+          ...(customerPhone && { customer_phone: customerPhone }),
+        };
+
+        console.log("Creating single order:", orderData);
+        order = await vendingAPI.createOrder(orderData);
+      } else {
+        toast.error("Slot produk tidak ditemukan");
+        return;
+      }
+
       console.log("Order created successfully:", order);
+
+      // Clear any existing Midtrans token for this order ID to prevent conflicts
+      const storageKey = `midtrans_token_${order.order_id}`;
+      localStorage.removeItem(storageKey);
+      console.log("🗑️ Cleared existing Midtrans token from cache");
 
       setCurrentOrder(order);
       setCurrentScreen("payment");
@@ -150,7 +207,7 @@ const OrderSummaryScreen: React.FC = () => {
         <div className="bg-white rounded-3xl p-6 mb-6 shadow-md border border-gray-100">
           {/* Product Items */}
           <div className="space-y-3 mb-6">
-            {Array.from({ length: quantity }).map((_, index) => (
+            {displayItems.map((item, index) => (
               <div
                 key={index}
                 className="flex items-center space-x-3 bg-teal-50 rounded-2xl p-3 border border-teal-50"
@@ -163,16 +220,19 @@ const OrderSummaryScreen: React.FC = () => {
                 {/* Product Info */}
                 <div className="flex-1">
                   <h3 className="text-gray-900 font-semibold">
-                    {selectedProduct.name}
+                    {item.name}
+                    <span className="text-teal-500 ml-2 text-xs">
+                      x{item.quantity}
+                    </span>
                   </h3>
                   <p className="text-gray-600 text-xs">
-                    {selectedProduct.description || "Produk"}
+                    {item.description || "Produk"}
                   </p>
                 </div>
 
                 {/* Price */}
                 <div className="bg-teal-400 text-white font-bold px-3 py-1.5 rounded-full text-sm">
-                  {formatPrice(unitPrice)}
+                  {formatPrice(item.unitPrice * item.quantity)}
                 </div>
               </div>
             ))}
@@ -181,13 +241,21 @@ const OrderSummaryScreen: React.FC = () => {
           {/* Tax & Total Card */}
           <div className="bg-teal-50 rounded-2xl p-5 border border-teal-50">
             <div className="relative z-10">
+              {/* Subtotal */}
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-gray-600 text-sm">Subtotal</span>
+                <span className="text-gray-900 font-semibold">
+                  {formatPrice(subtotal)}
+                </span>
+              </div>
+
               {/* Tax Amount */}
               <div className="flex items-center justify-between mb-3 pb-3 border-b border-teal-100">
                 <span className="text-teal-500 font-semibold text-sm flex items-center gap-2">
-                  <ClipboardCheck className="h-4 w-4" /> Tax Amount
+                  <ClipboardCheck className="h-4 w-4" /> Tax (11%)
                 </span>
                 <span className="text-gray-900 font-bold">
-                  {formatPrice(totalPrice * 0.11)}
+                  {formatPrice(tax)}
                 </span>
               </div>
 
@@ -197,7 +265,7 @@ const OrderSummaryScreen: React.FC = () => {
                   <ShieldCheck className="h-5 w-5" /> Total Amount
                 </p>
                 <p className="text-3xl font-bold text-gray-900">
-                  {formatPrice(totalPrice * 1.11)}
+                  {formatPrice(totalPrice)}
                 </p>
               </div>
             </div>

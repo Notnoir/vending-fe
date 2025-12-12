@@ -69,11 +69,20 @@ export interface Product {
   final_price?: number;
 }
 
-export interface Order {
-  order_id: string;
+export interface OrderItem {
+  slot_id: number;
+  product_id: number;
   product_name: string;
   quantity: number;
   unit_price: number;
+  total: number;
+}
+
+export interface Order {
+  order_id: string;
+  product_name?: string;
+  quantity: number;
+  unit_price?: number;
   total_amount: number;
   payment_url: string;
   payment_token: string;
@@ -82,6 +91,8 @@ export interface Order {
   status: "PENDING" | "PAID" | "DISPENSING" | "COMPLETED" | "FAILED";
   paid_at?: string;
   dispensed_at?: string;
+  items?: OrderItem[];
+  total_quantity?: number;
 }
 
 export interface DispenseStatus {
@@ -118,6 +129,15 @@ export const vendingAPI = {
     payment_method?: "qris" | "va" | "gopay" | "shopeepay";
   }): Promise<Order> => {
     const response = await api.post("/orders", orderData);
+    return response.data;
+  },
+
+  createMultiItemOrder: async (orderData: {
+    items: Array<{ slot_id: number; quantity: number }>;
+    customer_phone?: string;
+    payment_method?: "qris" | "va" | "gopay" | "shopeepay";
+  }): Promise<Order> => {
+    const response = await api.post("/orders/multi", orderData);
     return response.data;
   },
 

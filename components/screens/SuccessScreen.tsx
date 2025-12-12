@@ -27,7 +27,10 @@ const SuccessScreen: React.FC = () => {
       setCountdown((prev) => {
         if (prev <= 1) {
           clearInterval(timer);
-          handleBackToHome();
+          // Use setTimeout to avoid setState during render
+          setTimeout(() => {
+            handleBackToHome();
+          }, 0);
           return 0;
         }
         return prev - 1;

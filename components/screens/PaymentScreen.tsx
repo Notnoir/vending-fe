@@ -28,6 +28,7 @@ const PaymentScreen: React.FC = () => {
   const {
     currentOrder,
     selectedProduct,
+    cartItems,
     setCurrentScreen,
     resetTransaction,
     setLoading,
@@ -53,7 +54,7 @@ const PaymentScreen: React.FC = () => {
 
   // Handle Midtrans payment
   const handleMidtransPayment = async () => {
-    if (!currentOrder || !selectedProduct) return;
+    if (!currentOrder) return;
 
     setIsProcessing(true);
     let paymentCompleted = false; // Track if payment completed successfully
@@ -63,23 +64,46 @@ const PaymentScreen: React.FC = () => {
 
       // Only create new transaction if we don't have a token yet
       if (!token) {
+        // Prepare items from order
+        let items;
+
+        if (currentOrder.items && currentOrder.items.length > 0) {
+          // Multi-item order from cart
+          items = currentOrder.items.map((item) => ({
+            id: item.product_id.toString(),
+            price: Number(item.unit_price),
+            quantity: Number(item.quantity),
+            name: item.product_name,
+          }));
+        } else if (selectedProduct) {
+          // Single product order
+          items = [
+            {
+              id: selectedProduct.id.toString(),
+              price: Number(selectedProduct.price),
+              quantity: Number(currentOrder.quantity),
+              name: selectedProduct.name,
+            },
+          ];
+        } else {
+          throw new Error("No items found in order");
+        }
+
         // Prepare payment request
         const paymentRequest: PaymentRequest = {
           orderId: currentOrder.order_id,
           amount: paymentService.formatAmount(currentOrder.total_amount),
           customerName: "Vending Machine Customer",
           customerEmail: "customer@vendingmachine.com",
-          items: [
-            {
-              id: selectedProduct.id.toString(),
-              price: selectedProduct.price,
-              quantity: currentOrder.quantity,
-              name: selectedProduct.name,
-            },
-          ],
+          items: items,
         };
 
-        console.log("💳 Creating new Midtrans transaction...");
+        console.log("💳 Creating new Midtrans transaction...", {
+          orderId: paymentRequest.orderId,
+          amount: paymentRequest.amount,
+          itemsCount: items.length,
+        });
+
         const response = await paymentService.createTransaction(paymentRequest);
         token = response.token;
         setPaymentToken(token);
@@ -181,14 +205,10 @@ const PaymentScreen: React.FC = () => {
 
     try {
       console.log("🔍 Verifying payment for order:", currentOrder.order_id);
-      // Verify payment (in real app, this would be automatic via webhook)
+      // Verify payment (backend will automatically trigger dispense)
       await vendingAPI.verifyPayment(currentOrder.order_id, "SUCCESS");
       console.log("✅ Payment verified successfully");
-
-      console.log("🎁 Triggering dispense for order:", currentOrder.order_id);
-      // Trigger dispense
-      await vendingAPI.triggerDispense(currentOrder.order_id);
-      console.log("✅ Dispense triggered successfully");
+      console.log("✅ Backend has automatically triggered dispense");
 
       console.log("🚀 Setting current screen to 'dispensing'...");
       setCurrentScreen("dispensing");

@@ -2,10 +2,18 @@ import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { Product, Order } from "./api";
 
+interface CartItem {
+  product: Product;
+  quantity: number;
+}
+
 interface VendingStore {
   // Machine state
   machineId: string;
   isOnline: boolean;
+
+  // Cart
+  cartItems: CartItem[];
 
   // Current transaction
   selectedProduct: Product | null;
@@ -16,6 +24,7 @@ interface VendingStore {
   currentScreen:
     | "home"
     | "product-detail"
+    | "cart"
     | "order-summary"
     | "payment"
     | "dispensing"
@@ -33,6 +42,12 @@ interface VendingStore {
   setError: (error: string | null) => void;
   setMachineStatus: (online: boolean) => void;
 
+  // Cart actions
+  addToCart: (product: Product, quantity: number) => void;
+  removeFromCart: (productId: number) => void;
+  updateCartQuantity: (productId: number, quantity: number) => void;
+  clearCart: () => void;
+
   // Reset transaction
   resetTransaction: () => void;
 }
@@ -43,6 +58,7 @@ export const useVendingStore = create<VendingStore>()(
       // Initial state
       machineId: "VM01",
       isOnline: true,
+      cartItems: [],
       selectedProduct: null,
       quantity: 1,
       currentOrder: null,
@@ -67,6 +83,46 @@ export const useVendingStore = create<VendingStore>()(
 
       setMachineStatus: (online) => set({ isOnline: online }),
 
+      // Cart actions
+      addToCart: (product, quantity) =>
+        set((state) => {
+          const existingItem = state.cartItems.find(
+            (item) => item.product.id === product.id
+          );
+
+          if (existingItem) {
+            return {
+              cartItems: state.cartItems.map((item) =>
+                item.product.id === product.id
+                  ? { ...item, quantity: item.quantity + quantity }
+                  : item
+              ),
+            };
+          }
+
+          return {
+            cartItems: [...state.cartItems, { product, quantity }],
+          };
+        }),
+
+      removeFromCart: (productId) =>
+        set((state) => ({
+          cartItems: state.cartItems.filter(
+            (item) => item.product.id !== productId
+          ),
+        })),
+
+      updateCartQuantity: (productId, quantity) =>
+        set((state) => ({
+          cartItems: state.cartItems.map((item) =>
+            item.product.id === productId
+              ? { ...item, quantity: Math.max(1, Math.min(10, quantity)) }
+              : item
+          ),
+        })),
+
+      clearCart: () => set({ cartItems: [] }),
+
       resetTransaction: () => {
         // Clear Midtrans token from localStorage when resetting
         const currentOrder = useVendingStore.getState().currentOrder;
@@ -90,6 +146,7 @@ export const useVendingStore = create<VendingStore>()(
       storage: createJSONStorage(() => localStorage),
       // Only persist important transaction data
       partialize: (state) => ({
+        cartItems: state.cartItems,
         selectedProduct: state.selectedProduct,
         quantity: state.quantity,
         currentOrder: state.currentOrder,

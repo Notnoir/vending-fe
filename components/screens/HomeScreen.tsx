@@ -14,6 +14,7 @@ import {
   Stethoscope,
   // Pill,
   ShieldCheck,
+  ShoppingCart,
 } from "lucide-react";
 // import Link from "next/link";
 import toast from "react-hot-toast";
@@ -26,7 +27,8 @@ const HomeScreen: React.FC = () => {
   const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
   const [isPrescriptionModalOpen, setIsPrescriptionModalOpen] = useState(false);
 
-  const { setSelectedProduct, setCurrentScreen, isOnline } = useVendingStore();
+  const { setSelectedProduct, setCurrentScreen, isOnline, cartItems } =
+    useVendingStore();
 
   const loadProducts = async () => {
     try {
@@ -133,6 +135,23 @@ const HomeScreen: React.FC = () => {
                 </span>
               </div>
             )}
+
+            {/* Cart Button */}
+            <button
+              onClick={() => setCurrentScreen("cart")}
+              className="relative flex items-center px-5 py-2 rounded-full bg-white border-2 border-teal-400 text-teal-500 shadow-md hover:bg-teal-50 transition-colors"
+              title="Lihat Keranjang"
+            >
+              <ShoppingCart className="h-5 w-5 mr-2" />
+              <span className="text-sm font-semibold tracking-wide">
+                Keranjang
+              </span>
+              {cartItems.length > 0 && (
+                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center">
+                  {cartItems.length}
+                </span>
+              )}
+            </button>
 
             {/* Prescription Scan Button */}
             <button

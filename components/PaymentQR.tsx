@@ -31,55 +31,79 @@ export const PaymentQR: React.FC<PaymentQRProps> = ({
   const [hasCheckedInitialStatus, setHasCheckedInitialStatus] = useState(false);
   const [qrGenerationError, setQrGenerationError] = useState<string>("");
   const [savedToken, setSavedToken] = useState<string | null>(null);
+  const [isGenerating, setIsGenerating] = useState(false); // Prevent multiple calls
 
   const generateMidtransQRIS = useCallback(async () => {
+    const orderId = order.order_id;
+    const storageKey = `midtrans_token_${orderId}`;
+
+    // Prevent multiple simultaneous calls
+    if (isGenerating) {
+      console.log("⏳ Generation already in progress, skipping...");
+      return;
+    }
+
     try {
+      setIsGenerating(true);
       setIsGeneratingQR(true);
       setQrGenerationError("");
-      console.log(
-        "🔄 Generating Midtrans Snap QRIS for order:",
-        order.order_id
-      );
+      console.log("🔄 Generating Midtrans Snap QRIS for order:", orderId);
 
-      const orderId = order.order_id;
       setMidtransOrderId(orderId);
 
-      // Check if we already have a token saved for this order
-      const storageKey = `midtrans_token_${orderId}`;
+      // Check if we already have a token saved for this order (priority check)
       const existingToken = localStorage.getItem(storageKey);
-
-      if (existingToken && savedToken === existingToken) {
-        console.log("♻️ Reusing existing Midtrans token from cache");
-        // Token already loaded, no need to create new transaction
-        return;
-      }
 
       if (existingToken) {
         console.log("♻️ Found existing Midtrans token in localStorage");
+
+        // Skip if we already have this token loaded
+        if (savedToken === existingToken) {
+          console.log("✅ Token already loaded, skipping");
+          return;
+        }
+
+        // Load existing token
         setSavedToken(existingToken);
-        // Get redirect URL from existing token
         const redirectUrl = `https://app.sandbox.midtrans.com/snap/v4/redirection/${existingToken}`;
         setQrisUrl(redirectUrl);
         toast.success("QR Code Midtrans berhasil dimuat");
+        setIsGeneratingQR(false);
         return;
       }
 
-      // Create new Midtrans Snap transaction
+      // No existing token, create new Midtrans Snap transaction
       console.log("🆕 Creating new Midtrans Snap transaction...");
+
+      // Prepare items from order
+      let items;
+
+      if (order.items && order.items.length > 0) {
+        // Multi-item order from cart
+        items = order.items.map((item) => ({
+          id: item.product_id.toString(),
+          price: Number(item.unit_price),
+          quantity: Number(item.quantity),
+          name: item.product_name,
+        }));
+      } else {
+        // Single product order
+        items = [
+          {
+            id: order.order_id,
+            price: Number(order.unit_price || 0),
+            quantity: Number(order.quantity || 1),
+            name: order.product_name || "Product",
+          },
+        ];
+      }
 
       const paymentRequest: PaymentRequest = {
         orderId: orderId,
         amount: order.total_amount,
         customerName: "Customer",
         customerEmail: "customer@example.com",
-        items: [
-          {
-            id: order.order_id,
-            price: order.unit_price,
-            quantity: order.quantity,
-            name: order.product_name,
-          },
-        ],
+        items: items,
       };
 
       console.log("📋 Payment request:", paymentRequest);
@@ -106,9 +130,9 @@ export const PaymentQR: React.FC<PaymentQRProps> = ({
 
       if (errorMessage.includes("order_id not unique")) {
         console.log("⚠️ Order ID already exists in Midtrans");
+        console.log("⚠️ Attempting to recover existing token...");
 
         // Try to get token from localStorage as fallback
-        const storageKey = `midtrans_token_${order.order_id}`;
         const existingToken = localStorage.getItem(storageKey);
 
         if (existingToken) {
@@ -116,8 +140,10 @@ export const PaymentQR: React.FC<PaymentQRProps> = ({
           setSavedToken(existingToken);
           const redirectUrl = `https://app.sandbox.midtrans.com/snap/v4/redirection/${existingToken}`;
           setQrisUrl(redirectUrl);
+          setQrGenerationError(""); // Clear error
           toast.success("QR Code Midtrans berhasil dimuat dari cache");
         } else {
+          console.warn("⚠️ No token found in localStorage, cannot recover");
           toast.error("Order sudah digunakan. Silakan buat pesanan baru.");
           setTimeout(() => {
             onClose();
@@ -142,6 +168,7 @@ export const PaymentQR: React.FC<PaymentQRProps> = ({
       }
     } finally {
       setIsGeneratingQR(false);
+      setIsGenerating(false);
     }
   }, [
     order.order_id,
@@ -150,8 +177,10 @@ export const PaymentQR: React.FC<PaymentQRProps> = ({
     order.quantity,
     order.product_name,
     order.payment_url,
+    order.items,
     savedToken,
     qrisUrl,
+    isGenerating,
     onClose,
   ]);
 

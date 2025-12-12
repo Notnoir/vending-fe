@@ -13,6 +13,7 @@ import {
   Pill,
   ShieldCheck,
 } from "lucide-react";
+import toast from "react-hot-toast";
 
 const ProductDetailScreen: React.FC = () => {
   const {
@@ -21,6 +22,7 @@ const ProductDetailScreen: React.FC = () => {
     setQuantity,
     setCurrentScreen,
     resetTransaction,
+    addToCart,
   } = useVendingStore();
 
   if (!selectedProduct) {
@@ -75,6 +77,16 @@ const ProductDetailScreen: React.FC = () => {
 
   const handleContinue = () => {
     setCurrentScreen("order-summary");
+  };
+
+  const handleAddToCart = () => {
+    if (selectedProduct) {
+      addToCart(selectedProduct, quantity);
+      toast.success(`${selectedProduct.name} ditambahkan ke keranjang`);
+      // Reset quantity and go back to home to continue shopping
+      setQuantity(1);
+      setCurrentScreen("home");
+    }
   };
 
   return (
@@ -227,10 +239,20 @@ const ProductDetailScreen: React.FC = () => {
                     variant="primary"
                     size="lg"
                     fullWidth
-                    onClick={handleContinue}
-                    className="bg-teal-400 text-white shadow-lg shadow-teal-100 hover:bg-teal-600"
+                    onClick={handleAddToCart}
+                    className="bg-teal-400 text-white shadow-lg shadow-teal-100 hover:bg-teal-500"
                   >
-                    Lanjut ke Pembayaran
+                    Tambah ke Keranjang
+                  </Button>
+
+                  <Button
+                    variant="primary"
+                    size="lg"
+                    fullWidth
+                    onClick={handleContinue}
+                    className="bg-teal-500 text-white shadow-lg shadow-teal-100 hover:bg-teal-600"
+                  >
+                    Beli Sekarang
                   </Button>
 
                   <Button

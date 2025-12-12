@@ -4,6 +4,7 @@ import React from "react";
 import { useVendingStore } from "@/lib/store";
 import HomeScreen from "./screens/HomeScreen";
 import ProductDetailScreen from "./screens/ProductDetailScreen";
+import CartScreen from "./screens/CartScreen";
 import OrderSummaryScreen from "./screens/OrderSummaryScreen";
 import PaymentScreen from "./screens/PaymentScreen";
 import DispensingScreen from "./screens/DispensingScreen";
@@ -33,6 +34,9 @@ const VendingMachine: React.FC = () => {
       break;
     case "product-detail":
       screenContent = <ProductDetailScreen />;
+      break;
+    case "cart":
+      screenContent = <CartScreen />;
       break;
     case "order-summary":
       screenContent = <OrderSummaryScreen />;
