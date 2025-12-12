@@ -28,7 +28,7 @@ const PaymentScreen: React.FC = () => {
   const {
     currentOrder,
     selectedProduct,
-    cartItems,
+    // cartItems,
     setCurrentScreen,
     resetTransaction,
     setLoading,
