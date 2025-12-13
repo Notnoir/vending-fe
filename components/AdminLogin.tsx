@@ -22,16 +22,30 @@ const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin }) => {
     e.preventDefault();
     setIsLoading(true);
 
-    // Simple authentication - in real app, this should be proper authentication
-    if (formData.username === "admin" && formData.password === "admin123") {
-      toast.success("Login berhasil!");
-      localStorage.setItem("isAdminLoggedIn", "true");
-      onLogin();
-    } else {
-      toast.error("Username atau password salah!");
-    }
+    try {
+      // Call backend API for authentication
+      const { vendingAPI } = await import("@/lib/api");
+      const response = await vendingAPI.adminLogin({
+        username: formData.username,
+        password: formData.password,
+      });
 
-    setIsLoading(false);
+      // Save token and user info to localStorage
+      localStorage.setItem("adminToken", response.token);
+      localStorage.setItem("adminUser", JSON.stringify(response.user));
+      localStorage.setItem("isAdminLoggedIn", "true");
+
+      toast.success("Login berhasil!");
+      onLogin();
+    } catch (error: unknown) {
+      console.error("Login error:", error);
+      const errorMessage =
+        (error as { response?: { data?: { error?: string } } })?.response?.data
+          ?.error || "Username atau password salah!";
+      toast.error(errorMessage);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

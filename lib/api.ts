@@ -212,6 +212,58 @@ export const vendingAPI = {
     const response = await api.get("/health-assistant/status");
     return response.data;
   },
+
+  // Admin Authentication
+  adminLogin: async (credentials: {
+    username: string;
+    password: string;
+  }): Promise<{
+    token: string;
+    user: {
+      id: number;
+      username: string;
+      email: string;
+      role: string;
+    };
+  }> => {
+    const response = await api.post("/auth/login", credentials);
+    return response.data;
+  },
+
+  adminLogout: () => {
+    // Clear admin token from localStorage
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("admin_token");
+      localStorage.removeItem("admin_user");
+      localStorage.removeItem("isAdminLoggedIn");
+    }
+  },
+
+  // Stock Logs
+  getStockLogs: async (
+    machineId: string = "VM01",
+    params?: {
+      limit?: number;
+      offset?: number;
+      change_type?: string;
+    }
+  ) => {
+    const response = await api.get(`/stock/logs/${machineId}`, { params });
+    return response.data;
+  },
+
+  // Orders by Machine
+  getOrdersByMachine: async (
+    machineId: string = "VM01",
+    params?: {
+      limit?: number;
+      offset?: number;
+      status?: string;
+    }
+  ) => {
+    const response = await api.get(`/orders/machine/${machineId}`, { params });
+    return response.data;
+  },
 };
 
 export default api;

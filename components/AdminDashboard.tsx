@@ -266,7 +266,15 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
                 Refresh
               </Button>
               {onLogout && (
-                <Button onClick={onLogout} variant="secondary" size="sm">
+                <Button
+                  onClick={async () => {
+                    vendingAPI.adminLogout();
+                    toast.success("Logout berhasil");
+                    onLogout();
+                  }}
+                  variant="secondary"
+                  size="sm"
+                >
                   <LogOut className="h-4 w-4 mr-2" />
                   Logout
                 </Button>

@@ -12,8 +12,13 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "Vending Machine",
   description: "IoT Vending Machine Interface",
-  viewport:
-    "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no",
+};
+
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
 };
 
 export default function RootLayout({
@@ -23,6 +28,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="id" className="h-full">
+      <head>
+        {/* eslint-disable-next-line @next/next/no-page-custom-font */}
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=optional"
+        />
+      </head>
       <body className={`${inter.variable} font-sans antialiased min-h-full`}>
         <Providers>{children}</Providers>
       </body>

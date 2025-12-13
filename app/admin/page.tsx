@@ -1,30 +1,25 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import AdminDashboard from "@/components/AdminDashboard";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import AdminLogin from "@/components/AdminLogin";
 
 export default function AdminPage() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     // Check if admin is already logged in
-    const loggedIn = localStorage.getItem("isAdminLoggedIn") === "true";
-    setIsLoggedIn(loggedIn);
-  }, []);
+    const token = localStorage.getItem("adminToken");
+    if (token) {
+      // Redirect to dashboard if already logged in
+      router.replace("/admin/dashboard");
+    }
+  }, [router]);
 
   const handleLogin = () => {
-    setIsLoggedIn(true);
+    // After successful login, redirect to dashboard
+    router.push("/admin/dashboard");
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem("isAdminLoggedIn");
-    setIsLoggedIn(false);
-  };
-
-  if (!isLoggedIn) {
-    return <AdminLogin onLogin={handleLogin} />;
-  }
-
-  return <AdminDashboard onLogout={handleLogout} />;
+  return <AdminLogin onLogin={handleLogin} />;
 }
