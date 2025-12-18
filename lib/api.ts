@@ -12,6 +12,7 @@ const api = axios.create({
   timeout: 60000,
   headers: {
     "Content-Type": "application/json",
+    "ngrok-skip-browser-warning": "true",
   },
 });
 
@@ -233,7 +234,7 @@ export const vendingAPI = {
   adminLogout: () => {
     // Clear admin token from localStorage
     if (typeof window !== "undefined") {
-      localStorage.removeItem("admin_token");
+      localStorage.removeItem("adminToken");
       localStorage.removeItem("admin_user");
       localStorage.removeItem("isAdminLoggedIn");
     }
@@ -262,6 +263,34 @@ export const vendingAPI = {
     }
   ) => {
     const response = await api.get(`/orders/machine/${machineId}`, { params });
+    return response.data;
+  },
+
+  // Users Management (Admin only)
+  getAllUsers: async (): Promise<{
+    success: boolean;
+    data: Array<{
+      id: number;
+      name: string;
+      email: string;
+      phone?: string;
+      role: string;
+      status: string;
+      createdAt: string;
+      lastLogin?: string;
+    }>;
+    total: number;
+  }> => {
+    // Use admin token instead of machine token
+    const adminToken = typeof window !== "undefined" 
+      ? localStorage.getItem("adminToken") 
+      : null;
+    
+    const response = await api.get("/users/all", {
+      headers: {
+        Authorization: `Bearer ${adminToken}`,
+      },
+    });
     return response.data;
   },
 };
