@@ -46,6 +46,12 @@ export default function AdminSidebar() {
       icon: "receipt_long",
       href: "/admin/transactions",
     },
+    {
+      id: "announcements",
+      label: "Announcements",
+      icon: "campaign",
+      href: "/admin/announcements",
+    },
     { id: "users", label: "Users", icon: "group", href: "/admin/users" },
   ];
 
