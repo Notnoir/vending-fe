@@ -73,8 +73,9 @@ export default function AdminSidebar() {
   const isActive = (href: string) => pathname === href;
 
   return (
-    <aside className="w-72 h-screen bg-white border-r border-[#dbe5e6] flex flex-col justify-between flex-shrink-0 p-6">
-      <div className="flex flex-col gap-8">
+    <aside className="w-72 h-screen bg-white border-r border-[#dbe5e6] flex flex-col flex-shrink-0">
+      {/* Top Section - Fixed */}
+      <div className="p-6 border-b border-[#dbe5e6]">
         {/* Brand Logo */}
         <div className="flex items-center gap-4">
           <div className="flex items-center justify-center rounded-xl p-2 size-12">
@@ -95,9 +96,12 @@ export default function AdminSidebar() {
             </p>
           </div>
         </div>
+      </div>
 
+      {/* Middle Section - Scrollable */}
+      <div className="flex-1 overflow-y-auto no-scrollbar">
         {/* Navigation Links */}
-        <nav className="flex flex-col gap-3">
+        <nav className="flex flex-col gap-3 p-6">
           {menuItems.map((item) => (
             <Link
               key={item.id}
@@ -137,8 +141,8 @@ export default function AdminSidebar() {
         </nav>
       </div>
 
-      {/* Bottom Actions */}
-      <div className="flex flex-col gap-4">
+      {/* Bottom Section - Fixed */}
+      <div className="p-6 border-t border-[#dbe5e6] flex flex-col gap-4">
         <div className="flex items-center gap-3 rounded-xl bg-gray-50 p-4">
           <div className="flex h-10 w-10 items-center justify-center rounded-full bg-green-100 text-green-600">
             <span className="material-symbols-outlined">check_circle</span>
