@@ -108,43 +108,80 @@ export default function AnnouncementPopup() {
     handleDismiss();
   };
 
+  // Get accent color based on announcement type
+  const getAccentColor = (type: string) => {
+    switch (type) {
+      case 'ERROR':
+        return '#EF4444'; // red-500
+      case 'WARNING':
+        return '#F59E0B'; // amber-500
+      case 'MAINTENANCE':
+        return '#F59E0B'; // amber-500
+      case 'PROMOTION':
+        return '#A855F7'; // purple-500
+      case 'INFO':
+      default:
+        return '#13DAEC'; // cyan
+    }
+  };
+
+  // Get icon background color based on type
+  const getIconBgColor = (type: string) => {
+    switch (type) {
+      case 'ERROR':
+        return '#FEE2E2'; // red-100
+      case 'WARNING':
+        return '#FEF3C7'; // amber-100
+      case 'MAINTENANCE':
+        return '#FEF3C7'; // amber-100
+      case 'PROMOTION':
+        return '#F3E8FF'; // purple-100
+      case 'INFO':
+      default:
+        return '#CFF9FE'; // cyan-100
+    }
+  };
+
   if (!isVisible || announcements.length === 0) return null;
 
   const currentAnn = announcements[currentIndex];
+  const accentColor = getAccentColor(currentAnn.type);
+  const iconBgColor = getIconBgColor(currentAnn.type);
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999] p-4 backdrop-blur-sm">
       <div
         className="bg-white rounded-2xl p-8 max-w-md w-full shadow-2xl transform transition-all animate-fade-in"
-        style={{
-          backgroundColor: currentAnn.bg_color || "#ffffff",
-          color: currentAnn.text_color || "#000000",
-        }}
       >
-        {/* Icon */}
+        {/* Icon with colored background */}
         {currentAnn.icon && (
           <div className="text-center mb-4">
-            <span
-              className="material-symbols-outlined text-6xl"
-              style={{ color: currentAnn.text_color || "#000000" }}
+            <div 
+              className="inline-flex items-center justify-center w-20 h-20 rounded-full mb-2"
+              style={{ backgroundColor: iconBgColor }}
             >
-              {currentAnn.icon}
-            </span>
+              <span
+                className="material-symbols-outlined text-5xl"
+                style={{ color: accentColor }}
+              >
+                {currentAnn.icon}
+              </span>
+            </div>
           </div>
         )}
 
-        {/* Title */}
+        {/* Title - always dark on white */}
         <h2
           className="text-2xl font-bold text-center mb-4"
-          style={{ color: currentAnn.text_color || "#000000" }}
+          style={{ color: '#0D1C1C' }}
         >
           {currentAnn.title}
         </h2>
 
-        {/* Message */}
+        {/* Message - gray text */}
         <p
           className="text-center mb-6 whitespace-pre-line leading-relaxed"
-          style={{ color: currentAnn.text_color || "#000000" }}
+          style={{ color: '#64748B' }}
         >
           {currentAnn.message}
         </p>
@@ -154,7 +191,11 @@ export default function AnnouncementPopup() {
           {currentAnn.has_action_button && (
             <button
               onClick={handleAction}
-              className="flex-1 bg-[#13daec] hover:bg-[#0ebac9] text-white font-bold py-3 rounded-xl transition-colors shadow-lg"
+              className="flex-1 text-white font-bold py-3 rounded-xl transition-colors shadow-lg"
+              style={{ 
+                backgroundColor: accentColor,
+                boxShadow: `0 10px 25px ${accentColor}30`
+              }}
             >
               {currentAnn.action_button_text || "Learn More"}
             </button>
@@ -162,7 +203,11 @@ export default function AnnouncementPopup() {
 
           <button
             onClick={handleDismiss}
-            className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 rounded-xl transition-colors"
+            className="flex-1 text-white font-bold py-3 rounded-xl transition-colors shadow-lg"
+            style={{ 
+              backgroundColor: accentColor,
+              boxShadow: `0 10px 25px ${accentColor}30`
+            }}
           >
             {currentIndex < announcements.length - 1 ? "Next" : "Dismiss"}
           </button>
@@ -170,12 +215,17 @@ export default function AnnouncementPopup() {
 
         {/* Counter */}
         {announcements.length > 1 && (
-          <p
-            className="text-center text-sm mt-4 opacity-70"
-            style={{ color: currentAnn.text_color || "#000000" }}
-          >
-            {currentIndex + 1} of {announcements.length}
-          </p>
+          <div className="flex justify-center gap-2 mt-4">
+            {Array.from({ length: announcements.length }).map((_, idx) => (
+              <div
+                key={idx}
+                className="w-2 h-2 rounded-full transition-colors"
+                style={{
+                  backgroundColor: idx === currentIndex ? accentColor : '#CBD5E1'
+                }}
+              />
+            ))}
+          </div>
         )}
       </div>
 

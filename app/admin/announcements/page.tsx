@@ -38,9 +38,9 @@ export default function AnnouncementsPage() {
     message: "",
     type: "INFO",
     priority: "0", // String to prevent NaN error
-    icon: "",
-    bg_color: "#E3F2FD",
-    text_color: "#1565C0",
+    icon: "info", // Default icon for INFO type
+    bg_color: "#FFFFFF", // White background
+    text_color: "#0D1C1C", // Dark text
     show_on_web: true,
     show_on_mobile: true,
     has_action_button: false,
@@ -57,6 +57,74 @@ export default function AnnouncementsPage() {
     fetchAnnouncements();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router]);
+
+  // Helper function to get default icon by type
+  const getDefaultIconByType = (type: string) => {
+    switch (type) {
+      case 'ERROR':
+        return 'error';
+      case 'WARNING':
+        return 'warning';
+      case 'MAINTENANCE':
+        return 'build';
+      case 'PROMOTION':
+        return 'celebration';
+      case 'INFO':
+      default:
+        return 'info';
+    }
+  };
+
+  // Helper function to get default colors by type
+  const getDefaultColorsByType = (type: string) => {
+    switch (type) {
+      case 'ERROR':
+        return {
+          bg_color: '#FFFFFF',    // White background
+          text_color: '#0D1C1C',  // Dark text
+          accent_color: '#EF4444' // Red-500
+        };
+      case 'WARNING':
+        return {
+          bg_color: '#FFFFFF',    // White background
+          text_color: '#0D1C1C',  // Dark text
+          accent_color: '#F59E0B' // Amber-500
+        };
+      case 'MAINTENANCE':
+        return {
+          bg_color: '#FFFFFF',    // White background
+          text_color: '#0D1C1C',  // Dark text
+          accent_color: '#F59E0B' // Amber-500
+        };
+      case 'PROMOTION':
+        return {
+          bg_color: '#FFFFFF',    // White background
+          text_color: '#0D1C1C',  // Dark text
+          accent_color: '#A855F7' // Purple-500
+        };
+      case 'INFO':
+      default:
+        return {
+          bg_color: '#FFFFFF',    // White background
+          text_color: '#0D1C1C',  // Dark text
+          accent_color: '#13DAEC' // Cyan
+        };
+    }
+  };
+
+  // Handle type change - auto-fill icon and colors
+  const handleTypeChange = (newType: string) => {
+    const defaultIcon = getDefaultIconByType(newType);
+    const defaultColors = getDefaultColorsByType(newType);
+    
+    setFormData({
+      ...formData,
+      type: newType as "INFO" | "WARNING" | "ERROR" | "MAINTENANCE" | "PROMOTION",
+      icon: defaultIcon,
+      bg_color: defaultColors.bg_color,
+      text_color: defaultColors.text_color,
+    });
+  };
 
   const fetchAnnouncements = async () => {
     setIsLoading(true);
@@ -118,9 +186,9 @@ export default function AnnouncementsPage() {
           message: "",
           type: "INFO",
           priority: "0",
-          icon: "",
-          bg_color: "#E3F2FD",
-          text_color: "#1565C0",
+          icon: "info", // Default icon for INFO type
+          bg_color: "#FFFFFF", // White background
+          text_color: "#0D1C1C", // Dark text
           show_on_web: true,
           show_on_mobile: true,
           has_action_button: false,
@@ -440,7 +508,7 @@ export default function AnnouncementsPage() {
                       </label>
                       <select
                         value={formData.type}
-                        onChange={(e) => setFormData({ ...formData, type: e.target.value as "INFO" | "WARNING" | "ERROR" | "MAINTENANCE" | "PROMOTION" })}
+                        onChange={(e) => handleTypeChange(e.target.value)}
                         className="form-input w-full h-16 px-6 rounded-2xl bg-[#f0f4f4] border-none text-[#111718] text-lg focus:ring-2 focus:ring-primary focus:bg-white transition-all"
                       >
                         <option value="INFO">📘 Info</option>
